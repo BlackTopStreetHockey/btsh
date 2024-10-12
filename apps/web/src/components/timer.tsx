@@ -133,7 +133,7 @@ export function Timer({
         // Game ends after shootout
         break;
     }
-  }, [period, setPeriod, setTimeLeft, resetTimeouts]);
+  }, [period, setPeriod, setTimeLeft, resetTimeouts, OT_DURATION, PERIOD_DURATION]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;

@@ -30,15 +30,11 @@ import { teams } from "@/data/teams";
 export default function GameDetails({
   date,
   setDate,
-  homeTeam,
-  awayTeam,
   setHomeTeam,
   setAwayTeam,
 }: {
   date: Date;
   setDate: (date: Date) => void;
-  homeTeam: Team;
-  awayTeam: Team;
   setHomeTeam: (team: Team) => void;
   setAwayTeam: (team: Team) => void;
 }) {
@@ -51,7 +47,7 @@ export default function GameDetails({
         <SheetHeader>
           <SheetTitle>Edit Game Details</SheetTitle>
           <SheetDescription>
-            Make changes to the game details here. Click save when you're done.
+            Make changes to the game details here. Click save when you are done.
           </SheetDescription>
         </SheetHeader>
         <div className="grid gap-4 py-4">

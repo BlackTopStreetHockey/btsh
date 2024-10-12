@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { PlusCircle, MinusCircle, Clock } from "lucide-react";
 import {
@@ -11,8 +11,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Image from "next/image";
-
-// import { teams } from "@/data/teams";
 
 type Period = "1st" | "2nd" | "3rd" | "OT" | "SO";
 
@@ -39,7 +37,6 @@ type ScoreboardProps = {
   period: Period;
   players: Player[];
   onTimeout: () => void;
-  endTimeout: () => void;
 };
 
 export function Scoreboard({
@@ -52,7 +49,6 @@ export function Scoreboard({
   period,
   players,
   onTimeout,
-  endTimeout,
 }: ScoreboardProps) {
   const [homeScore, setHomeScore] = useState(0);
   const [awayScore, setAwayScore] = useState(0);
