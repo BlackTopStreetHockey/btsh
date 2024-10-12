@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
 
     # 3rd party
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -76,6 +77,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
 ]
+
+if DEBUG:
+    INSTALLED_APPS.append('debug_toolbar')
+    MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
+    DEBUG_TOOLBAR_CONFIG = {
+        'SHOW_COLLAPSED': True,
+        'SHOW_TOOLBAR_CALLBACK': lambda request: DEBUG
+    }
 
 ROOT_URLCONF = 'api.urls'
 
