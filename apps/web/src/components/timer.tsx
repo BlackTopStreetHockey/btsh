@@ -150,7 +150,7 @@ export function Timer({
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isActive, timeLeft, handlePeriodEnd, isTimeout]);
+  }, [isActive, timeLeft, handlePeriodEnd, isTimeout, setIsActive, setTimeLeft]);
 
   return (
     <div className="flex flex-col justify-center items-center">

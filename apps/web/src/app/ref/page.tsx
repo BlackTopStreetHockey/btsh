@@ -19,8 +19,8 @@ type GoalEvent = {
 };
 
 export default function RefPage() {
-  const [homeTeam, setHomeTeam] = useState<Team>(teams[9]);
-  const [awayTeam, setAwayTeam] = useState<Team>(teams[10]);
+  const [homeTeam, setHomeTeam] = useState<Team>(teams[9] as Team);
+  const [awayTeam, setAwayTeam] = useState<Team>(teams[10] as Team);
   const [goalEvents, setGoalEvents] = useState<GoalEvent[]>([]);
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [totalSeconds, setTotalSeconds] = useState(25 * 60); // 25 minutes
@@ -36,10 +36,6 @@ export default function RefPage() {
   const handleTimeout = () => {
     setIsTimeout(true);
     setIsActive(false);
-  };
-
-  const endTimeout = () => {
-    setIsTimeout(false);
   };
 
   return (
@@ -61,7 +57,6 @@ export default function RefPage() {
                 timeLeft={timeLeft}
                 period={period}
                 onTimeout={handleTimeout}
-                endTimeout={endTimeout}
               />
             </CardContent>
           </Card>
@@ -94,11 +89,9 @@ export default function RefPage() {
               <div className="flex flex-row justify-between">
                 <GameDetails
                   date={date}
-                  setDate={setDate}
-                  homeTeam={homeTeam}
-                  awayTeam={awayTeam}
-                  setHomeTeam={setHomeTeam}
-                  setAwayTeam={setAwayTeam}
+                  setDate={(newDate: Date) => setDate(newDate)}
+                  setHomeTeam={(team: Team) => setHomeTeam(team)}
+                  setAwayTeam={(team: Team) => setAwayTeam(team)}
                 />
               </div>
             </CardHeader>

@@ -33,7 +33,7 @@ export default function GameDetails({
   setHomeTeam,
   setAwayTeam,
 }: {
-  date: Date;
+  date?: Date;
   setDate: (date: Date) => void;
   setHomeTeam: (team: Team) => void;
   setAwayTeam: (team: Team) => void;
@@ -132,7 +132,7 @@ export default function GameDetails({
           <Calendar
             mode="single"
             selected={date}
-            onSelect={setDate}
+            onSelect={(newDate: Date | undefined) => newDate && setDate(newDate)}
             className="flex rounded-md border justify-center items-center"
           />
 

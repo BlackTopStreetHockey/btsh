@@ -58,11 +58,11 @@ interface Game {
   }
   
   interface Player {
+    id: string;
     name: string;
     gender?: 'M' | 'F' | string;
-    goals: number;
+    team: string;
     position?: 'F' | 'D' | 'G' | string;
-    team?: string | Pick<Team, 'name' | 'logoUrl'>;
   }
   
   interface Goalie extends Player {
