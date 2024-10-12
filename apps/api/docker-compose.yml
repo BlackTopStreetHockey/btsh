@@ -1,0 +1,23 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/src
+    depends_on:
+      - postgres
+  postgres: # Solely intended for local development
+    image: postgres:16.4-bookworm
+    environment:
+      POSTGRES_USER: btsh
+      POSTGRES_PASSWORD: btsh
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgresdata:/var/lib/postgresql/data
+volumes:
+  postgresdata:
