@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
 
     # Project
+    'common.apps.CommonConfig',
     'users.apps.UsersConfig',
 
     # 3rd party
