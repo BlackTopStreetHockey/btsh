@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Scoreboard } from "@/components/scoreboard";
 import { BoxScore } from "@/components/box-score";
@@ -26,45 +27,25 @@ export default function RefPage() {
   const [timeLeft, setTimeLeft] = useState(totalSeconds);
   const [period, setPeriod] = useState<Period>("1st");
   const [isActive, setIsActive] = useState(false);
+  const [isTimeout, setIsTimeout] = useState(false);
 
   const resetTimeouts = () => {
     // Implementation of resetTimeouts
   };
 
+  const handleTimeout = () => {
+    setIsTimeout(true);
+    setIsActive(false);
+  };
+
+  const endTimeout = () => {
+    setIsTimeout(false);
+  };
+
   return (
     <>
-      <GameDetails
-        date={date}
-        setDate={setDate}
-        homeTeam={homeTeam}
-        awayTeam={awayTeam}
-        setHomeTeam={setHomeTeam}
-        setAwayTeam={setAwayTeam}
-      />
-
       <main className="flex-1 overflow-auto p-4">
         <div className="grid gap-4 lg:grid-cols-2">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle>Timer</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col justify-center items-center">
-                <Timer
-                  resetTimeouts={resetTimeouts}
-                  totalSeconds={totalSeconds}
-                  setTotalSeconds={setTotalSeconds}
-                  timeLeft={timeLeft}
-                  setTimeLeft={setTimeLeft}
-                  period={period}
-                  setPeriod={setPeriod}
-                  isActive={isActive}
-                  setIsActive={setIsActive}
-                />
-              </div>
-            </CardContent>
-          </Card>
-
           <Card>
             <CardHeader>
               <CardTitle>Scoresheet</CardTitle>
@@ -79,6 +60,28 @@ export default function RefPage() {
                 totalSeconds={totalSeconds}
                 timeLeft={timeLeft}
                 period={period}
+                onTimeout={handleTimeout}
+                endTimeout={endTimeout}
+              />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle>Timer</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Timer
+                resetTimeouts={resetTimeouts}
+                totalSeconds={totalSeconds}
+                setTotalSeconds={setTotalSeconds}
+                timeLeft={timeLeft}
+                setTimeLeft={setTimeLeft}
+                period={period}
+                setPeriod={setPeriod}
+                isActive={isActive}
+                setIsActive={setIsActive}
+                isTimeout={isTimeout}
               />
             </CardContent>
           </Card>
@@ -86,8 +89,18 @@ export default function RefPage() {
 
         <div className="grid gap-4 mt-4">
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle>Box Score</CardTitle>
+              <div className="flex flex-row justify-between">
+                <GameDetails
+                  date={date}
+                  setDate={setDate}
+                  homeTeam={homeTeam}
+                  awayTeam={awayTeam}
+                  setHomeTeam={setHomeTeam}
+                  setAwayTeam={setAwayTeam}
+                />
+              </div>
             </CardHeader>
             <CardContent>
               <BoxScore
@@ -95,6 +108,13 @@ export default function RefPage() {
                 homeTeam={homeTeam}
                 awayTeam={awayTeam}
               />
+              <Button
+                onClick={() => {
+                  // TODO: Implement sending to Box Scores
+                }}
+              >
+                Send to Box Scores
+              </Button>
             </CardContent>
           </Card>
         </div>

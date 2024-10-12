@@ -16,6 +16,7 @@ type TimerProps = {
   setPeriod: React.Dispatch<React.SetStateAction<Period>>;
   isActive: boolean;
   setIsActive: React.Dispatch<React.SetStateAction<boolean>>;
+  isTimeout: boolean;
 };
 
 export function Timer({
@@ -28,6 +29,7 @@ export function Timer({
   setPeriod,
   isActive,
   setIsActive,
+  isTimeout,
 }: TimerProps) {
   const PERIOD_DURATION = 25 * 60;
   const OT_DURATION = 5 * 60;
@@ -107,7 +109,7 @@ export function Timer({
   // Calculate color based on progress
   const getColor = (progress: number) => {
     const hue = ((1 - progress) * 120).toString(10);
-    return `hsl(${hue}, 100%, 50%)`;
+    return `hsl(${hue}, 80%, 40%)`;
   };
 
   const handlePeriodEnd = useCallback(() => {
@@ -136,7 +138,7 @@ export function Timer({
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
 
-    if (isActive && timeLeft > 0) {
+    if (isActive && timeLeft > 0 && !isTimeout) {
       interval = setInterval(() => {
         setTimeLeft((prevTime) => prevTime - 1);
       }, 1000);
@@ -148,10 +150,10 @@ export function Timer({
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isActive, timeLeft, handlePeriodEnd]);
+  }, [isActive, timeLeft, handlePeriodEnd, isTimeout]);
 
   return (
-    <>
+    <div className="flex flex-col justify-center items-center">
       <div className="relative w-48 h-48">
         <svg className="w-full h-full">
           <circle
@@ -203,11 +205,15 @@ export function Timer({
         <Button
           onClick={toggleTimer}
           variant="outline"
-          disabled={period === "SO"}
+          disabled={period === "SO" || isTimeout}
         >
           {isActive ? <PauseCircleIcon /> : <PlayCircleIcon />}
         </Button>
-        <Button onClick={resetTimer} variant="outline" disabled={period === "SO"}>
+        <Button
+          onClick={resetTimer}
+          variant="outline"
+          disabled={period === "SO"}
+        >
           <RefreshCcwIcon className="h-4 w-4" />
         </Button>
         {period === "SO" && (
@@ -232,6 +238,6 @@ export function Timer({
           </button>
         ))}
       </div>
-    </>
+    </div>
   );
 }

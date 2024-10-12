@@ -38,6 +38,8 @@ type ScoreboardProps = {
   timeLeft: number;
   period: Period;
   players: Player[];
+  onTimeout: () => void;
+  endTimeout: () => void;
 };
 
 export function Scoreboard({
@@ -49,6 +51,8 @@ export function Scoreboard({
   timeLeft,
   period,
   players,
+  onTimeout,
+  endTimeout,
 }: ScoreboardProps) {
   const [homeScore, setHomeScore] = useState(0);
   const [awayScore, setAwayScore] = useState(0);
@@ -85,6 +89,16 @@ export function Scoreboard({
       } else {
         setAwayScore((score) => Math.max(0, score - 1));
       }
+    }
+  };
+
+  const handleTimeout = (team: Team) => {
+    if (team === homeTeam && homeTimeouts > 0) {
+      setHomeTimeouts(homeTimeouts - 1);
+      onTimeout();
+    } else if (team === awayTeam && awayTimeouts > 0) {
+      setAwayTimeouts(awayTimeouts - 1);
+      onTimeout();
     }
   };
 
@@ -126,9 +140,7 @@ export function Scoreboard({
             <Clock className="h-4 w-4 mr-1" />
             <span>{homeTimeouts}</span>
             <Button
-              onClick={() =>
-                setHomeTimeouts((timeouts) => Math.max(0, timeouts - 1))
-              }
+              onClick={() => handleTimeout(homeTeam)}
               size="sm"
               variant="ghost"
               disabled={homeTimeouts === 0}
@@ -174,9 +186,7 @@ export function Scoreboard({
             <Clock className="h-4 w-4 mr-1" />
             <span>{awayTimeouts}</span>
             <Button
-              onClick={() =>
-                setAwayTimeouts((timeouts) => Math.max(0, timeouts - 1))
-              }
+              onClick={() => handleTimeout(awayTeam)}
               size="sm"
               variant="ghost"
               disabled={awayTimeouts === 0}
@@ -200,7 +210,8 @@ export function Scoreboard({
             {players
               .filter(
                 (player) =>
-                  player.team === homeTeam?.name || player.team === awayTeam?.name
+                  player.team === homeTeam?.name ||
+                  player.team === awayTeam?.name
               )
               .map((player) => (
                 <SelectItem key={player.id} value={player.id}>

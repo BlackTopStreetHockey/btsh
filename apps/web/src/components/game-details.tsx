@@ -24,7 +24,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-
+import { Textarea } from "@/components/ui/textarea";
 import { teams } from "@/data/teams";
 
 export default function GameDetails({
@@ -45,7 +45,7 @@ export default function GameDetails({
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline">Open</Button>
+        <Button variant="outline">Open Game Details</Button>
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>
@@ -139,6 +139,8 @@ export default function GameDetails({
             onSelect={setDate}
             className="flex rounded-md border justify-center items-center"
           />
+
+          <Textarea placeholder="Notes from the game..." />
         </div>
         <SheetFooter>
           <SheetClose asChild>

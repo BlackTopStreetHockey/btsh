@@ -39,9 +39,9 @@ export default function Dashboard({ children }: { children: React.ReactNode }) {
             {[
               "Home",
               "Analytics",
-              "Projects",
-              "Tasks",
-              "Reports",
+              "Schedule",
+              "Referee",
+              "Rules",
               "Settings",
             ].map((item) => (
               <Button
