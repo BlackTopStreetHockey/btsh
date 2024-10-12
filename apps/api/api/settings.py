@@ -76,6 +76,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
+    'common.middleware.TimezoneMiddleware',
 ]
 
 if DEBUG:
@@ -161,7 +162,12 @@ LOGOUT_REDIRECT_URL = 'home'
 
 LANGUAGE_CODE = 'en-us'
 
+# https://docs.djangoproject.com/en/5.1/topics/i18n/timezones/#default-time-zone-and-current-time-zone
+
 TIME_ZONE = 'UTC'
+# Django displays datetimes as UTC (i.e. in the django admin), to make it easier for end users we automatically
+# "activate" the NY timezone (see TimezoneMiddleware). We don't need to handle different timezones per user right now
+DEFAULT_USER_TIME_ZONE = 'America/New_York'
 
 USE_I18N = True
 
