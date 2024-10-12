@@ -19,7 +19,7 @@ type Period = "1st" | "2nd" | "3rd" | "OT" | "SO";
 type Player = {
   id: string;
   name: string;
-  team: "home" | "away";
+  team: string;
 };
 
 type GoalEvent = {
@@ -57,23 +57,20 @@ export function Scoreboard({
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
 
   const addGoal = (team: Team) => {
-    if (selectedPlayer && selectedPlayer.team == team.name) {
+    if (selectedPlayer && selectedPlayer.team === team.name) {
       const newGoal: GoalEvent = {
         id: `goal-${goalEvents.length + 1}`,
         player: selectedPlayer,
         time: totalSeconds - timeLeft,
         period: period,
       };
-      console.log("+", newGoal);
       setGoalEvents([...goalEvents, newGoal]);
-      if (team === homeTeam) {
+      if (team.name === homeTeam.name) {
         setHomeScore((score) => score + 1);
       } else {
         setAwayScore((score) => score + 1);
       }
       setSelectedPlayer(null);
-    } else {
-      console.log("not allowed");
     }
   };
 
@@ -83,7 +80,7 @@ export function Scoreboard({
       .find((goal) => goal.player.team === team.name);
     if (lastGoal) {
       setGoalEvents(goalEvents.filter((goal) => goal.id !== lastGoal.id));
-      if (team === homeTeam) {
+      if (team.name === homeTeam.name) {
         setHomeScore((score) => Math.max(0, score - 1));
       } else {
         setAwayScore((score) => Math.max(0, score - 1));
@@ -98,7 +95,7 @@ export function Scoreboard({
           <Image
             className="mb-2 rounded-full"
             src={homeTeam?.logoUrl || "/teams/btsh.jpg"}
-            alt={homeTeam?.name || ""}
+            alt={homeTeam?.name || "BTSH"}
             width={48}
             height={48}
           />
@@ -146,7 +143,7 @@ export function Scoreboard({
           <Image
             className="mb-2 rounded-full"
             src={awayTeam?.logoUrl || "/teams/btsh.jpg"}
-            alt={awayTeam?.name || ""}
+            alt={awayTeam?.name || "BTSH"}
             width={48}
             height={48}
           />

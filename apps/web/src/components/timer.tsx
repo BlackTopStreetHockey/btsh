@@ -1,21 +1,37 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useRef, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { PlayCircleIcon, PauseCircleIcon, RefreshCcwIcon } from "lucide-react";
 
-type Period = "1st" | "2nd" | "OT" | "SO";
+type Period = "1st" | "2nd" | "3rd" | "OT" | "SO";
 
-export function Timer({ resetTimeouts }: { resetTimeouts: () => void }) {
-  const [period, setPeriod] = useState<Period>("1st");
-  const [totalSeconds, setTotalSeconds] = useState(20 * 60); // 20 minutes for regular periods
-  const [timeLeft, setTimeLeft] = useState(totalSeconds);
-  const [isActive, setIsActive] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+type TimerProps = {
+  resetTimeouts: () => void;
+  totalSeconds: number;
+  setTotalSeconds: React.Dispatch<React.SetStateAction<number>>;
+  timeLeft: number;
+  setTimeLeft: React.Dispatch<React.SetStateAction<number>>;
+  period: Period;
+  setPeriod: React.Dispatch<React.SetStateAction<Period>>;
+  isActive: boolean;
+  setIsActive: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
+export function Timer({
+  resetTimeouts,
+  totalSeconds,
+  setTotalSeconds,
+  timeLeft,
+  setTimeLeft,
+  period,
+  setPeriod,
+  isActive,
+  setIsActive,
+}: TimerProps) {
   const PERIOD_DURATION = 25 * 60;
   const OT_DURATION = 5 * 60;
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const switchPeriod = (newPeriod: Period) => {
     setPeriod(newPeriod);
@@ -60,7 +76,7 @@ export function Timer({ resetTimeouts }: { resetTimeouts: () => void }) {
 
   const handleTimeClick = () => {
     if (!isActive && period !== "SO") {
-      setIsEditing(true);
+      setIsActive(true);
       setTimeout(() => inputRef.current?.focus(), 0);
     }
   };
@@ -75,7 +91,7 @@ export function Timer({ resetTimeouts }: { resetTimeouts: () => void }) {
   };
 
   const handleTimeBlur = () => {
-    setIsEditing(false);
+    setIsActive(false);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -167,7 +183,7 @@ export function Timer({ resetTimeouts }: { resetTimeouts: () => void }) {
         >
           {period === "SO" ? (
             "Shootout"
-          ) : isEditing ? (
+          ) : isActive ? (
             <input
               ref={inputRef}
               type="text"
@@ -187,11 +203,11 @@ export function Timer({ resetTimeouts }: { resetTimeouts: () => void }) {
         <Button
           onClick={toggleTimer}
           variant="outline"
-          disabled={isEditing || period === "SO"}
+          disabled={period === "SO"}
         >
           {isActive ? <PauseCircleIcon /> : <PlayCircleIcon />}
         </Button>
-        <Button onClick={resetTimer} variant="outline" disabled={isEditing}>
+        <Button onClick={resetTimer} variant="outline" disabled={period === "SO"}>
           <RefreshCcwIcon className="h-4 w-4" />
         </Button>
         {period === "SO" && (
@@ -202,7 +218,7 @@ export function Timer({ resetTimeouts }: { resetTimeouts: () => void }) {
       </div>
 
       <div className="flex space-x-2 mb-4">
-        {["1st", "2nd", "3rd", "OT", "SO"].map((p) => (
+        {["1st", "2nd", "OT", "SO"].map((p) => (
           <button
             key={p}
             onClick={() => switchPeriod(p as Period)}
@@ -216,8 +232,6 @@ export function Timer({ resetTimeouts }: { resetTimeouts: () => void }) {
           </button>
         ))}
       </div>
-
-
     </>
   );
 }
