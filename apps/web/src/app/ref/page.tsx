@@ -1,177 +1,209 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Clock, Plus, X } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Calendar } from "@/components/ui/calendar";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Scoreboard } from "@/components/scoreboard";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
-export default function GameScoringInterface({ game, onScoreUpdate }) {
-  const [selectedPeriod, setSelectedPeriod] = useState(1);
-  const [showScoringModal, setShowScoringModal] = useState(false);
-  const [scoringDetails, setScoringDetails] = useState({
-    scorerId: '',
-    assists: [],
-    timeInPeriod: '',
-  });
+import { BoxScore } from "@/components/box-score";
+import { Timer } from "@/components/timer";
 
-  const handleAddGoal = async () => {
-    try {
-      const response = await fetch(`/api/games/${game.id}/goals`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...scoringDetails,
-          periodId: selectedPeriod,
-        }),
-      });
+import { teams } from "@/data/teams";
+import { mockPlayers } from "@/data/__mocks__/players";
 
-      if (!response.ok) {
-        throw new Error('Failed to add goal');
-      }
+type Period = "1" | "2" | "3" | "OT" | "SO";
+type GoalEvent = {
+  id: string;
+  player: Player;
+  time: number;
+  period: Period;
+};
 
-      setShowScoringModal(false);
-      setScoringDetails({ scorerId: '', assists: [], timeInPeriod: '' });
-      onScoreUpdate();
-    } catch (error) {
-      console.error('Error adding goal:', error);
-    }
+export default function RefPage() {
+  const [homeTeam, setHomeTeam] = useState<Team>();
+  const [awayTeam, setAwayTeam] = useState<Team>();
+  const [goalEvents, setGoalEvents] = useState<GoalEvent[]>([]);
+  const [date, setDate] = useState<Date | undefined>(new Date());
+  const [homeTimeouts, setHomeTimeouts] = useState(1);
+  const [awayTimeouts, setAwayTimeouts] = useState(1);
+
+  const resetTimeouts = () => {
+    setHomeTimeouts(1);
+    setAwayTimeouts(1);
   };
 
   return (
-    <div className="space-y-4">
-      <Card>
-        <CardHeader>
-          <CardTitle>Game Score</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex justify-between items-center text-2xl font-bold">
-            <div>{game?.homeTeam.name}</div>
-            <div className="flex items-center gap-8">
-              <span>{game?.homeScore}</span>
-              <span>-</span>
-              <span>{game?.awayScore}</span>
+    <>
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button variant="outline">Open</Button>
+        </SheetTrigger>
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>Edit Game Details</SheetTitle>
+            <SheetDescription>
+              Make changes to the game details here. Click save when you're
+              done.
+            </SheetDescription>
+          </SheetHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="ref1" className="text-right">
+                String Referee
+              </Label>
+              <Input id="ref1" value="Alex M" className="col-span-3" />
             </div>
-            <div>{game?.awayTeam.name}</div>
-          </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="ref2" className="text-right">
+                Fence Referee
+              </Label>
+              <Input id="ref2" value="Zac H" className="col-span-3" />
+            </div>
 
-          <div className="mt-4 flex justify-center gap-2">
-            {[1, 2, 3].map((period) => (
-              <Button
-                key={period}
-                variant={selectedPeriod === period ? "default" : "outline"}
-                onClick={() => setSelectedPeriod(period)}
-              >
-                Period {period}
-              </Button>
-            ))}
-          </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="time" className="text-right">
+                Game Time
+              </Label>
+              <Input id="time" value="12:00PM" className="col-span-3" />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="awayTeam" className="text-right">
+                Away Team
+              </Label>
+              <div className="col-span-3">
+                <Select
+                  defaultValue={teams[10].shortName}
+                  onValueChange={(value) => {
+                    const foundTeam = teams.find((t) => t.shortName === value);
+                    if (foundTeam) {
+                      setAwayTeam(foundTeam as Team);
+                    }
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select team" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {teams.map((team) => (
+                      <SelectItem key={team.shortName} value={team.shortName}>
+                        {team.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
 
-          <div className="mt-6">
-            <Button
-              onClick={() => setShowScoringModal(true)}
-              className="w-full flex items-center justify-center gap-2"
-            >
-              <Plus className="h-4 w-4" />
-              Add Goal
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="homeTeam" className="text-right">
+                Home Team
+              </Label>
+              <div className="col-span-3">
+                <Select
+                  defaultValue={teams[9].shortName}
+                  onValueChange={(value) => {
+                    const foundTeam = teams.find((t) => t.shortName === value);
+                    if (foundTeam) {
+                      setHomeTeam(foundTeam as Team);
+                    }
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select team" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {teams.map((team) => (
+                      <SelectItem key={team.shortName} value={team.shortName}>
+                        {team.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
 
-      {showScoringModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <Card className="w-full max-w-md">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Add Goal</CardTitle>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowScoringModal(false)}
-              >
-                <X className="h-4 w-4" />
-              </Button>
+            <Label htmlFor="date" className="text-left">
+              Date
+            </Label>
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={setDate}
+              className="flex rounded-md border justify-center items-center"
+            />
+          </div>
+          <SheetFooter>
+            <SheetClose asChild>
+              <Button type="submit">Save</Button>
+            </SheetClose>
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
+
+      <main className="flex-1 overflow-auto p-4">
+        <div className="grid gap-4 lg:grid-cols-2">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle>Timer</CardTitle>
             </CardHeader>
             <CardContent>
-              <form className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Scorer
-                  </label>
-                  <select
-                    className="w-full p-2 border rounded-md"
-                    value={scoringDetails.scorerId}
-                    onChange={(e) => setScoringDetails(prev => ({
-                      ...prev,
-                      scorerId: e.target.value
-                    }))}
-                  >
-                    <option value="">Select player</option>
-                    {[...game?.homeTeam.players, ...game?.awayTeam.players].map((player) => (
-                      <option key={player.id} value={player.id}>
-                        {player.firstName} {player.lastName} (#{player.number})
-                      </option>
-                    ))}
-                  </select>
-                </div>
+              <div className="flex flex-col justify-center items-center">
+                <Timer resetTimeouts={resetTimeouts} />
+              </div>
+            </CardContent>
+          </Card>
 
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Time in Period
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="MM:SS"
-                    className="w-full p-2 border rounded-md"
-                    value={scoringDetails.timeInPeriod}
-                    onChange={(e) => setScoringDetails(prev => ({
-                      ...prev,
-                      timeInPeriod: e.target.value
-                    }))}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Assists (max 2)
-                  </label>
-                  {[0, 1].map((index) => (
-                    <select
-                      key={index}
-                      className="w-full p-2 border rounded-md mb-2"
-                      value={scoringDetails.assists[index] || ''}
-                      onChange={(e) => {
-                        const newAssists = [...scoringDetails.assists];
-                        newAssists[index] = e.target.value;
-                        setScoringDetails(prev => ({
-                          ...prev,
-                          assists: newAssists
-                        }));
-                      }}
-                    >
-                      <option value="">Select player</option>
-                      {[...game.homeTeam.players, ...game.awayTeam.players].map((player) => (
-                        <option key={player.id} value={player.id}>
-                          {player.firstName} {player.lastName} (#{player.number})
-                        </option>
-                      ))}
-                    </select>
-                  ))}
-                </div>
-
-                <Button
-                  type="button"
-                  className="w-full"
-                  onClick={handleAddGoal}
-                >
-                  Save Goal
-                </Button>
-              </form>
+          <Card>
+            <CardHeader>
+              <CardTitle>Scoresheet</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Scoreboard 
+                homeTeam={homeTeam} 
+                awayTeam={awayTeam} 
+                goalEvents={goalEvents}
+                setGoalEvents={setGoalEvents}
+                players={mockPlayers}
+              />
             </CardContent>
           </Card>
         </div>
-      )}
-    </div>
+
+        <div className="grid gap-4 mt-4">
+        <Card>
+            <CardHeader>
+              <CardTitle>Box Score</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <BoxScore
+                goalEvents={goalEvents}
+                homeTeam={homeTeam}
+                awayTeam={awayTeam}
+              />
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    </>
   );
 }
