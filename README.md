@@ -19,3 +19,20 @@ This is a website for Black Top Street Hockey League.
 
 This project is licensed under the MIT License. See the LICENSE file for more details.
 
+
+
+## TODO 
+* Scaffold django project under api/
+  * django debug toolbar
+  * django extensions
+  * django environ
+  * Dockerize dev env
+* Custom user model
+* Setup django admin
+* Add some tables -- seasons, divisions, teams, games
+  * M2M b/w teams and seasons, divisions and seasons, players and seasons
+* Setup
+  * DRF -- api tokens
+  * django filter
+  * django import export
+  * django storages
