@@ -9,6 +9,7 @@ import { Timer } from "@/components/timer";
 import GameDetails from "@/components/game-details";
 import { teams } from "@/data/teams";
 import { mockPlayers } from "@/data/__mocks__/players";
+import { ShootoutSheet } from "@/components/shootout-sheet";
 
 type Period = "1st" | "2nd" | "3rd" | "OT" | "SO";
 type GoalEvent = {
@@ -78,6 +79,9 @@ export default function RefPage() {
                 setIsActive={setIsActive}
                 isTimeout={isTimeout}
               />
+              {period === "SO" && (
+                <ShootoutSheet homeTeam={homeTeam} awayTeam={awayTeam} />
+              )}
             </CardContent>
           </Card>
         </div>

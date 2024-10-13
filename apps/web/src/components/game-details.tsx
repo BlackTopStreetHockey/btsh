@@ -51,18 +51,6 @@ export default function GameDetails({
           </SheetDescription>
         </SheetHeader>
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="ref1" className="text-right">
-              String Referee
-            </Label>
-            <Input id="ref1" value="Alex M" className="col-span-3" />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="ref2" className="text-right">
-              Fence Referee
-            </Label>
-            <Input id="ref2" value="Zac H" className="col-span-3" />
-          </div>
 
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="time" className="text-right">
@@ -135,6 +123,31 @@ export default function GameDetails({
             onSelect={(newDate: Date | undefined) => newDate && setDate(newDate)}
             className="flex rounded-md border justify-center items-center"
           />
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="ref1" className="text-right">
+              String Referee
+            </Label>
+            <Input id="ref1" value="Alex M" className="col-span-3" />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="ref2" className="text-right">
+              Fence Referee
+            </Label>
+            <Input id="ref2" value="Zac H" className="col-span-3" />
+          </div>
+
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="goalie1" className="text-right">
+              Away Goalie
+            </Label>
+            <Input id="goalie1" value="Jamie" className="col-span-3" />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="goalie2" className="text-right">
+              Home Goalie
+            </Label>
+            <Input id="goalie2" value="Craig" className="col-span-3" />
+          </div>
 
           <Textarea placeholder="Notes from the game..." />
         </div>
