@@ -2,6 +2,40 @@
 
 This is a website for Black Top Street Hockey League.
 
+# Apps
+
+## api
+
+Built with: Django, Django REST Framework, Postgres.
+
+### Getting Started
+
+* Install docker
+* `$ cp .env.example .env`
+* Build the docker images
+  * `$ make build`
+* Apply django migrations
+  * `$ make migrate`
+* Create a superuser
+  * `$ make manage C="createsuperuser"`
+  * You can use this user to log into the django admin
+* Start your local server
+  * `$ make up`
+* Go to your local admin http://localhost:8000/admin/
+  * Under `Sites` change `Domain name` to `localhost:8000` and `Display name` to `BTSH`
+  * Under `Users` find the superuser you created and set your first name and last name
+
+### Development
+
+* Use the makefile, it has a bunch of make targets for common development tasks
+  * Run `$ make help` to view all commands
+* Remember to run `$ make makemigrations` after making changes to models and commit the generated migration files
+* Remember to update the relevant `*Admin` class if you modify the models
+
+## mobile
+
+## web
+
 ## Getting Started
 
 1. Clone the repository
@@ -18,21 +52,3 @@ This is a website for Black Top Street Hockey League.
 ## License
 
 This project is licensed under the MIT License. See the LICENSE file for more details.
-
-
-
-## TODO 
-* Scaffold django project under api/
-  * django debug toolbar
-  * django extensions
-  * django environ
-  * Dockerize dev env
-* Custom user model
-* Setup django admin
-* Add some tables -- seasons, divisions, teams, games
-  * M2M b/w teams and seasons, divisions and seasons, players and seasons
-* Setup
-  * DRF -- api tokens
-  * django filter
-  * django import export
-  * django storages
