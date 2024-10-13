@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     # Project
     'common.apps.CommonConfig',
     'divisions.apps.DivisionsConfig',
+    'seasons.apps.SeasonsConfig',
     'users.apps.UsersConfig',
 
     # 3rd party
