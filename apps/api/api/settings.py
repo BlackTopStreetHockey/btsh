@@ -65,6 +65,7 @@ INSTALLED_APPS = [
 
     # 3rd party
     'django_extensions',
+    'import_export',
 ]
 
 MIDDLEWARE = [
@@ -202,3 +203,6 @@ SECURE_SSL_REDIRECT = env.bool('SECURE_SSL_REDIRECT')
 SESSION_COOKIE_AGE = 1209600 * 2  # 4 weeks
 SESSION_COOKIE_SECURE = env.bool('SESSION_COOKIE_SECURE')
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Django import export
+IMPORT_EXPORT_TMP_STORAGE_CLASS = 'import_export.tmp_storages.MediaStorage'
