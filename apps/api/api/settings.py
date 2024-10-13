@@ -61,6 +61,7 @@ INSTALLED_APPS = [
 
     # Project
     'common.apps.CommonConfig',
+    'divisions.apps.DivisionsConfig',
     'users.apps.UsersConfig',
 
     # 3rd party
