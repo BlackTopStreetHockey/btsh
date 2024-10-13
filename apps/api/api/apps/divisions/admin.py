@@ -1,11 +1,11 @@
 from django.contrib import admin
 
+from common.admin import BaseModelAdmin
 from .models import Division
 
 
 @admin.register(Division)
-class DivisionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'created_at', 'updated_at')
-    list_filter = ('created_at',)
+class DivisionAdmin(BaseModelAdmin):
+    list_display = ('name',)
     search_fields = ('name',)
-    date_hierarchy = 'created_at'
+    ordering = ('name',)
