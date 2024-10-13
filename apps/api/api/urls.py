@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.conf import settings
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 from django.views import generic
 
 
@@ -27,6 +27,7 @@ admin.site.site_title = project_name
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', generic.RedirectView.as_view(pattern_name='admin:login'), name='home'),
+    path('api/auth/', include('rest_framework.urls')),
 ]
 
 if settings.DEBUG:
