@@ -24,6 +24,8 @@ Built with: Django, Django REST Framework, Postgres.
 * Go to your local admin http://localhost:8000/admin/
   * Under `Sites` change `Domain name` to `localhost:8000` and `Display name` to `BTSH`
   * Under `Users` find the superuser you created and set your first name and last name
+* Seed some data
+  * `$ make manage C="seed_data"`
 
 ### Development
 

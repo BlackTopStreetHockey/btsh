@@ -9,7 +9,10 @@ from seasons.models import Season
 @pytest.fixture
 def division_factory():
     def _factory(name):
-        return Division.objects.create(name=name)
+        division = Division(name=name)
+        division.full_clean()
+        division.save()
+        return division
 
     return _factory
 
@@ -37,7 +40,10 @@ def division4(division_factory):
 @pytest.fixture
 def season_factory():
     def _factory(start, end):
-        return Season.objects.create(start=start, end=end)
+        season = Season(start=start, end=end)
+        season.full_clean()
+        season.save()
+        return season
 
     return _factory
 
