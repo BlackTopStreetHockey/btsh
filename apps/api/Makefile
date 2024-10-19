@@ -27,5 +27,12 @@ migrate: ## Apply django migrations.
 shell: ## Start a django shell with models and common django utils already imported.
 	@$(MAKE) manage C=shell_plus
 
+.PHONY: flake pytest test
+flake: ## Run flake.
+	@$(MAKE) bash-cmd S=api C=flake8
+pytest: ## Run pytest for unit & integration tests. Usage: make pytest T=MyTest.
+	@$(MAKE) bash-cmd S=api C="pytest --cov -k '$(T)'"
+test: flake pytest ## Run test suite.
+
 .PHONY: sync
 sync: clean build migrate ## Sync the project.
