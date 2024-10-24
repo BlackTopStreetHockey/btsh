@@ -34,6 +34,14 @@ Built with: Django, Django REST Framework, Postgres.
 * Remember to run `$ make makemigrations` after making changes to models and commit the generated migration files
 * Remember to update the relevant `*Admin` class if you modify the models
 
+### TODO
+
+* AWS Deployment
+  * Migrations
+  * Collectstatic
+* Configure django-storages and django-import-export to store user uploaded files in s3
+  * Until we have a deployment to AWS these are stored on the file system (works for local dev but won't work for a real deployment)
+
 ## mobile
 
 ## web
