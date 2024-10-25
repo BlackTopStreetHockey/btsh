@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     # Project
     'common.apps.CommonConfig',
     'divisions.apps.DivisionsConfig',
+    'games.apps.GamesConfig',
     'seasons.apps.SeasonsConfig',
     'teams.apps.TeamsConfig',
     'users.apps.UsersConfig',
