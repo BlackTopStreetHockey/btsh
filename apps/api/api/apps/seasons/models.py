@@ -3,21 +3,20 @@ from django.db import models
 from django.utils import timezone
 
 from common.models import BaseModel
+from api.utils.datetime import format_datetime
 
 
 class Season(BaseModel):
-    DATE_FORMAT = '%m/%d/%Y'
-
     start = models.DateField()
     end = models.DateField()
 
     @property
     def start_formatted(self):
-        return self.start.strftime(self.DATE_FORMAT)
+        return format_datetime(self.start)
 
     @property
     def end_formatted(self):
-        return self.end.strftime(self.DATE_FORMAT)
+        return format_datetime(self.end)
 
     @property
     def is_past(self):
