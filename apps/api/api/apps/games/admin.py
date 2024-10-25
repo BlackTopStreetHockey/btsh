@@ -4,6 +4,13 @@ from common.admin import BaseModelAdmin
 from .models import Game, GameDay
 
 
+class GameInline(admin.TabularInline):
+    model = Game
+    extra = 0
+    autocomplete_fields = ('home_team', 'away_team',)
+    readonly_fields = ('end',)
+
+
 @admin.register(GameDay)
 class GameDayAdmin(BaseModelAdmin):
     list_display = ('day', 'season', 'opening_team', 'closing_team')
@@ -11,6 +18,7 @@ class GameDayAdmin(BaseModelAdmin):
     search_fields = ('opening_team__name', 'closing_team__name')
     ordering = ('-season__start', 'day',)
     autocomplete_fields = ('season', 'opening_team', 'closing_team')
+    inlines = [GameInline]
 
 
 @admin.register(Game)
