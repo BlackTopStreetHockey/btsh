@@ -26,7 +26,9 @@ COLLECTSTATIC_OUTPUT_DIR = BASE_DIR / 'staticfiles'
 MEDIA_DIR = BASE_DIR / 'media'
 FIXTURES_DIR = BASE_DIR / 'fixtures'
 
-ENV_FILE_NAME = '.env'
+# Run tests using a consistent set of env vars (.env may be different for each person working on this project)
+sys_argv = ' '.join(sys.argv) if len(sys.argv) > 1 else ''
+ENV_FILE_NAME = '.env.test' if 'pytest' in sys_argv else '.env'
 ENV_FILE = BASE_DIR / ENV_FILE_NAME
 print(f'\n{"*" * 50}\nReading env vars from {ENV_FILE}\n{"*" * 50}\n')
 
