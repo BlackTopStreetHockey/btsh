@@ -1,14 +1,17 @@
 from django.contrib import admin
 
-from common.admin import BaseModelAdmin
+from common.admin import BaseModelAdmin, BaseModelTabularInline
 from .models import Game, GameDay
 
 
-class GameInline(admin.TabularInline):
+class GameInline(BaseModelTabularInline):
     model = Game
-    extra = 0
     autocomplete_fields = ('home_team', 'away_team',)
     readonly_fields = ('end',)
+    ordering = ('start',)
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related()
 
 
 @admin.register(GameDay)

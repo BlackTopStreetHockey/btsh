@@ -11,6 +11,7 @@ from divisions.models import Division
 from games.models import Game, GameDay
 from seasons.models import Season
 from teams.models import Team
+from users.models import User
 
 
 CURRENT_YEAR = timezone.now().date().year
@@ -75,6 +76,12 @@ class Command(BaseCommand):
     help = 'Seed data for local development purposes.'
 
     def handle(self, *args, **options):
+        users = User.objects.filter(is_superuser=True)
+        if not users.exists():
+            print('Please create a superuser to continue.')
+            return
+
+        created_by = users.first()
         divisions = []
         seasons = []
         teams = []
@@ -82,7 +89,9 @@ class Command(BaseCommand):
 
         print(f'Seeding {len(DIVISIONS)} divisions.')
         for d in DIVISIONS:
-            division, _ = get_or_create(Division, get_kwargs={'name': d}, create_kwargs={'name': d})
+            division, _ = get_or_create(
+                Division, get_kwargs={'name': d}, create_kwargs={'name': d, 'created_by': created_by}
+            )
             divisions.append(division)
 
         print_separator()
@@ -92,7 +101,9 @@ class Command(BaseCommand):
             start = datetime.date(year=s, month=3, day=1)
             end = start + datetime.timedelta(weeks=4 * 8)
             season, _ = get_or_create(
-                Season, get_kwargs={'start': start, 'end': end}, create_kwargs={'start': start, 'end': end}
+                Season,
+                get_kwargs={'start': start, 'end': end},
+                create_kwargs={'start': start, 'end': end, 'created_by': created_by}
             )
             seasons.append(season)
 
@@ -105,7 +116,9 @@ class Command(BaseCommand):
             with open(logo_path, 'rb') as f:
                 logo = File(f, name=filename)
                 team, _ = get_or_create(
-                    Team, get_kwargs={'name': t}, create_kwargs={'name': t, 'logo': logo, 'jersey_colors': None}
+                    Team,
+                    get_kwargs={'name': t},
+                    create_kwargs={'name': t, 'logo': logo, 'jersey_colors': None, 'created_by': created_by}
                 )
                 teams.append(team)
 
@@ -133,6 +146,7 @@ class Command(BaseCommand):
                         'season': season,
                         'opening_team': opening_team,
                         'closing_team': closing_team,
+                        'created_by': created_by,
                     }
                 )
 
@@ -159,6 +173,7 @@ class Command(BaseCommand):
                             'home_team': home_team,
                             'away_team': away_team,
                             'court': court,
+                            'created_by': created_by,
                         },
                     )
                     games.append(game)
