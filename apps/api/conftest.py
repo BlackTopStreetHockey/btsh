@@ -4,6 +4,7 @@ from datetime import date, time
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 
+from api.utils.datetime import datetime_to_drf
 from divisions.models import Division
 from games.models import Game, GameDay
 from seasons.models import Season
@@ -33,6 +34,17 @@ def placeholder_user(user_factory):
         email='mscott@dundermifflin.com',
         password='ilovepaper',
     )
+
+
+@pytest.fixture
+def placeholder_user_expected_json(placeholder_user):
+    return {
+        'id': placeholder_user.id,
+        'first_name': 'Michael',
+        'last_name': 'Scott',
+        'full_name': 'Michael Scott',
+        'date_joined': datetime_to_drf(placeholder_user.date_joined),
+    }
 
 
 @pytest.fixture
