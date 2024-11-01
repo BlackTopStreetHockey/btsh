@@ -26,6 +26,7 @@ admin.site.site_header = project_name
 admin.site.site_title = project_name
 
 urlpatterns = [
+    # Admin
     path(
         "admin/password_reset/",
         auth_views.PasswordResetView.as_view(
@@ -55,8 +56,15 @@ urlpatterns = [
         name="password_reset_complete",
     ),
     path('admin/', admin.site.urls),
+
+    # Home
     path('', generic.RedirectView.as_view(pattern_name='admin:login'), name='home'),
-    path('api/auth/', include('rest_framework.urls')),
+
+    # API
+    path('api/', include([
+        path('auth/', include('rest_framework.urls')),
+        path('', include('divisions.urls')),
+    ])),
 ]
 
 if settings.DEBUG:

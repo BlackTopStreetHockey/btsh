@@ -8,7 +8,7 @@ class TestDivisionReadOnlySerializer(BaseTest):
         s = DivisionReadOnlySerializer(division1)
 
         assert s.data == {
-            'created_by': placeholder_user_expected_json,
+            'created_by': placeholder_user_expected_json(),
             'updated_by': None,
             'created_at': self.format_datetime(division1.created_at),
             'updated_at': self.format_datetime(division1.updated_at),

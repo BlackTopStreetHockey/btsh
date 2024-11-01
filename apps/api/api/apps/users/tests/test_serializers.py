@@ -6,7 +6,7 @@ from users.serializers import UserReadOnlySerializer
 
 @pytest.mark.django_db
 class TestUserReadOnlySerializer(BaseTest):
-    def test_serialize(self, wgretzky):
+    def test_serialize(self, settings, wgretzky):
         s = UserReadOnlySerializer(wgretzky)
 
         assert s.data == {
@@ -14,5 +14,5 @@ class TestUserReadOnlySerializer(BaseTest):
             'first_name': 'Wayne',
             'last_name': 'Gretzky',
             'full_name': 'Wayne Gretzky',
-            'date_joined': self.format_datetime(wgretzky.date_joined),
+            'date_joined': self.format_datetime(wgretzky.date_joined, tz=settings.DEFAULT_USER_TIME_ZONE),
         }
