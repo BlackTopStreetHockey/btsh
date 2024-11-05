@@ -26,7 +26,9 @@ COLLECTSTATIC_OUTPUT_DIR = BASE_DIR / 'staticfiles'
 MEDIA_DIR = BASE_DIR / 'media'
 FIXTURES_DIR = BASE_DIR / 'fixtures'
 
-ENV_FILE_NAME = '.env'
+# Run tests using a consistent set of env vars (.env may be different for each person working on this project)
+sys_argv = ' '.join(sys.argv) if len(sys.argv) > 1 else ''
+ENV_FILE_NAME = '.env.test' if 'pytest' in sys_argv else '.env'
 ENV_FILE = BASE_DIR / ENV_FILE_NAME
 print(f'\n{"*" * 50}\nReading env vars from {ENV_FILE}\n{"*" * 50}\n')
 
@@ -217,7 +219,11 @@ IMPORT_EXPORT_TMP_STORAGE_CLASS = 'import_export.tmp_storages.MediaStorage'
 
 # Django rest framework
 REST_FRAMEWORK = {
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter',
+    ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 100,
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
