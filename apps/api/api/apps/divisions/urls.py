@@ -4,7 +4,7 @@ from rest_framework import routers
 from .views import DivisionViewSet
 
 
-router = routers.DefaultRouter()
+router = routers.SimpleRouter()
 router.register(r'divisions', DivisionViewSet)
 
 app_name = 'divisions'
