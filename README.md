@@ -45,7 +45,11 @@ permissions if need be. See https://docs.djangoproject.com/en/5.1/topics/auth/de
 ### API
 
 We have setup read only endpoints so the frontend can display data. The API follows normal REST conventions
-and can be found at `/api` which will list available top level endpoints for you.
+and can be found at `/api`.
+
+#### Endpoints
+
+You can run `$ make manage C="show_urls" | grep api` to see what endpoints are available.
 
 #### Pagination
 
@@ -68,11 +72,20 @@ See https://www.django-rest-framework.org/api-guide/filtering/#djangofilterbacke
 
 ### TODO
 
+* API docs (swagger or something)
+* GH actions for flake + tests
+* import/export the different models
+* Goal, Game Player tables
+* Setup relations between various models + seasons
+  * Relegation
+  * etc
+
 * AWS Deployment
   * Migrations
   * Collectstatic
 * Configure django-storages and django-import-export to store user uploaded files in s3
-  * Until we have a deployment to AWS these are stored on the file system (works for local dev but won't work for a real deployment)
+  * Until we have a deployment to AWS these are stored on the file system (works for local dev but won't work for a
+    real deployment)
 
 ## mobile
 
