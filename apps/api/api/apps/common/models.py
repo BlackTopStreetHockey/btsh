@@ -1,6 +1,9 @@
 from django.db import models
 
 
+BASE_MODEL_FIELDS = ('created_by', 'updated_by', 'created_at', 'updated_at')
+
+
 class BaseModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
