@@ -7,7 +7,7 @@ from .views import GameDayViewSet
 router = routers.SimpleRouter()
 router.register(r'game_days', GameDayViewSet)
 
-app_name = 'game_days'
+app_name = 'games'
 urlpatterns = [
     path('', include(router.urls)),
 ]
