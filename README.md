@@ -87,6 +87,10 @@ See https://www.django-rest-framework.org/api-guide/filtering/#djangofilterbacke
   * Until we have a deployment to AWS these are stored on the file system (works for local dev but won't work for a
     real deployment)
 
+### Future
+
+* Post videos, pictures, comments on games (i.e. GameMedia)
+
 ## mobile
 
 ## web
