@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
 
     # 3rd party
+    'corsheaders',
     'django_extensions',
     'django_filters',
     'import_export',
@@ -88,6 +89,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.sites.middleware.CurrentSiteMiddleware',
     'common.middleware.TimezoneMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 if DEBUG:
@@ -228,3 +230,8 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 100,
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+]
