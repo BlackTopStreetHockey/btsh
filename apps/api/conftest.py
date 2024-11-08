@@ -139,6 +139,25 @@ def season_2022(season_factory, placeholder_user):
 
 
 @pytest.fixture
+def season_2022_expected_json(season_2022, placeholder_user_expected_json):
+    def _factory(is_past, is_current, is_future, tz=None):
+        return {
+            'created_by': placeholder_user_expected_json(tz),
+            'updated_by': None,
+            'created_at': datetime_to_drf(season_2022.created_at, tz=tz),
+            'updated_at': datetime_to_drf(season_2022.updated_at, tz=tz),
+            'id': season_2022.id,
+            'start': '2022-03-31',
+            'end': '2022-10-31',
+            'is_past': is_past,
+            'is_current': is_current,
+            'is_future': is_future,
+        }
+
+    return _factory
+
+
+@pytest.fixture
 def season_2023(season_factory, placeholder_user):
     year = 2023
     yield season_factory(
@@ -149,6 +168,25 @@ def season_2023(season_factory, placeholder_user):
 
 
 @pytest.fixture
+def season_2023_expected_json(season_2023, placeholder_user_expected_json):
+    def _factory(is_past, is_current, is_future, tz=None):
+        return {
+            'created_by': placeholder_user_expected_json(tz),
+            'updated_by': None,
+            'created_at': datetime_to_drf(season_2023.created_at, tz=tz),
+            'updated_at': datetime_to_drf(season_2023.updated_at, tz=tz),
+            'id': season_2023.id,
+            'start': '2023-03-31',
+            'end': '2023-10-31',
+            'is_past': is_past,
+            'is_current': is_current,
+            'is_future': is_future,
+        }
+
+    return _factory
+
+
+@pytest.fixture
 def season_2024(season_factory, placeholder_user):
     year = 2024
     yield season_factory(
@@ -156,6 +194,25 @@ def season_2024(season_factory, placeholder_user):
         end=date(year=year, month=10, day=31),
         created_by=placeholder_user,
     )
+
+
+@pytest.fixture
+def season_2024_expected_json(season_2024, placeholder_user_expected_json):
+    def _factory(is_past, is_current, is_future, tz=None):
+        return {
+            'created_by': placeholder_user_expected_json(tz),
+            'updated_by': None,
+            'created_at': datetime_to_drf(season_2024.created_at, tz=tz),
+            'updated_at': datetime_to_drf(season_2024.updated_at, tz=tz),
+            'id': season_2024.id,
+            'start': '2024-03-31',
+            'end': '2024-10-31',
+            'is_past': is_past,
+            'is_current': is_current,
+            'is_future': is_future,
+        }
+
+    return _factory
 
 
 @pytest.fixture
@@ -190,6 +247,23 @@ def corlears_hookers(team_factory, settings, placeholder_user):
 
 
 @pytest.fixture
+def corlears_hookers_expected_json(corlears_hookers, placeholder_user_expected_json):
+    def _factory(tz=None, logo_prefix=''):
+        return {
+            'created_by': placeholder_user_expected_json(tz),
+            'updated_by': None,
+            'created_at': datetime_to_drf(corlears_hookers.created_at, tz=tz),
+            'updated_at': datetime_to_drf(corlears_hookers.updated_at, tz=tz),
+            'id': corlears_hookers.id,
+            'name': 'Corlears Hookers',
+            'logo': f'{logo_prefix}/media/{corlears_hookers.logo.name}',
+            'jersey_colors': ['white', 'purple'],
+        }
+
+    return _factory
+
+
+@pytest.fixture
 def butchers(team_factory, settings, placeholder_user):
     yield team_factory(
         name='Butchers',
@@ -197,6 +271,23 @@ def butchers(team_factory, settings, placeholder_user):
         jersey_colors=None,
         created_by=placeholder_user,
     )
+
+
+@pytest.fixture
+def butchers_expected_json(butchers, placeholder_user_expected_json):
+    def _factory(tz=None, logo_prefix=''):
+        return {
+            'created_by': placeholder_user_expected_json(tz),
+            'updated_by': None,
+            'created_at': datetime_to_drf(butchers.created_at, tz=tz),
+            'updated_at': datetime_to_drf(butchers.updated_at, tz=tz),
+            'id': butchers.id,
+            'name': 'Butchers',
+            'logo': f'{logo_prefix}/media/{butchers.logo.name}',
+            'jersey_colors': None,
+        }
+
+    return _factory
 
 
 @pytest.fixture
@@ -210,6 +301,23 @@ def lbs(team_factory, settings, placeholder_user):
 
 
 @pytest.fixture
+def lbs_expected_json(lbs, placeholder_user_expected_json):
+    def _factory(tz=None, logo_prefix=''):
+        return {
+            'created_by': placeholder_user_expected_json(tz),
+            'updated_by': None,
+            'created_at': datetime_to_drf(lbs.created_at, tz=tz),
+            'updated_at': datetime_to_drf(lbs.updated_at, tz=tz),
+            'id': lbs.id,
+            'name': 'Lbs',
+            'logo': f'{logo_prefix}/media/{lbs.logo.name}',
+            'jersey_colors': None,
+        }
+
+    return _factory
+
+
+@pytest.fixture
 def cobra_kai(team_factory, settings, placeholder_user):
     yield team_factory(
         name='Cobra Kai',
@@ -217,6 +325,23 @@ def cobra_kai(team_factory, settings, placeholder_user):
         jersey_colors=None,
         created_by=placeholder_user,
     )
+
+
+@pytest.fixture
+def cobra_kai_expected_json(cobra_kai, placeholder_user_expected_json):
+    def _factory(tz=None, logo_prefix=''):
+        return {
+            'created_by': placeholder_user_expected_json(tz),
+            'updated_by': None,
+            'created_at': datetime_to_drf(cobra_kai.created_at, tz=tz),
+            'updated_at': datetime_to_drf(cobra_kai.updated_at, tz=tz),
+            'id': cobra_kai.id,
+            'name': 'Cobra Kai',
+            'logo': f'{logo_prefix}/media/{cobra_kai.logo.name}',
+            'jersey_colors': None,
+        }
+
+    return _factory
 
 
 @pytest.fixture
@@ -230,6 +355,23 @@ def dark_rainbows(team_factory, settings, placeholder_user):
 
 
 @pytest.fixture
+def dark_rainbows_expected_json(dark_rainbows, placeholder_user_expected_json):
+    def _factory(tz=None, logo_prefix=''):
+        return {
+            'created_by': placeholder_user_expected_json(tz),
+            'updated_by': None,
+            'created_at': datetime_to_drf(dark_rainbows.created_at, tz=tz),
+            'updated_at': datetime_to_drf(dark_rainbows.updated_at, tz=tz),
+            'id': dark_rainbows.id,
+            'name': 'Dark Rainbows',
+            'logo': f'{logo_prefix}/media/{dark_rainbows.logo.name}',
+            'jersey_colors': None,
+        }
+
+    return _factory
+
+
+@pytest.fixture
 def denim_demons(team_factory, settings, placeholder_user):
     yield team_factory(
         name='Denim Demons',
@@ -237,6 +379,23 @@ def denim_demons(team_factory, settings, placeholder_user):
         jersey_colors=None,
         created_by=placeholder_user,
     )
+
+
+@pytest.fixture
+def denim_demons_expected_json(denim_demons, placeholder_user_expected_json):
+    def _factory(tz=None, logo_prefix=''):
+        return {
+            'created_by': placeholder_user_expected_json(tz),
+            'updated_by': None,
+            'created_at': datetime_to_drf(denim_demons.created_at, tz=tz),
+            'updated_at': datetime_to_drf(denim_demons.updated_at, tz=tz),
+            'id': denim_demons.id,
+            'name': 'Denim Demons',
+            'logo': f'{logo_prefix}/media/{denim_demons.logo.name}',
+            'jersey_colors': None,
+        }
+
+    return _factory
 
 
 @pytest.fixture

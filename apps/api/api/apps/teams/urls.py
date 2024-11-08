@@ -1,13 +1,13 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from .views import DivisionViewSet
+from .views import TeamViewSet
 
 
 router = routers.SimpleRouter()
-router.register(r'divisions', DivisionViewSet)
+router.register(r'teams', TeamViewSet)
 
-app_name = 'divisions'
+app_name = 'teams'
 urlpatterns = [
     path('', include(router.urls)),
 ]

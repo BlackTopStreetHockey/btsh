@@ -41,6 +41,7 @@ TEAMS = [
     'Moby Dekes',
     'What the Puck',
 ]
+JERSEY_COLORS = ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'White', 'Black', 'Purple', 'Gray']
 
 
 def get_sundays_for_date_range(start_date, end_date):
@@ -115,10 +116,11 @@ class Command(BaseCommand):
             logo_path = settings.FIXTURES_DIR / f'team_logos/{filename}'
             with open(logo_path, 'rb') as f:
                 logo = File(f, name=filename)
+                jersey_colors = random.sample(JERSEY_COLORS, random.randint(1, 2))
                 team, _ = get_or_create(
                     Team,
                     get_kwargs={'name': t},
-                    create_kwargs={'name': t, 'logo': logo, 'jersey_colors': None, 'created_by': created_by}
+                    create_kwargs={'name': t, 'logo': logo, 'jersey_colors': jersey_colors, 'created_by': created_by}
                 )
                 teams.append(team)
 
