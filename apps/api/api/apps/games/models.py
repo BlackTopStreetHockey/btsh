@@ -4,21 +4,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import F
 
-from common.models import BaseModel
 from api.utils.datetime import format_datetime
-
-
-"""
-Questions/Ideas:
-
-Can a game day have many opening and closing teams? If so would need a M2M relationship over FK
-
-We could store the full date + time on the game instead of date on game day and time on game but I think this would
-be more annoying for maintenance (changing game datese for rainout, etc).
-
-How to handle teams changing divisions, store home team division and away team division on game?
-
-"""
+from common.models import BaseModel
 
 
 def default_game_duration():

@@ -1,6 +1,6 @@
 from django_filters import rest_framework as filters
 
-from .models import GameDay
+from .models import Game, GameDay
 
 
 class GameDayFilterSet(filters.FilterSet):
@@ -9,3 +9,14 @@ class GameDayFilterSet(filters.FilterSet):
     class Meta:
         model = GameDay
         fields = ('day', 'season', 'opening_team', 'closing_team')
+
+
+class GameFilterSet(filters.FilterSet):
+    start = filters.TimeRangeFilter()
+    end = filters.TimeRangeFilter()
+
+    class Meta:
+        model = Game
+        fields = (
+            'game_day', 'game_day__season', 'start', 'duration', 'end', 'home_team', 'away_team', 'location', 'court'
+        )
