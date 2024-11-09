@@ -39,7 +39,7 @@ class Game(BaseModel):
         WEST: 'West',
     }
 
-    game_day = models.ForeignKey(GameDay, on_delete=models.PROTECT)
+    game_day = models.ForeignKey(GameDay, on_delete=models.PROTECT, related_name='games')
     start = models.TimeField()
     duration = models.DurationField(default=default_game_duration)
     end = models.GeneratedField(

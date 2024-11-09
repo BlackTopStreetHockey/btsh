@@ -31,7 +31,7 @@ export default function BTSHLayout({
       >
         <div>
           <BTSHSidebar/>
-          <div className="ml-64">
+          <div className="ml-32 min-h-screen">
             {children}
           </div>
         </div>
