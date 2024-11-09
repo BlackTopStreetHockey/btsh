@@ -12,7 +12,7 @@ export default function BTSHSidebar() {
 
         <ul>
           <li className="mb-4">
-            <Link href="/schedule" className="text-gray-300 hover:text-white">
+            <Link href="/league-schedule" className="text-gray-300 hover:text-white">
               Schedule
             </Link>
           </li>
