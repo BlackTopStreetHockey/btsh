@@ -1,14 +1,18 @@
 "use client";
 
 import Link from "next/link"
+import TeamLink from "../teams/team-link";
+import formatDateNoTimezone from "@/lib/dates";
 
 
-export default function Game({ game }) {
+export default function Game({ game }: { game: Game }) {
+  const startTime = game.start.toString().split(':').slice(0, 2).join(':')
   return (
     <div key={game.id} className='flex flex-row gap-2'>
-      <Link href={`/teams/${game.home_team.id}`} className='text-sm'>{game.home_team.name}</Link>
+      <div className='text-sm'>{startTime}</div>
+      <TeamLink team={game.home_team} />
       <div className='text-sm'>vs</div>
-      <Link href={`/teams/${game.away_team.id}`} className='text-sm'>{game.away_team.name}</Link>
+      <TeamLink team={game.away_team} />
     </div>
   );
 }

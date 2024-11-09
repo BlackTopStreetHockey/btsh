@@ -1,7 +1,7 @@
 import formatDateNoTimezone from "@/lib/dates";
 import Game from "./game";
 
-export default function GameDay({ gameDay }) {
+export default function GameDay({ gameDay }: { gameDay: GameDay }) {
   const eastGames = gameDay.games.filter(g => g.court === 'east');
   const westGames = gameDay.games.filter(g => g.court === 'west');
   const gameSets = [
@@ -30,9 +30,11 @@ export default function GameDay({ gameDay }) {
           {gameSets.map(({ label, games }) => (
             <div key={label} className="flex flex-col items-center">
               <div className='font-bold text-sm'>{label}</div>
-              {games.map(g => (
-                <Game key={g.id} game={g} />
-              ))}
+              <div className='flex flex-col gap-1'>
+                {games.map(g => (
+                  <Game key={g.id} game={g} />
+                ))}
+              </div>
             </div>
           ))}
         </div>

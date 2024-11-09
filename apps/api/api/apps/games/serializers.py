@@ -1,12 +1,12 @@
 from common.serializers import BaseReadOnlyModelSerializer
+from common.models import BASE_MODEL_FIELDS
 from seasons.serializers import SeasonReadOnlySerializer
 from teams.serializers import TeamReadOnlySerializer
 from .models import Game, GameDay
 
 
 
-
-class GameDayGameReadOnlySerializer(BaseReadOnlyModelSerializer):
+class GameDayReadOnlySerializer(BaseReadOnlyModelSerializer):
     season = SeasonReadOnlySerializer()
     class Meta(BaseReadOnlyModelSerializer.Meta):
         model = GameDay
@@ -14,7 +14,7 @@ class GameDayGameReadOnlySerializer(BaseReadOnlyModelSerializer):
 
 
 class GameReadOnlySerializer(BaseReadOnlyModelSerializer):
-    game_day = GameDayGameReadOnlySerializer()
+    game_day = GameDayReadOnlySerializer()
     home_team = TeamReadOnlySerializer()
     away_team = TeamReadOnlySerializer()
 
@@ -24,12 +24,21 @@ class GameReadOnlySerializer(BaseReadOnlyModelSerializer):
             'game_day', 'start', 'duration', 'end', 'home_team', 'away_team', 'location', 'court', 'get_court_display',
         )
 
+class GameDayGameReadOnlySerializer(BaseReadOnlyModelSerializer):
+    home_team = TeamReadOnlySerializer(exclude=BASE_MODEL_FIELDS)
+    away_team = TeamReadOnlySerializer(exclude=BASE_MODEL_FIELDS)
 
-class GameDayReadOnlySerializer(BaseReadOnlyModelSerializer):
-    opening_team = TeamReadOnlySerializer()
-    closing_team = TeamReadOnlySerializer()
-    season = SeasonReadOnlySerializer()
-    games = GameReadOnlySerializer(many=True)
+    class Meta(BaseReadOnlyModelSerializer.Meta):
+        model = Game
+        fields = BaseReadOnlyModelSerializer.Meta.fields + (
+            'start', 'duration', 'end', 'home_team', 'away_team', 'location', 'court', 'get_court_display',
+        )
+
+class GameDayWithGamesReadOnlySerializer(BaseReadOnlyModelSerializer):
+    opening_team = TeamReadOnlySerializer(exclude=BASE_MODEL_FIELDS)
+    closing_team = TeamReadOnlySerializer(exclude=BASE_MODEL_FIELDS)
+    season = SeasonReadOnlySerializer(exclude=BASE_MODEL_FIELDS)
+    games = GameDayGameReadOnlySerializer(many=True, exclude=BASE_MODEL_FIELDS)
 
     class Meta(BaseReadOnlyModelSerializer.Meta):
         model = GameDay

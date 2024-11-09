@@ -1,7 +1,7 @@
 from common.views import BaseModelReadOnlyViewSet
 from .filtersets import GameDayFilterSet, GameFilterSet
 from .models import Game, GameDay
-from .serializers import GameDayReadOnlySerializer, GameReadOnlySerializer
+from .serializers import GameDayWithGamesReadOnlySerializer, GameReadOnlySerializer
 from django.db.models import Prefetch
 
 
@@ -14,7 +14,7 @@ class GameDayViewSet(BaseModelReadOnlyViewSet):
         'season__created_by',
         'season__updated_by',
     ).prefetch_related('games')
-    serializer_class = GameDayReadOnlySerializer
+    serializer_class = GameDayWithGamesReadOnlySerializer
     ordering = ('day',)
     ordering_fields = ('day', 'season',)
     filterset_class = GameDayFilterSet

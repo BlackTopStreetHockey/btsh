@@ -13,6 +13,8 @@ export const usePlaceholder = ({ data, loading, error, ...requestState }, placeh
 
   return {
     data,
+    loading,
+    error,
     placeholder,
     ...requestState 
   }

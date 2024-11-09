@@ -7,8 +7,8 @@ const promiseRequest = ({
   method='GET',
   params=undefined, // request args
   body=undefined, // post/put body
+  controller=undefined
 }) => {
-  let controller = new AbortController();
   const promise = new Promise((resolve, reject) => {
     const url = `${process.env.API_URL}/api/${route}`;
     const args = !!params ? `?${new URLSearchParams(params).toString()}` : '';
@@ -18,17 +18,19 @@ const promiseRequest = ({
         'Content-Type': 'application/json',
       },
       body: !!body ? JSON.stringify(body) : undefined,
-      signal: controller.signal,
+      signal: controller?.signal,
     }).then(async (res) => {
       if (res.status >= 400) {
+        console.error(`Received error (${res.status}): ${res.statusText}`)
         reject(res)
       } 
       resolve(await res.json())
     }).catch(async (error) => {
+      console.error(error)
       reject(error)
     });
   });
-  return [promise, controller]
+  return promise;
 }
 
 function useRequest({
@@ -38,69 +40,34 @@ function useRequest({
   body=undefined,
   skip=false, // if true, won't fire request
 }) {
+  let controller;
   const [state, setState] = useState({ data: undefined, loading: !skip, error: undefined });
   const fetchData = () => {
     if (skip) return;
-    setState({ loading: true, data: undefined, error: undefined })
-    const [promise, controller] = promiseRequest({
+    controller = new AbortController();
+    setState({ loading: true, data: undefined, error: undefined  })
+    const promise = promiseRequest({
       route,
       method,
       params,
-      body
+      body,
+      controller
     })
     promise.then(res => {
       setState({ loading: false, data: res, error: undefined })
     }).catch(err => {
       setState({ loading: false, data: undefined, error: err })
     });
-    return controller
   }
 
   useEffect(() => {
-    var cntrl;
-    cntrl = fetchData()
+    fetchData();
     return () => {
-      if (!!cntrl) {
-        cntrl.abort();
-      }
+      controller?.abort();
     }
-  }, [skip]);
-  
-  return {
-    ...state
-  }
+  }, [skip, JSON.stringify(body), JSON.stringify(params)]);
+
+  return state;
 }
 
 export { useRequest };
-// async function getGameDays(
-//   month: number,
-//   year: number
-// ): Promise<GameDaysResponse> {
-//   const cacheKey = `${month}-${year}`;
-  
-//   // Return cached request if it exists
-//   if (await requestCache[cacheKey]) {
-//     return requestCache[cacheKey];
-//   }
-
-//   // Create the request promise
-//   const requestPromise = new Promise<GameDaysResponse>(async (resolve, reject) => {
-//     try {
-//       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/game_days`);
-//       if (!res.ok) {
-//         throw new Error(`Failed to fetch game days: ${res.statusText}`);
-//       }
-//       const data = await res.json();
-//       resolve(data);
-//     } catch (error) {
-//       console.error("Error fetching game days:", error);
-//       // Remove failed request from cache
-//       delete requestCache[cacheKey];
-//       reject(error);
-//     }
-//   });
-
-//   // Store in cache
-//   requestCache[cacheKey] = requestPromise;
-//   return requestPromise;
-// }
