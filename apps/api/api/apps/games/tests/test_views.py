@@ -75,3 +75,36 @@ class TestGameDayViewSet(BaseTest):
                 tz=settings.DEFAULT_USER_TIME_ZONE, logo_prefix='http://testserver'
             ),
         }
+
+
+class TestGameViewSet(BaseTest):
+    list_url = 'games:game-list'
+    retrieve_url = 'games:game-detail'
+
+    def test_list(self, api_client, settings, hookers_lbs_game_day1_2024, demons_rainbows_game_day1_2024,
+                  hookers_lbs_game_day1_2024_expected_json,
+                  demons_rainbows_game_day1_2024_game_day1_2024_expected_json):
+        response = api_client.get(self.reverse_api_url(url=self.list_url))
+
+        assert response.status_code == 200
+        assert response.data == {
+            'count': 2,
+            'next': None,
+            'previous': None,
+            'results': [
+                hookers_lbs_game_day1_2024_expected_json(
+                    tz=settings.DEFAULT_USER_TIME_ZONE, logo_prefix='http://testserver'
+                ),
+                demons_rainbows_game_day1_2024_game_day1_2024_expected_json(
+                    tz=settings.DEFAULT_USER_TIME_ZONE, logo_prefix='http://testserver'
+                ),
+            ],
+        }
+
+    def test_retrieve(self, api_client, settings, hookers_lbs_game_day1_2024, hookers_lbs_game_day1_2024_expected_json):
+        response = api_client.get(self.reverse_api_url(url=self.retrieve_url, pk=hookers_lbs_game_day1_2024.pk))
+
+        assert response.status_code == 200
+        assert response.data == hookers_lbs_game_day1_2024_expected_json(
+            tz=settings.DEFAULT_USER_TIME_ZONE, logo_prefix='http://testserver'
+        )
