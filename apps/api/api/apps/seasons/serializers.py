@@ -5,4 +5,4 @@ from .models import Season
 class SeasonReadOnlySerializer(BaseReadOnlyModelSerializer):
     class Meta(BaseReadOnlyModelSerializer.Meta):
         model = Season
-        fields = BaseReadOnlyModelSerializer.Meta.fields + ('start', 'end', 'is_past', 'is_current', 'is_future')
+        fields = BaseReadOnlyModelSerializer.Meta.fields + ('start', 'end', 'is_past', 'is_current', 'is_future', 'year')

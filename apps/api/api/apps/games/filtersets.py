@@ -18,5 +18,5 @@ class GameFilterSet(filters.FilterSet):
     class Meta:
         model = Game
         fields = (
-            'game_day', 'start', 'duration', 'end', 'home_team', 'away_team', 'location', 'court'
+            'game_day', 'start', 'duration', 'end', 'home_team', 'away_team', 'location', 'court', 'game_day__season'
         )

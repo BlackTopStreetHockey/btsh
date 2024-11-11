@@ -30,6 +30,10 @@ class Season(BaseModel):
     def is_future(self):
         return timezone.now().date() < self.start
 
+    @property
+    def year(self):
+        return self.start.year
+
     def clean(self):
         super().clean()
         if self.start and self.end and self.end <= self.start:
