@@ -428,6 +428,27 @@ def game_day1_2024(game_day_factory, season_2024, corlears_hookers, butchers, pl
 
 
 @pytest.fixture
+def game_day1_2024_expected_json(game_day1_2024, placeholder_user_expected_json, season_2024_expected_json,
+                                 butchers_expected_json, corlears_hookers_expected_json):
+    def _factory(tz=None, logo_prefix=''):
+        return {
+            'created_by': placeholder_user_expected_json(tz),
+            'updated_by': None,
+            'created_at': datetime_to_drf(game_day1_2024.created_at, tz=tz),
+            'updated_at': datetime_to_drf(game_day1_2024.updated_at, tz=tz),
+            'id': game_day1_2024.id,
+            'day': '2024-04-07',
+            'season': season_2024_expected_json(
+                is_past=True, is_current=False, is_future=False, tz=tz
+            ),
+            'opening_team': butchers_expected_json(tz=tz, logo_prefix=logo_prefix),
+            'closing_team': corlears_hookers_expected_json(tz=tz, logo_prefix=logo_prefix),
+        }
+
+    return _factory
+
+
+@pytest.fixture
 def game_day2_2024(game_day_factory, season_2024, lbs, denim_demons, placeholder_user):
     yield game_day_factory(
         day=date(year=season_2024.start.year, month=season_2024.start.month + 1, day=14),
@@ -485,3 +506,67 @@ def hookers_lbs_game_day1_2024(game_day1_2024, corlears_hookers, lbs, game_facto
         court=Game.EAST,
         created_by=placeholder_user,
     )
+
+
+@pytest.fixture
+def hookers_lbs_game_day1_2024_expected_json(hookers_lbs_game_day1_2024, placeholder_user_expected_json,
+                                             game_day1_2024_expected_json, corlears_hookers_expected_json,
+                                             lbs_expected_json):
+    def _factory(tz=None, logo_prefix=''):
+        return {
+            'created_by': placeholder_user_expected_json(tz),
+            'updated_by': None,
+            'created_at': datetime_to_drf(hookers_lbs_game_day1_2024.created_at, tz=tz),
+            'updated_at': datetime_to_drf(hookers_lbs_game_day1_2024.updated_at, tz=tz),
+            'id': hookers_lbs_game_day1_2024.id,
+            'game_day': game_day1_2024_expected_json(tz=tz, logo_prefix=logo_prefix),
+            'start': '12:00:00',
+            'duration': '00:50:00',
+            'end': time(hour=12, minute=50),
+            'home_team': corlears_hookers_expected_json(tz=tz, logo_prefix=logo_prefix),
+            'away_team': lbs_expected_json(tz=tz, logo_prefix=logo_prefix),
+            'location': 'Tompkins Square Park',
+            'court': 'east',
+            'get_court_display': 'East',
+        }
+
+    return _factory
+
+
+@pytest.fixture
+def demons_rainbows_game_day1_2024(game_day1_2024, denim_demons, dark_rainbows, game_factory, placeholder_user):
+    yield game_factory(
+        game_day=game_day1_2024,
+        start=time(hour=12, minute=0),
+        home_team=denim_demons,
+        away_team=dark_rainbows,
+        court=Game.WEST,
+        created_by=placeholder_user,
+    )
+
+
+@pytest.fixture
+def demons_rainbows_game_day1_2024_game_day1_2024_expected_json(demons_rainbows_game_day1_2024,
+                                                                placeholder_user_expected_json,
+                                                                game_day1_2024_expected_json,
+                                                                denim_demons_expected_json,
+                                                                dark_rainbows_expected_json):
+    def _factory(tz=None, logo_prefix=''):
+        return {
+            'created_by': placeholder_user_expected_json(tz),
+            'updated_by': None,
+            'created_at': datetime_to_drf(demons_rainbows_game_day1_2024.created_at, tz=tz),
+            'updated_at': datetime_to_drf(demons_rainbows_game_day1_2024.updated_at, tz=tz),
+            'id': demons_rainbows_game_day1_2024.id,
+            'game_day': game_day1_2024_expected_json(tz=tz, logo_prefix=logo_prefix),
+            'start': '12:00:00',
+            'duration': '00:50:00',
+            'end': time(hour=12, minute=50),
+            'home_team': denim_demons_expected_json(tz=tz, logo_prefix=logo_prefix),
+            'away_team': dark_rainbows_expected_json(tz=tz, logo_prefix=logo_prefix),
+            'location': 'Tompkins Square Park',
+            'court': 'west',
+            'get_court_display': 'West',
+        }
+
+    return _factory

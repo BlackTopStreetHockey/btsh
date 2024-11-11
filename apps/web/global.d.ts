@@ -1,86 +1,51 @@
+interface User {
+  id: number;
+  first_name: string;
+  last_name: string;
+  full_name: string;
+  date_joined: string;
+}
+
+
+interface Team {
+  id: number;
+  name: string;
+  logo: string;
+  jersey_colors: [string];
+}
+
+interface Season {
+  id: number;
+  year: number;
+  start: Date;
+  end: Date;
+  is_current: boolean;
+  is_past: boolean;
+  is_future: boolean;
+}
+
 interface Game {
-    date: string;
-    time: string | 'BYE';
-    court?: 'EAST' | 'WEST' | '' | string;
-    home?: string;
-    away?: string;
-    homeScore?: string;
-    awayScore?: string;
-    status?: 'SCHEDULED' | 'ACTIVE' | 'CANCELLED' | 'POSTPONED' | 'FINAL' | 'FINAL/OT' | 'FINAL/SO' | string;
-    title?: string;
-    description?: string;
-  }
-  
-  type TeamShortName =
-    | 'LBS'
-    | 'FK'
-    | 'FUZZ'
-    | 'CK'
-    | 'IK'
-    | 'VERT'
-    | 'HOOK'
-    | 'GANK'
-    | 'POU'
-    | 'FLTH'
-    | 'MEGA'
-    | 'SKYF'
-    | 'WTP'
-    | 'DEM'
-    | 'GREM'
-    | 'DARK'
-    | 'BTC'
-    | 'RIOT'
-    | 'REN'
-    | 'MOBY'
-    | 'BTSH';
-  
-  type TeamInfo = {
-    name: string;
-    shortName: TeamShortName;
-    logoUrl?: string;
-    roster?: Player[];
-  };
-  
-  type TeamRecord = {
-    wins: number;
-    losses: number;
-    otLosses: number;
-  };
-  
-  type Team = TeamInfo & TeamRecord;
-  
-  interface TeamStanding {
-    div: 1 | 2 | 3 | 4 | 0;
-    record: TeamRecord;
-    points: number;
-    diff: number;
-    wkChange: number;
-  }
-  
-  interface Player {
-    id: string;
-    name: string;
-    gender?: 'M' | 'F' | string;
-    team: string;
-    position?: 'F' | 'D' | 'G' | string;
-  }
-  
-  interface Goalie extends Player {
-    wins: number;
-    svp: string;
-  }
-  
-  interface BoxScore {
-    game: Game;
-    homeScores: number[];
-    awayScores: number[];
-    away: Team;
-    home: Team;
-  }
-  
-  interface Division {
-    name: string;
-    teams: Team[];
-  }
-  
-  type ReducedGame = Record<string, Game[]>;
+  id: number;
+}
+
+interface GameDay {
+  id: number;
+  day: Date;
+  season: Season;
+  opening_team: Team;
+  closing_team: Team;
+  games: Game[];
+}
+
+interface Game {
+  id: number;
+  start: Date;
+  duration: number;
+  end: Date;
+  home_team: Team;
+  away_team: Team;
+  location: string;
+  court: string;
+  get_court_display: string;
+  game_day?: GameDay;
+}

@@ -51,6 +51,12 @@ and can be found at `/api`.
 
 You can run `$ make manage C="show_urls" | grep api` to see what endpoints are available.
 
+Access the endpoints in your browser for some basic api docs, you'll be able to see what the query params are, if the
+endpoint supports search, what fields you can filter and order by.
+
+If anything is unclear you can always checkout the relevant `*ViewSet` and `*FilterSet` (if applicable) classes for more
+info as to what fields are used in search, etc.
+
 #### Pagination
 
 See https://www.django-rest-framework.org/api-guide/pagination/#pagenumberpagination for more info.
@@ -69,27 +75,6 @@ See https://www.django-rest-framework.org/api-guide/filtering/#searchfilter for 
 #### Filtering
 
 See https://www.django-rest-framework.org/api-guide/filtering/#djangofilterbackend for more info.
-
-### TODO
-
-* API docs (swagger or something)
-* GH actions for flake + tests
-* import/export the different models
-* Goal, Game Player tables
-* Setup relations between various models + seasons
-  * Relegation
-  * etc
-
-* AWS Deployment
-  * Migrations
-  * Collectstatic
-* Configure django-storages and django-import-export to store user uploaded files in s3
-  * Until we have a deployment to AWS these are stored on the file system (works for local dev but won't work for a
-    real deployment)
-
-### Future
-
-* Post videos, pictures, comments on games (i.e. GameMedia)
 
 ## mobile
 
