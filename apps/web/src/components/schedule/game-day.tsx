@@ -1,9 +1,10 @@
 import formatDateNoTimezone from "@/lib/dates";
 import Game from "./game";
+import { GAME_COURTS } from "@/constants/games";
 
 export default function GameDay({ gameDay }: { gameDay: GameDay }) {
-  const eastGames = gameDay.games.filter(g => g.court === 'east');
-  const westGames = gameDay.games.filter(g => g.court === 'west');
+  const eastGames = gameDay.games.filter(g => g.court === GAME_COURTS.east);
+  const westGames = gameDay.games.filter(g => g.court === GAME_COURTS.west);
   const gameSets = [
     { label: 'West', games: westGames }, 
     { label: 'East', games: eastGames }
