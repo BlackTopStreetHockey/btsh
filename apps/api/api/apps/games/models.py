@@ -13,6 +13,7 @@ def default_game_duration():
 
 
 class GameDay(BaseModel):
+    """A day in which games take place, this will almost always be sundays"""
     day = models.DateField(unique=True)
     season = models.ForeignKey('seasons.Season', on_delete=models.PROTECT)
     opening_team = models.ForeignKey('teams.Team', on_delete=models.PROTECT, related_name='opening_team_game_days')
@@ -58,4 +59,26 @@ class Game(BaseModel):
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=('game_day', 'start', 'home_team', 'away_team'), name='game_uniq')
+        ]
+
+
+class GameReferee(BaseModel):
+    """Referees for the game"""
+    STRING = 'string'
+    FENCE = 'fence'
+    TYPES = {
+        STRING: 'String',
+        FENCE: 'Fence',
+    }
+
+    game = models.ForeignKey(Game, on_delete=models.PROTECT, related_name='referees')
+    user = models.ForeignKey('users.User', on_delete=models.PROTECT, related_name='game_referees')
+    type = models.CharField(max_length=8, choices=TYPES)
+
+    def __str__(self):
+        return f'{self.user.get_full_name()} - {self.game}'
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=('game', 'user', 'type'), name='game_user_type_uniq')
         ]

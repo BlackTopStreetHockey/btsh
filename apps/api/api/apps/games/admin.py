@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from common.admin import BaseModelAdmin, BaseModelTabularInline
-from .models import Game, GameDay
+from .models import Game, GameDay, GameReferee
 
 
 class GameInline(BaseModelTabularInline):
@@ -12,6 +12,12 @@ class GameInline(BaseModelTabularInline):
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related()
+
+
+class GameRefereeInline(BaseModelTabularInline):
+    model = GameReferee
+    autocomplete_fields = ('user',)
+    ordering = ('user__email',)
 
 
 @admin.register(GameDay)
@@ -32,3 +38,13 @@ class GameAdmin(BaseModelAdmin):
     ordering = ('-game_day__day', 'start')
     autocomplete_fields = ('game_day', 'home_team', 'away_team')
     readonly_fields = ('end',)
+    inlines = [GameRefereeInline]
+
+
+@admin.register(GameReferee)
+class GameRefereeAdmin(BaseModelAdmin):
+    list_display = ('game', 'user', 'type')
+    list_filter = ('type',)
+    search_fields = ('user__first_name', 'user__last_name',)
+    ordering = ('-game__game_day__day', 'game__start',)
+    autocomplete_fields = ('game', 'user',)
