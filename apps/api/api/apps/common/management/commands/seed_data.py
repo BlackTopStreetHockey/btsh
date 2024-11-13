@@ -41,7 +41,95 @@ TEAMS = [
     'Moby Dekes',
     'What the Puck',
 ]
+SHORT_NAMES = [
+    'LBS',
+    'GANK',
+    'MEGA',
+    'RENS',
+    'SKYF',
+    'HOOK',
+    'VERT',
+    'FUZZ',
+    'FLTH',
+    'POUT',
+    'IK',
+    'CK',
+    'DEMS',
+    'FK',
+    'BTCH',
+    'DRKR',
+    'GREM',
+    'RIOT',
+    'MOBY',
+    'WTP',
+]
 JERSEY_COLORS = ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'White', 'Black', 'Purple', 'Gray']
+ESTABLISHMENT_YEARS = {
+    'Lbs': 2010,
+    'Gouging Anklebiters': 2012,
+    'Mega Touch': 2015,
+    'Renaissance': 2013,
+    'Sky Fighters': 2011,
+    'Corlears Hookers': 2014,
+    'Vertz': 2016,
+    'Fuzz': 2012,
+    'Filthier': 2015,
+    'Poutine Machine': 2013,
+    'Instant Karma': 2014,
+    'Cobra Kai': 2017,
+    'Denim Demons': 2016,
+    'Fresh Kills': 2011,
+    'Butchers': 2015,
+    'Dark Rainbows': 2018,
+    'Gremlins': 2014,
+    'Riots': 2013,
+    'Moby Dekes': 2016,
+    'What the Puck': 2001,
+}
+TEAM_DESCRIPTIONS = {
+    'Lbs': 'League champions in 2012, 2015, and 2018. Known for their aggressive defense.',
+    'Gouging Anklebiters': 'Champions in 2016. Renowned for their speed and agility.',
+    'Mega Touch': 'Won championships in 2017, 2019. Famous for their precise passing game.',
+    'Renaissance': 'League champions in 2013, 2014. Traditional powerhouse team.',
+    'Sky Fighters': 'Champions in 2011, 2020. Aerial specialists.',
+    'Corlears Hookers': 'Won the title in 2015. Known for their unique playing style.',
+    'Vertz': 'Championship victories in 2018, 2021. Rising stars of the league.',
+    'Fuzz': 'League champions in 2014, 2016, 2019. Defensive specialists.',
+    'Filthier': 'Won it all in 2017. Famous for their physical play.',
+    'Poutine Machine': 'Champions in 2015, 2020. Canadian-style hockey at its finest.',
+    'Instant Karma': 'League winners in 2016, 2018. Known for their comebacks.',
+    'Cobra Kai': 'Champions in 2019. No mercy on the ice.',
+    'Denim Demons': 'Won championships in 2017, 2021. Style icons of the league.',
+    'Fresh Kills': 'League champions in 2012, 2013. Original dynasty team.',
+    'Butchers': 'Champions in 2016, 2020. Powerful offensive team.',
+    'Dark Rainbows': 'Won their first title in 2021. Up-and-coming contenders.',
+    'Gremlins': 'League champions in 2015, 2017. Night game specialists.',
+    'Riots': 'Won it all in 2014, 2018. High-energy playing style.',
+    'Moby Dekes': 'Champions in 2019, 2021. Masters of deception on ice.',
+    'What the Puck': 'League champions in 2011, 2013, 2016. Original franchise with rich history.',
+}
+TEAM_INSTAGRAM_URLS = {
+    'Lbs': 'https://instagram.com/lbs_hockey',
+    'Gouging Anklebiters': 'https://instagram.com/anklebiters_hockey',
+    'Mega Touch': 'https://instagram.com/mega_touch_hockey',
+    'Renaissance': 'https://instagram.com/renaissance_hockey',
+    'Sky Fighters': 'https://instagram.com/sky_fighters_hockey',
+    'Corlears Hookers': 'https://instagram.com/corlears_hockey',
+    'Vertz': 'https://instagram.com/vertz_hockey',
+    'Fuzz': 'https://instagram.com/fuzz_hockey',
+    'Filthier': 'https://instagram.com/filthier_hockey',
+    'Poutine Machine': 'https://instagram.com/poutine_machine_hockey',
+    'Instant Karma': 'https://instagram.com/instant_karma_hockey',
+    'Cobra Kai': 'https://instagram.com/cobra_kai_hockey',
+    'Denim Demons': 'https://instagram.com/denim_demons_hockey',
+    'Fresh Kills': 'https://instagram.com/fresh_kills_hockey',
+    'Butchers': 'https://instagram.com/butchers_hockey',
+    'Dark Rainbows': 'https://instagram.com/dark_rainbows_hockey',
+    'Gremlins': 'https://instagram.com/gremlins_hockey',
+    'Riots': 'https://instagram.com/riots_hockey',
+    'Moby Dekes': 'https://instagram.com/moby_dekes_hockey',
+    'What the Puck': 'https://instagram.com/what_the_puck_hockey',
+}
 
 
 def get_sundays_for_date_range(start_date, end_date):
@@ -111,16 +199,25 @@ class Command(BaseCommand):
         print_separator()
 
         print(f'Seeding {len(TEAMS)} teams.')
-        for t in TEAMS:
-            filename = f'{slugify(t).replace("-", "_")}.jpg'
+        for idx, team_name in enumerate(TEAMS):
+            filename = f'{slugify(team_name).replace("-", "_")}.jpg'
             logo_path = settings.FIXTURES_DIR / f'team_logos/{filename}'
             with open(logo_path, 'rb') as f:
                 logo = File(f, name=filename)
                 jersey_colors = random.sample(JERSEY_COLORS, random.randint(1, 2))
                 team, _ = get_or_create(
                     Team,
-                    get_kwargs={'name': t},
-                    create_kwargs={'name': t, 'logo': logo, 'jersey_colors': jersey_colors, 'created_by': created_by}
+                    get_kwargs={'name': team_name},
+                    create_kwargs={
+                        'name': team_name,
+                        'logo': logo,
+                        'jersey_colors': jersey_colors,
+                        'created_by': created_by,
+                        'short_name': SHORT_NAMES[idx],
+                        'established': ESTABLISHMENT_YEARS.get(team_name),
+                        'description': TEAM_DESCRIPTIONS.get(team_name),
+                        'instagram_url': TEAM_INSTAGRAM_URLS.get(team_name)
+                    }
                 )
                 teams.append(team)
 

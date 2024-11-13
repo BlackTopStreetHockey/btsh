@@ -19,8 +19,11 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
                 ('name', models.CharField(max_length=64, unique=True)),
+                ('established', models.IntegerField(help_text='Year the team was established.')),
+                ('description', models.TextField(blank=True, null=True, help_text='Team description including championship years')),
                 ('logo', models.ImageField(upload_to='teams/logos/')),
                 ('jersey_colors', django.contrib.postgres.fields.ArrayField(base_field=models.CharField(max_length=32), blank=True, help_text='Comma separated list of jersey colors.', null=True, size=None)),
+                ('short_name', models.CharField(max_length=8, unique=True, help_text='Short name of the team, e.g. "WTP" for What The Puck.')),
             ],
             options={
                 'abstract': False,
