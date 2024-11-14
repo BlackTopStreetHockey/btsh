@@ -17,3 +17,19 @@ export const formatTime = (timeStr: string) => {
   const displayHours = hours % 12 || 12; // Convert 0 to 12 for 12 AM
   return `${displayHours}:${minutes.toString().padStart(2, '0')} ${period}`;
 };
+
+export function formatTime2(dateString: string): string {
+  return new Date(dateString).toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  });
+}
+
+export function formatDate2(dateString: string): string {
+  return new Date(dateString).toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric'
+  });
+}
