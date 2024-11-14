@@ -8,6 +8,7 @@ interface Team {
   name: string;
   logo: string;
   jersey_colors?: string;
+  short_name: string;
 }
 
 // Add this interface
@@ -47,7 +48,7 @@ export default async function SchedulePage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {teams.map((team) => (
-            <Link href={`/teams/${team.id}`} key={team.id}>
+            <Link href={`/teams/${team.short_name}`} key={team.id}>
               <Card key={team.id}>
                 <CardHeader>
                   <CardTitle>{team.name}</CardTitle>

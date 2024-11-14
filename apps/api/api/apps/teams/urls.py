@@ -10,4 +10,7 @@ app_name = 'teams'
 urlpatterns = [
     path('', include(router.urls)),
     path('team/<str:short_name>/', TeamDetailByShortNameView.as_view(), name='team-by-short-name'),
+    path('team/<str:short_name>/schedule/', 
+         TeamDetailByShortNameView.as_view({'get': 'schedule'}), 
+         name='team-schedule'),
 ]
