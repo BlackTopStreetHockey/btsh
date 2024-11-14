@@ -20,13 +20,13 @@ export default function GameDay({ gameDay }: { gameDay: GameDay }) {
           <div className="flex flex-col items-start">
             <div className="flex flex-row gap-2">
               <div className="font-bold text-sm">Opening Team</div>
-              <Link href={`/teams/${gameDay.opening_team.id}`}>
+              <Link href={`/teams/${gameDay.opening_team.short_name}`}>
                 <div className="text-sm">{gameDay.opening_team.name}</div>
               </Link>
             </div>
             <div className="flex flex-row gap-2">
               <div className="font-bold text-sm">Closing Team</div>
-              <Link href={`/teams/${gameDay.closing_team.id}`}>
+              <Link href={`/teams/${gameDay.closing_team.short_name}`}>
                 <div className="text-sm">{gameDay.closing_team.name}</div>
               </Link>
             </div>

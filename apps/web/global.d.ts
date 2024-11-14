@@ -5,13 +5,12 @@ interface User {
   full_name: string;
   date_joined: string;
 }
-
-
 interface Team {
   id: number;
   name: string;
   logo: string;
-  jersey_colors: [string];
+  jersey_colors?: string[];
+  short_name: string;
 }
 
 interface Season {
