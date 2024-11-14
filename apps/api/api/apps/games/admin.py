@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from common.admin import BaseModelAdmin, BaseModelTabularInline
-from .models import Game, GameDay, GameReferee
+from .models import Game, GameDay, GamePlayer, GameReferee
 
 
 class GameInline(BaseModelTabularInline):
@@ -17,6 +17,12 @@ class GameInline(BaseModelTabularInline):
 class GameRefereeInline(BaseModelTabularInline):
     model = GameReferee
     autocomplete_fields = ('user',)
+    ordering = ('user__email',)
+
+
+class GamePlayerInline(BaseModelTabularInline):
+    model = GamePlayer
+    autocomplete_fields = ('user', 'team',)
     ordering = ('user__email',)
 
 
@@ -38,7 +44,7 @@ class GameAdmin(BaseModelAdmin):
     ordering = ('-game_day__day', 'start')
     autocomplete_fields = ('game_day', 'home_team', 'away_team')
     readonly_fields = ('end',)
-    inlines = [GameRefereeInline]
+    inlines = [GameRefereeInline, GamePlayerInline]
 
 
 @admin.register(GameReferee)
@@ -48,3 +54,12 @@ class GameRefereeAdmin(BaseModelAdmin):
     search_fields = ('user__first_name', 'user__last_name',)
     ordering = ('-game__game_day__day', 'game__start',)
     autocomplete_fields = ('game', 'user',)
+
+
+@admin.register(GamePlayer)
+class GamePlayerAdmin(BaseModelAdmin):
+    list_display = ('game', 'user', 'team', 'is_substitute', 'is_goalie')
+    list_filter = ('is_substitute', 'is_goalie', 'team')
+    search_fields = ('user__first_name', 'user__last_name', 'team__name')
+    ordering = ('-game__game_day__day', 'game__start',)
+    autocomplete_fields = ('game', 'user', 'team')

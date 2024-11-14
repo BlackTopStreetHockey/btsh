@@ -60,6 +60,10 @@ class Game(BaseModel):
     court = models.CharField(max_length=8, choices=COURTS)
     type = models.CharField(max_length=8, choices=TYPES, default=REGULAR)
 
+    @property
+    def teams(self):
+        return [self.home_team, self.away_team]
+
     def __str__(self):
         return f'{self.game_day} {self.start.strftime("%I:%M%p")} {self.home_team.name} vs. {self.away_team.name}'
 
@@ -88,4 +92,28 @@ class GameReferee(BaseModel):
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=('game', 'user', 'type'), name='game_user_type_uniq')
+        ]
+
+
+class GamePlayer(BaseModel):
+    """Players for the game"""
+    game = models.ForeignKey(Game, on_delete=models.PROTECT, related_name='players')
+    user = models.ForeignKey('users.User', on_delete=models.PROTECT, related_name='game_players')
+    team = models.ForeignKey('teams.Team', on_delete=models.PROTECT, related_name='game_players')
+    is_substitute = models.BooleanField(default=False)
+    is_goalie = models.BooleanField()
+
+    def clean(self):
+        super().clean()
+
+        if self.team and self.game and self.team not in self.game.teams:
+            team_names = ' or '.join([t.name for t in self.game.teams])
+            raise ValidationError({'team': f'Team must be {team_names}.'})
+
+    def __str__(self):
+        return f'{self.user.get_full_name()} - {self.game}'
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=('game', 'user', 'team'), name='game_user_team_uniq')
         ]
