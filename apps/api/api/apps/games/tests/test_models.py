@@ -36,6 +36,7 @@ class TestGameModel:
                 home_team=hookers_lbs_game_day1_2024.home_team,
                 away_team=hookers_lbs_game_day1_2024.away_team,
                 court=hookers_lbs_game_day1_2024.court,
+                game_type=hookers_lbs_game_day1_2024.type,
             )
         assert e.value.message_dict == {
             '__all__': ['Game with this Game day, Start, Home team and Away team already exists.']

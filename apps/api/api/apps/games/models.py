@@ -34,10 +34,16 @@ class GameDay(BaseModel):
 class Game(BaseModel):
     EAST = 'east'
     WEST = 'west'
-    # Dict keys are what get stored in the db, dict values are what's displayed to end users
     COURTS = {
         EAST: 'East',
         WEST: 'West',
+    }
+
+    REGULAR = 'regular'
+    PLAYOFF = 'playoff'
+    TYPES = {
+        REGULAR: 'Regular',
+        PLAYOFF: 'Playoff',
     }
 
     game_day = models.ForeignKey(GameDay, on_delete=models.PROTECT, related_name='games')
@@ -52,6 +58,7 @@ class Game(BaseModel):
     away_team = models.ForeignKey('teams.Team', on_delete=models.PROTECT, related_name='away_team_games')
     location = models.CharField(max_length=256, default='Tompkins Square Park')
     court = models.CharField(max_length=8, choices=COURTS)
+    type = models.CharField(max_length=8, choices=TYPES, default=REGULAR)
 
     def __str__(self):
         return f'{self.game_day} {self.start.strftime("%I:%M%p")} {self.home_team.name} vs. {self.away_team.name}'

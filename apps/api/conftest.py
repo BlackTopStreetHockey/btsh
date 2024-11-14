@@ -152,6 +152,7 @@ def season_2022_expected_json(season_2022, placeholder_user_expected_json):
             'is_past': is_past,
             'is_current': is_current,
             'is_future': is_future,
+            'year': 2022,
         }
 
     return _factory
@@ -181,6 +182,7 @@ def season_2023_expected_json(season_2023, placeholder_user_expected_json):
             'is_past': is_past,
             'is_current': is_current,
             'is_future': is_future,
+            'year': 2023,
         }
 
     return _factory
@@ -210,6 +212,7 @@ def season_2024_expected_json(season_2024, placeholder_user_expected_json):
             'is_past': is_past,
             'is_current': is_current,
             'is_future': is_future,
+            'year': 2024,
         }
 
     return _factory
@@ -217,9 +220,11 @@ def season_2024_expected_json(season_2024, placeholder_user_expected_json):
 
 @pytest.fixture
 def team_factory():
-    def _factory(name: str, logo: pathlib.Path, jersey_colors: list[str] | None, created_by=None, updated_by=None):
+    def _factory(name: str, short_name: str, logo: pathlib.Path, jersey_colors: list[str] | None, created_by=None,
+                 updated_by=None):
         team = Team(
             name=name,
+            short_name=short_name,
             logo=SimpleUploadedFile(
                 logo.name,
                 logo.read_bytes(),
@@ -240,6 +245,7 @@ def team_factory():
 def corlears_hookers(team_factory, settings, placeholder_user):
     yield team_factory(
         name='Corlears Hookers',
+        short_name='HOOK',
         logo=settings.FIXTURES_DIR / 'team_logos/corlears_hookers.jpg',
         jersey_colors=['white', 'purple'],
         created_by=placeholder_user,
@@ -256,6 +262,7 @@ def corlears_hookers_expected_json(corlears_hookers, placeholder_user_expected_j
             'updated_at': datetime_to_drf(corlears_hookers.updated_at, tz=tz),
             'id': corlears_hookers.id,
             'name': 'Corlears Hookers',
+            'short_name': 'HOOK',
             'logo': f'{logo_prefix}/media/{corlears_hookers.logo.name}',
             'jersey_colors': ['white', 'purple'],
         }
@@ -267,6 +274,7 @@ def corlears_hookers_expected_json(corlears_hookers, placeholder_user_expected_j
 def butchers(team_factory, settings, placeholder_user):
     yield team_factory(
         name='Butchers',
+        short_name='BUTCH',
         logo=settings.FIXTURES_DIR / 'team_logos/butchers.jpg',
         jersey_colors=None,
         created_by=placeholder_user,
@@ -283,6 +291,7 @@ def butchers_expected_json(butchers, placeholder_user_expected_json):
             'updated_at': datetime_to_drf(butchers.updated_at, tz=tz),
             'id': butchers.id,
             'name': 'Butchers',
+            'short_name': 'BUTCH',
             'logo': f'{logo_prefix}/media/{butchers.logo.name}',
             'jersey_colors': None,
         }
@@ -294,6 +303,7 @@ def butchers_expected_json(butchers, placeholder_user_expected_json):
 def lbs(team_factory, settings, placeholder_user):
     yield team_factory(
         name='Lbs',
+        short_name='LBS',
         logo=settings.FIXTURES_DIR / 'team_logos/lbs.jpg',
         jersey_colors=None,
         created_by=placeholder_user,
@@ -310,6 +320,7 @@ def lbs_expected_json(lbs, placeholder_user_expected_json):
             'updated_at': datetime_to_drf(lbs.updated_at, tz=tz),
             'id': lbs.id,
             'name': 'Lbs',
+            'short_name': 'LBS',
             'logo': f'{logo_prefix}/media/{lbs.logo.name}',
             'jersey_colors': None,
         }
@@ -321,6 +332,7 @@ def lbs_expected_json(lbs, placeholder_user_expected_json):
 def cobra_kai(team_factory, settings, placeholder_user):
     yield team_factory(
         name='Cobra Kai',
+        short_name='CK',
         logo=settings.FIXTURES_DIR / 'team_logos/cobra_kai.jpg',
         jersey_colors=None,
         created_by=placeholder_user,
@@ -337,6 +349,7 @@ def cobra_kai_expected_json(cobra_kai, placeholder_user_expected_json):
             'updated_at': datetime_to_drf(cobra_kai.updated_at, tz=tz),
             'id': cobra_kai.id,
             'name': 'Cobra Kai',
+            'short_name': 'CK',
             'logo': f'{logo_prefix}/media/{cobra_kai.logo.name}',
             'jersey_colors': None,
         }
@@ -348,6 +361,7 @@ def cobra_kai_expected_json(cobra_kai, placeholder_user_expected_json):
 def dark_rainbows(team_factory, settings, placeholder_user):
     yield team_factory(
         name='Dark Rainbows',
+        short_name='DRKRNBW',
         logo=settings.FIXTURES_DIR / 'team_logos/dark_rainbows.jpg',
         jersey_colors=None,
         created_by=placeholder_user,
@@ -364,6 +378,7 @@ def dark_rainbows_expected_json(dark_rainbows, placeholder_user_expected_json):
             'updated_at': datetime_to_drf(dark_rainbows.updated_at, tz=tz),
             'id': dark_rainbows.id,
             'name': 'Dark Rainbows',
+            'short_name': 'DRKRNBW',
             'logo': f'{logo_prefix}/media/{dark_rainbows.logo.name}',
             'jersey_colors': None,
         }
@@ -375,6 +390,7 @@ def dark_rainbows_expected_json(dark_rainbows, placeholder_user_expected_json):
 def denim_demons(team_factory, settings, placeholder_user):
     yield team_factory(
         name='Denim Demons',
+        short_name='DMNS',
         logo=settings.FIXTURES_DIR / 'team_logos/denim_demons.jpg',
         jersey_colors=None,
         created_by=placeholder_user,
@@ -391,6 +407,7 @@ def denim_demons_expected_json(denim_demons, placeholder_user_expected_json):
             'updated_at': datetime_to_drf(denim_demons.updated_at, tz=tz),
             'id': denim_demons.id,
             'name': 'Denim Demons',
+            'short_name': 'DMNS',
             'logo': f'{logo_prefix}/media/{denim_demons.logo.name}',
             'jersey_colors': None,
         }
@@ -472,7 +489,7 @@ def game_day3_2024(game_day_factory, season_2024, dark_rainbows, corlears_hooker
 
 @pytest.fixture
 def game_factory():
-    def _factory(game_day, start, home_team, away_team, court, duration=None, location=None, created_by=None,
+    def _factory(game_day, start, home_team, away_team, court, game_type, duration=None, location=None, created_by=None,
                  updated_by=None):
         kwargs = {
             'game_day': game_day,
@@ -480,6 +497,7 @@ def game_factory():
             'home_team': home_team,
             'away_team': away_team,
             'court': court,
+            'type': game_type,
             'created_by': created_by,
             'updated_by': updated_by,
         }
@@ -504,6 +522,7 @@ def hookers_lbs_game_day1_2024(game_day1_2024, corlears_hookers, lbs, game_facto
         home_team=corlears_hookers,
         away_team=lbs,
         court=Game.EAST,
+        game_type=Game.REGULAR,
         created_by=placeholder_user,
     )
 
@@ -528,6 +547,8 @@ def hookers_lbs_game_day1_2024_expected_json(hookers_lbs_game_day1_2024, placeho
             'location': 'Tompkins Square Park',
             'court': 'east',
             'get_court_display': 'East',
+            'type': 'regular',
+            'get_type_display': 'Regular',
         }
 
     return _factory
@@ -541,6 +562,7 @@ def demons_rainbows_game_day1_2024(game_day1_2024, denim_demons, dark_rainbows, 
         home_team=denim_demons,
         away_team=dark_rainbows,
         court=Game.WEST,
+        game_type=Game.REGULAR,
         created_by=placeholder_user,
     )
 
@@ -567,6 +589,8 @@ def demons_rainbows_game_day1_2024_game_day1_2024_expected_json(demons_rainbows_
             'location': 'Tompkins Square Park',
             'court': 'west',
             'get_court_display': 'West',
+            'type': 'regular',
+            'get_type_display': 'Regular',
         }
 
     return _factory

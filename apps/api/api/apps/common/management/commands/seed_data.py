@@ -129,6 +129,7 @@ class Command(BaseCommand):
         for season in seasons:
             sundays = get_sundays_for_date_range(season.start, season.end)
             num_games_per_day = 10
+            playoff_start_date = datetime.date(year=season.year, month=10, day=1)
 
             print(f'Seeding game days and games for {season}.')
             for sunday in sundays:
@@ -161,6 +162,7 @@ class Command(BaseCommand):
                     start_offset = offsets[game_number]
                     start = datetime.time(hour=start_hour + start_offset, minute=0)
                     court = Game.EAST if game_number % 2 == 0 else Game.WEST
+                    game_type = Game.REGULAR if game_day.day <= playoff_start_date else Game.PLAYOFF
                     game, _ = get_or_create(
                         Game,
                         get_kwargs={
@@ -175,6 +177,7 @@ class Command(BaseCommand):
                             'home_team': home_team,
                             'away_team': away_team,
                             'court': court,
+                            'type': game_type,
                             'created_by': created_by,
                         },
                     )

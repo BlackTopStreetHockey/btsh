@@ -1,13 +1,13 @@
-from common.serializers import BaseReadOnlyModelSerializer
 from common.models import BASE_MODEL_FIELDS
+from common.serializers import BaseReadOnlyModelSerializer
 from seasons.serializers import SeasonReadOnlySerializer
 from teams.serializers import TeamReadOnlySerializer
 from .models import Game, GameDay
 
 
-
 class GameDayReadOnlySerializer(BaseReadOnlyModelSerializer):
     season = SeasonReadOnlySerializer()
+
     class Meta(BaseReadOnlyModelSerializer.Meta):
         model = GameDay
         fields = BaseReadOnlyModelSerializer.Meta.fields + ('day', 'season')
@@ -22,7 +22,9 @@ class GameReadOnlySerializer(BaseReadOnlyModelSerializer):
         model = Game
         fields = BaseReadOnlyModelSerializer.Meta.fields + (
             'game_day', 'start', 'duration', 'end', 'home_team', 'away_team', 'location', 'court', 'get_court_display',
+            'type', 'get_type_display',
         )
+
 
 class GameDayGameReadOnlySerializer(BaseReadOnlyModelSerializer):
     home_team = TeamReadOnlySerializer(exclude=BASE_MODEL_FIELDS)
@@ -31,8 +33,10 @@ class GameDayGameReadOnlySerializer(BaseReadOnlyModelSerializer):
     class Meta(BaseReadOnlyModelSerializer.Meta):
         model = Game
         fields = BaseReadOnlyModelSerializer.Meta.fields + (
-            'start', 'duration', 'end', 'home_team', 'away_team', 'location', 'court', 'get_court_display',
+            'start', 'duration', 'end', 'home_team', 'away_team', 'location', 'court', 'get_court_display', 'type',
+            'get_type_display',
         )
+
 
 class GameDayWithGamesReadOnlySerializer(BaseReadOnlyModelSerializer):
     opening_team = TeamReadOnlySerializer(exclude=BASE_MODEL_FIELDS)
