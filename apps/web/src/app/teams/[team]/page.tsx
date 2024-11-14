@@ -1,10 +1,12 @@
 "use client";
-import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Image from 'next/image';
-import Link from 'next/link';
-import { Instagram } from 'lucide-react';
+import Image from "next/image";
+import Link from "next/link";
+import { Instagram } from "lucide-react";
+
+import { getContrastingColor } from "@/lib/utils";
 
 type Team = {
   id: number;
@@ -17,7 +19,7 @@ type Team = {
   instagram_url: string | null;
 };
 
-export default function TeamPage() { 
+export default function TeamPage() {
   const { team } = useParams();
   const [teamData, setTeamData] = useState<Team | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -26,15 +28,17 @@ export default function TeamPage() {
   useEffect(() => {
     const fetchTeam = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/team/${team}`);
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/team/${team}`
+        );
         if (!response.ok) {
-          throw new Error('Failed to fetch team data');
+          throw new Error("Failed to fetch team data");
         }
         const data = await response.json();
         setTeamData(data);
       } catch (err) {
-        console.error('Error fetching team:', err);
-        setError('Failed to load team details');
+        console.error("Error fetching team:", err);
+        setError("Failed to load team details");
       } finally {
         setLoading(false);
       }
@@ -57,9 +61,7 @@ export default function TeamPage() {
   if (error || !teamData) {
     return (
       <div className="container mx-auto p-4">
-        <div className="text-red-500">
-          {error || 'Team not found'}
-        </div>
+        <div className="text-red-500">{error || "Team not found"}</div>
       </div>
     );
   }
@@ -70,15 +72,17 @@ export default function TeamPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="text-3xl font-bold">{teamData.name}</CardTitle>
+              <CardTitle className="text-3xl font-bold">
+                {teamData.name}
+              </CardTitle>
               <p className="text-muted-foreground">
                 {teamData.short_name} • Est. {teamData.established}
               </p>
             </div>
             {teamData.instagram_url && (
-              <Link 
-                href={teamData.instagram_url} 
-                target="_blank" 
+              <Link
+                href={teamData.instagram_url}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-blue-500"
               >
@@ -101,9 +105,10 @@ export default function TeamPage() {
             <h3 className="text-lg font-semibold mb-2">Team Colors</h3>
             <div className="flex gap-2">
               {teamData.jersey_colors?.map((color, index) => (
-                <span 
+                <span
                   key={index}
-                  className="px-3 py-1 rounded-full text-sm bg-gray-100"
+                  className="px-3 py-1 rounded-full text-sm border"
+                  style={{ backgroundColor: color, color: getContrastingColor(color) }}
                 >
                   {color}
                 </span>
@@ -114,9 +119,7 @@ export default function TeamPage() {
           {teamData.description && (
             <div>
               <h3 className="text-lg font-semibold mb-2">History</h3>
-              <p className="text-muted-foreground">
-                {teamData.description}
-              </p>
+              <p className="text-muted-foreground">{teamData.description}</p>
             </div>
           )}
         </CardContent>
