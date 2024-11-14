@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
+import Link from "next/link";
 
 // Define the shape of our team data
 interface Team {
@@ -46,30 +47,32 @@ export default async function SchedulePage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {teams.map((team) => (
-            <Card key={team.id}>
-              <CardHeader>
-                <CardTitle>{team.name}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex gap-4">
-                  <Image
-                    src={team.logo}
-                    alt={team.name}
-                    width={100}
-                    height={100}
-                  />
-                  <div className="flex flex-col justify-center gap-4">
-                    {team.jersey_colors?.map((color) => (
-                      <div
-                        key={color}
-                        className="w-8 h-8 rounded-full border"
-                        style={{ backgroundColor: color }}
-                      />
-                    ))}
+            <Link href={`/teams/${team.id}`} key={team.id}>
+              <Card key={team.id}>
+                <CardHeader>
+                  <CardTitle>{team.name}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex gap-4">
+                    <Image
+                      src={team.logo}
+                      alt={team.name}
+                      width={100}
+                      height={100}
+                    />
+                    <div className="flex flex-col justify-center gap-4">
+                      {team.jersey_colors?.map((color) => (
+                        <div
+                          key={color}
+                          className="w-8 h-8 rounded-full border"
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       )}
