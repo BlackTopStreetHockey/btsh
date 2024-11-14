@@ -5,11 +5,11 @@ from common.models import BaseModel
 
 
 class Team(BaseModel):
-    name = models.CharField(max_length=100, unique=True)
-    short_name = models.CharField(max_length=10, unique=True)
-    logo = models.ImageField(upload_to='team_logos/')
-    jersey_colors = ArrayField(models.CharField(max_length=50), size=2, null=True, blank=True, help_text='Comma separated list of jersey colors')
-    established = models.PositiveSmallIntegerField(
+    name = models.CharField(max_length=64, unique=True)
+    short_name = models.CharField(max_length=8, unique=True)
+    logo = models.ImageField(upload_to='teams/logos/')
+    jersey_colors = ArrayField(
+        base_field=models.CharField(max_length=32),
         null=True,
         blank=True,
         help_text='Year the team was established'
