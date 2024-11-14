@@ -7,5 +7,5 @@ class TeamViewSet(BaseModelReadOnlyViewSet):
     queryset = Team.objects.all()
     serializer_class = TeamReadOnlySerializer
     ordering = ('name',)
-    ordering_fields = ('name',)
-    search_fields = ('name',)
+    ordering_fields = ('name', 'short_name')
+    search_fields = ('name', 'short_name')
