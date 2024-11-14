@@ -6,6 +6,7 @@ from common.models import BaseModel
 
 class Team(BaseModel):
     name = models.CharField(max_length=64, unique=True)
+    short_name = models.CharField(max_length=10, unique=True)
     logo = models.ImageField(upload_to='teams/logos/')
     jersey_colors = ArrayField(
         base_field=models.CharField(max_length=32),
