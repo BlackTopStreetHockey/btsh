@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
-
+import Link from "next/link";
 // Define the shape of our team data
 interface Team {
   id: number;
@@ -46,8 +46,9 @@ export default async function SchedulePage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {teams.map((team) => (
-            <Card key={team.id}>
-              <CardHeader>
+            <Link href={`/teams/${team.id}`} key={team.id} className="no-underline hover:shadow-md">
+              <Card key={team.id}>
+                <CardHeader>
                 <CardTitle>{team.name}</CardTitle>
               </CardHeader>
               <CardContent>
@@ -70,6 +71,7 @@ export default async function SchedulePage() {
                 </div>
               </CardContent>
             </Card>
+            </Link>
           ))}
         </div>
       )}
