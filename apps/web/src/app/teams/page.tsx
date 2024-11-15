@@ -3,17 +3,31 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
-import { useTeams } from "@/requests/hooks/useTeams";
 
+import { useTeams } from "@/requests/hooks/useTeams";
+import { useSeasons } from "@/requests/hooks/useSeasons";
+import { useDivisions } from "@/requests/hooks/useDivisions";
 export default function SchedulePage() {
-  const { data, placeholder, error } = useTeams({});
+  const { teams, placeholder, error } = useTeams({});
+  const { seasons } = useSeasons({});
+  const { divisions } = useDivisions({});
+
+  console.log("seasons:", seasons);
+  console.log("divisions:", divisions);
 
   return (
     <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-6">Hockey League Teams</h1>
+      <h1 className="text-3xl font-bold mb-6">Teams</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {data?.results.map((team: Team) => (
+      {divisions?.map((division: Division) => (
+        <Card key={division.id} className="mb-4">
+          <CardHeader>
+            <CardTitle>{division.name}</CardTitle>
+          </CardHeader>
+        </Card>
+      ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {teams?.map((team: Team) => (
           <Link href={`/teams/${team.short_name}`} key={team.id}>
             <Card key={team.id}>
               <CardHeader>

@@ -3,9 +3,12 @@ import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
-import { Instagram } from "lucide-react";
+import { Instagram, ArrowLeft } from "lucide-react";
 
 import { getContrastingColor } from "@/lib/utils";
+
+import { useDivisions } from "@/requests/hooks/useDivisions";
+import { useSeasons } from "@/requests/hooks/useSeasons";
 import { useTeams } from "@/requests/hooks/useTeams";
 
 export default function TeamPage() {
@@ -13,6 +16,11 @@ export default function TeamPage() {
   const { data, placeholder, loading, error } = useTeams({
     short_name: team as string,
   });
+  const { data: divisions } = useDivisions({});
+  const { data: seasons } = useSeasons({});
+
+  console.log("divisions:", divisions);
+  console.log("seasons:", seasons);
 
   return error ? (
     <div>{error.message}</div>
@@ -21,6 +29,13 @@ export default function TeamPage() {
   ) : (
     data && (
       <div className="container mx-auto p-4">
+        <div className="flex mb-4">
+          <Link href="/teams" className="text-muted-foreground">
+            <span className="flex text-sm gap-2 items-center">
+              <ArrowLeft size={24} /> Back to Teams
+            </span>
+          </Link>
+        </div>
         <Card className="max-w-4xl mx-auto">
           <CardHeader>
             <div className="flex items-center justify-between">
@@ -28,8 +43,8 @@ export default function TeamPage() {
                 <CardTitle className="text-3xl font-bold">
                   {data?.name}
                 </CardTitle>
-                <p className="text-muted-foreground">
-                  {data.short_name} • Est. {data.established}
+                <p className="text-xs text-muted-foreground">
+                  {data.established && `Est. ${data.established}`}
                 </p>
               </div>
               {data.instagram_url && (
@@ -51,11 +66,14 @@ export default function TeamPage() {
                 alt={`${data.name} logo`}
                 fill
                 className="object-contain"
+                priority
               />
             </div>
 
             <div>
-              <h3 className="text-lg font-semibold mb-2">Team Colors</h3>
+              {data.jersey_colors && (
+                <h3 className="text-lg font-semibold mb-2">Team Colors</h3>
+              )}
               <div className="flex gap-2">
                 {data.jersey_colors?.map((color: string, index: number) => (
                   <span
@@ -66,7 +84,18 @@ export default function TeamPage() {
                       color: getContrastingColor(color),
                     }}
                   >
-                    {color}
+                    {!color.startsWith("#") ? (
+                      <span
+                        style={{
+                          filter: "invert(1)",
+                          mixBlendMode: "difference",
+                        }}
+                      >
+                        {color}
+                      </span>
+                    ) : (
+                      color
+                    )}
                   </span>
                 ))}
               </div>

@@ -23,6 +23,11 @@ interface Season {
   is_future: boolean;
 }
 
+interface Division {
+  id: number;
+  name: string;
+}
+
 interface Game {
   id: number;
 }

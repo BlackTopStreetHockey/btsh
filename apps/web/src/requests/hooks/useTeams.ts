@@ -8,7 +8,7 @@ export const useTeams = ({ short_name }: { short_name?: string }) => {
   );
   return {
     data,
-    seasons: data?.results,
+    teams: data?.results,
     placeholder,
     loading,
     error,

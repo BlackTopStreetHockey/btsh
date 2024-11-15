@@ -58,8 +58,6 @@ function useRequest({
   body = undefined,
   skip = false, // if true, won't fire request
 }: RequestOptions) {
-  let controller: AbortController | undefined;
-
   const [state, setState] = useState({
     data: undefined,
     loading: !skip,
@@ -68,14 +66,12 @@ function useRequest({
 
   const fetchData = () => {
     if (skip) return;
-    controller = new AbortController();
     setState({ loading: true, data: undefined, error: undefined });
     const promise = promiseRequest({
       route,
       method,
       params,
       body,
-      controller,
     });
     promise
       .then((res) => {
@@ -88,9 +84,6 @@ function useRequest({
 
   useEffect(() => {
     fetchData();
-    return () => {
-      controller?.abort();
-    };
   }, [skip, JSON.stringify(body), JSON.stringify(params)]);
 
   return state;
