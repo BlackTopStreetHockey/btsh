@@ -6,6 +6,7 @@ from django.db.models import F
 
 from api.utils.datetime import format_datetime
 from common.models import BaseModel
+from teams.models import Team
 
 
 def default_game_duration():
@@ -22,9 +23,11 @@ class GameDay(BaseModel):
     def clean(self):
         super().clean()
 
-        if self.day and self.season and (self.season.start > self.day or self.season.end < self.day):
+        season = getattr(self, 'season', None)
+
+        if self.day and season and (season.start > self.day or season.end < self.day):
             raise ValidationError({
-                'day': f'Day must be between {self.season.start_formatted} and {self.season.end_formatted}.'
+                'day': f'Day must be between {season.start_formatted} and {season.end_formatted}.'
             })
 
     def __str__(self):
@@ -106,12 +109,15 @@ class GamePlayer(BaseModel):
     def clean(self):
         super().clean()
 
-        if self.team and self.game and self.team not in self.game.teams:
-            team_names = ' or '.join([t.name for t in self.game.teams])
+        team = getattr(self, 'team', None)
+        game = getattr(self, 'game', None)
+
+        if team and game and team not in game.teams:
+            team_names = ' or '.join([t.name for t in game.teams])
             raise ValidationError({'team': f'Team must be {team_names}.'})
 
     def __str__(self):
-        return f'{self.user.get_full_name()} - {self.game}'
+        return f'{self.user.get_full_name()} - {self.team} - {self.game}'
 
     class Meta:
         constraints = [
@@ -120,17 +126,30 @@ class GamePlayer(BaseModel):
 
 
 class GameGoal(BaseModel):
+    """Goals for the game"""
+    FIRST = '1'
+    SECOND = '2'
+    OT = 'ot'
+    SO = 'so'
+    PERIODS = {
+        FIRST: '1st',
+        SECOND: '2nd',
+        OT: 'OT',
+        SO: 'SO',
+    }
+
     game = models.ForeignKey(Game, on_delete=models.PROTECT, related_name='goals')
     team = models.ForeignKey('teams.Team', on_delete=models.PROTECT, related_name='goals')
-    scorer = models.ForeignKey(GamePlayer, on_delete=models.PROTECT, related_name='goals')
-    assist1 = models.ForeignKey(
+    period = models.CharField(max_length=4, choices=PERIODS)
+    scored_by = models.ForeignKey(GamePlayer, on_delete=models.PROTECT, related_name='goals')
+    assisted_by1 = models.ForeignKey(
         GamePlayer,
         on_delete=models.PROTECT,
         null=True,
         blank=True,
         related_name='primary_assists',
     )
-    assist2 = models.ForeignKey(
+    assisted_by2 = models.ForeignKey(
         GamePlayer,
         on_delete=models.PROTECT,
         null=True,
@@ -138,24 +157,62 @@ class GameGoal(BaseModel):
         related_name='secondary_assists',
     )
 
-    def clean(self):
-        super().clean()
+    def _validate_game_player(self, game_player: GamePlayer, game: Game, team: Team):
+        """Validates the selected game player belongs to the selected team and game."""
         errors = []
 
-        if self.game and self.team and self.team not in self.game.teams:
-            errors.append({'team': 'Team must be either the home or away team.'})
+        if game_player and game and game_player.game_id != game.id:
+            errors.append('This player does not belong to the selected game.')
 
-        if self.scorer and self.assist1:
-            ...
+        if game_player and team and game_player.team_id != team.id:
+            errors.append('This player does not belong to the selected team.')
 
-        if self.scorer and self.assist2:
-            ...
+        return errors
 
-        if self.assist1 and self.assist2:
-            ...
+    def _validate_game_players(self, gp1: GamePlayer, gp2: GamePlayer):
+        """Validates the selected game players are not the same, i.e. the scorer isn't given an assist."""
+        errors = []
+
+        if gp1 and gp2 and gp1.id == gp2.id:
+            errors.append('This player can\'t be selected more than once.')
+
+        return errors
+
+    def clean(self):
+        super().clean()
+        errors = {}
+
+        team = getattr(self, 'team', None)
+        game = getattr(self, 'game', None)
+        scored_by = getattr(self, 'scored_by', None)
+        assisted_by1 = getattr(self, 'assisted_by1', None)
+        assisted_by2 = getattr(self, 'assisted_by2', None)
+
+        if team and game and team not in game.teams:
+            team_names = ' or '.join([t.name for t in game.teams])
+            errors.setdefault('team', []).append(f'Team must be {team_names}.')
+
+        # Ensure game player belongs to the game and team
+        if errors1 := self._validate_game_player(scored_by, game, team):
+            errors.setdefault('scored_by', []).extend(errors1)
+        if errors2 := self._validate_game_player(assisted_by1, game, team):
+            errors.setdefault('assisted_by1', []).extend(errors2)
+        if errors3 := self._validate_game_player(assisted_by2, game, team):
+            errors.setdefault('assisted_by2', []).extend(errors3)
+
+        # Ensure scorer, assist1, assist2 are all different
+        if errors4 := self._validate_game_players(scored_by, assisted_by1):
+            errors.setdefault('assisted_by1', []).extend(errors4)
+        if errors5 := self._validate_game_players(scored_by, assisted_by2):
+            errors.setdefault('assisted_by2', []).extend(errors5)
+        if errors6 := self._validate_game_players(assisted_by1, assisted_by2):
+            errors.setdefault('assisted_by2', []).extend(errors6)
+
+        if not assisted_by1 and assisted_by2:
+            errors.setdefault('assisted_by1', []).append('This field is required when a secondary assist is provided.')
 
         if errors:
             raise ValidationError(errors)
 
     def __str__(self):
-        return f'{self.scorer.get_full_name()} - {self.team} - {self.game}'
+        return f'{self.scored_by.user.get_full_name()} - {self.team} - {self.game}'
