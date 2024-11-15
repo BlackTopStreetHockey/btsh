@@ -117,3 +117,45 @@ class GamePlayer(BaseModel):
         constraints = [
             models.UniqueConstraint(fields=('game', 'user', 'team'), name='game_user_team_uniq')
         ]
+
+
+class GameGoal(BaseModel):
+    game = models.ForeignKey(Game, on_delete=models.PROTECT, related_name='goals')
+    team = models.ForeignKey('teams.Team', on_delete=models.PROTECT, related_name='goals')
+    scorer = models.ForeignKey(GamePlayer, on_delete=models.PROTECT, related_name='goals')
+    assist1 = models.ForeignKey(
+        GamePlayer,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name='primary_assists',
+    )
+    assist2 = models.ForeignKey(
+        GamePlayer,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name='secondary_assists',
+    )
+
+    def clean(self):
+        super().clean()
+        errors = []
+
+        if self.game and self.team and self.team not in self.game.teams:
+            errors.append({'team': 'Team must be either the home or away team.'})
+
+        if self.scorer and self.assist1:
+            ...
+
+        if self.scorer and self.assist2:
+            ...
+
+        if self.assist1 and self.assist2:
+            ...
+
+        if errors:
+            raise ValidationError(errors)
+
+    def __str__(self):
+        return f'{self.scorer.get_full_name()} - {self.team} - {self.game}'
