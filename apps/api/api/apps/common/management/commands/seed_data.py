@@ -6,13 +6,17 @@ from django.core.files import File
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from django.utils.text import slugify
+from mimesis import Person
 
 from divisions.models import Division
 from games.models import Game, GameDay
 from seasons.models import Season
 from teams.models import Team
 from users.models import User
+from .utils import get_or_create, print_separator
 
+
+person = Person()
 
 CURRENT_YEAR = timezone.now().date().year
 YEAR_DIFF = 2
@@ -54,35 +58,23 @@ def get_sundays_for_date_range(start_date, end_date):
     return sundays
 
 
-def get_or_create(cls, get_kwargs, create_kwargs):
-    try:
-        obj = cls.objects.get(**get_kwargs)
-        created = False
-    except cls.DoesNotExist:
-        obj = cls(**create_kwargs)
-        obj.full_clean()
-        obj.save()
-        created = True
-    print(f'[{cls._meta.verbose_name}] {obj} {"created" if created else "already exists"}.')
-    return obj, created
-
-
-def print_separator():
-    print()
-    print('*' * 50)
-    print()
-
-
 class Command(BaseCommand):
     help = 'Seed data for local development purposes.'
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--seed-users', action='store_true', help='Seed users that can be used for game refs, game players, etc.'
+        )
+
     def handle(self, *args, **options):
-        users = User.objects.filter(is_superuser=True)
-        if not users.exists():
+        seed_users = options.get('seed_users')
+
+        superusers = User.objects.filter(is_superuser=True)
+        if not superusers.exists():
             print('Please create a superuser to continue.')
             return
 
-        created_by = users.first()
+        created_by = superusers.first()
         divisions = []
         seasons = []
         teams = []
@@ -123,6 +115,32 @@ class Command(BaseCommand):
                     create_kwargs={'name': t, 'logo': logo, 'jersey_colors': jersey_colors, 'created_by': created_by}
                 )
                 teams.append(team)
+
+        print_separator()
+
+        if seed_users:
+            print(f'Seeding users.')
+            num_users = len(teams) * 20  # Assume 20ish users per team
+            users = []
+            for i in range(num_users):
+                email = person.email(unique=True, domains=['btsh.org'])
+                first_name = person.first_name()
+                last_name = person.last_name()
+
+                user, _ = get_or_create(
+                    User,
+                    get_kwargs={'pk': None},
+                    create_kwargs={
+                        'username': email,
+                        'email': email,
+                        'first_name': first_name,
+                        'last_name': last_name,
+                    },
+                    exclude=['password'],
+                )
+                users.append(user)
+
+            print(f'Seeded {len(users)} users.')
 
         print_separator()
 
