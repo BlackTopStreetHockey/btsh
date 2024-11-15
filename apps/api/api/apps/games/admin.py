@@ -17,13 +17,13 @@ class GameInline(BaseModelTabularInline):
 class GameRefereeInline(BaseModelTabularInline):
     model = GameReferee
     autocomplete_fields = ('user',)
-    ordering = ('user__email',)
+    ordering = ('type', 'user__email',)
 
 
 class GamePlayerInline(BaseModelTabularInline):
     model = GamePlayer
     autocomplete_fields = ('user', 'team',)
-    ordering = ('user__email',)
+    ordering = ('team', 'user__email')
 
 
 @admin.register(GameDay)
@@ -50,7 +50,7 @@ class GameAdmin(BaseModelAdmin):
 @admin.register(GameReferee)
 class GameRefereeAdmin(BaseModelAdmin):
     list_display = ('game', 'user', 'type')
-    list_filter = ('type',)
+    list_filter = ('game__game_day__season', 'type',)
     search_fields = ('user__first_name', 'user__last_name',)
     ordering = ('-game__game_day__day', 'game__start',)
     autocomplete_fields = ('game', 'user',)
@@ -59,7 +59,7 @@ class GameRefereeAdmin(BaseModelAdmin):
 @admin.register(GamePlayer)
 class GamePlayerAdmin(BaseModelAdmin):
     list_display = ('game', 'user', 'team', 'is_substitute', 'is_goalie')
-    list_filter = ('is_substitute', 'is_goalie', 'team')
+    list_filter = ('game__game_day__season', 'is_substitute', 'is_goalie', 'team')
     search_fields = ('user__first_name', 'user__last_name', 'team__name')
     ordering = ('-game__game_day__day', 'game__start',)
     autocomplete_fields = ('game', 'user', 'team')
