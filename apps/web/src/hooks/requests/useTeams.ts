@@ -1,4 +1,4 @@
-import { usePlaceholder, useRequest } from "@/requests/hooks";
+import { usePlaceholder, useRequest } from "@/hooks";
 
 export const useTeams = ({ short_name }: { short_name?: string }) => {
   const { data, placeholder, loading, error, ...rest } = usePlaceholder(
