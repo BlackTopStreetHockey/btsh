@@ -13,7 +13,7 @@ from games.models import Game, GameDay
 from seasons.models import Season
 from teams.models import Team
 from users.models import User
-from .utils import get_or_create, print_separator
+from .utils import get_default_created_by, get_or_create, print_separator
 
 
 person = Person()
@@ -69,12 +69,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         seed_users = options.get('seed_users')
 
-        superusers = User.objects.filter(is_superuser=True)
-        if not superusers.exists():
-            print('Please create a superuser to continue.')
-            return
-
-        created_by = superusers.first()
+        created_by = get_default_created_by()
         divisions = []
         seasons = []
         teams = []

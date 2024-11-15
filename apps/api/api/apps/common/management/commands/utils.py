@@ -1,3 +1,6 @@
+from users.models import User
+
+
 def get_or_create(cls, get_kwargs, create_kwargs, exclude=None):
     try:
         obj = cls.objects.get(**get_kwargs)
@@ -15,3 +18,10 @@ def print_separator():
     print()
     print('*' * 50)
     print()
+
+
+def get_default_created_by():
+    superusers = User.objects.filter(is_superuser=True)
+    if not superusers.exists():
+        raise Exception('Please create a superuser to continue.')
+    return superusers.first()
