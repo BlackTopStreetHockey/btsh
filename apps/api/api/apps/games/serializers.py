@@ -3,7 +3,7 @@ from common.serializers import BaseReadOnlyModelSerializer
 from seasons.serializers import SeasonReadOnlySerializer
 from teams.serializers import TeamReadOnlySerializer
 from users.serializers import UserReadOnlySerializer
-from .models import Game, GameDay, GamePlayer, GameReferee
+from .models import Game, GameDay, GameGoal, GamePlayer, GameReferee
 
 
 class GameDayReadOnlySerializer(BaseReadOnlyModelSerializer):
@@ -65,3 +65,16 @@ class GamePlayerReadOnlySerializer(BaseReadOnlyModelSerializer):
     class Meta(BaseReadOnlyModelSerializer.Meta):
         model = GamePlayer
         fields = BaseReadOnlyModelSerializer.Meta.fields + ('game', 'user', 'team', 'is_substitute', 'is_goalie')
+
+
+class GameGoalReadOnlySerializer(BaseReadOnlyModelSerializer):
+    team = TeamReadOnlySerializer(exclude=BASE_MODEL_FIELDS)
+    scored_by = GamePlayerReadOnlySerializer(exclude=(*BASE_MODEL_FIELDS, 'team',))
+    assisted_by1 = GamePlayerReadOnlySerializer(exclude=(*BASE_MODEL_FIELDS, 'team',))
+    assisted_by2 = GamePlayerReadOnlySerializer(exclude=(*BASE_MODEL_FIELDS, 'team',))
+
+    class Meta(BaseReadOnlyModelSerializer.Meta):
+        model = GameGoal
+        fields = BaseReadOnlyModelSerializer.Meta.fields + (
+            'game', 'team', 'period', 'get_period_display', 'scored_by', 'assisted_by1', 'assisted_by2',
+        )

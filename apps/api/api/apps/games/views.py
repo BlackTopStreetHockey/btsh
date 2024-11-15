@@ -1,8 +1,9 @@
 from common.views import BaseModelReadOnlyViewSet
-from .filtersets import GameDayFilterSet, GameFilterSet, GamePlayerFilterSet, GameRefereeFilterSet
-from .models import Game, GameDay, GamePlayer, GameReferee
+from .filtersets import GameDayFilterSet, GameFilterSet, GameGoalFilterSet, GamePlayerFilterSet, GameRefereeFilterSet
+from .models import Game, GameDay, GameGoal, GamePlayer, GameReferee
 from .serializers import (
     GameDayWithGamesReadOnlySerializer,
+    GameGoalReadOnlySerializer,
     GamePlayerReadOnlySerializer,
     GameReadOnlySerializer,
     GameRefereeReadOnlySerializer
@@ -62,3 +63,20 @@ class GamePlayerViewSet(BaseModelReadOnlyViewSet):
     ordering_fields = ('game', 'team', 'is_substitute', 'is_goalie')
     search_fields = ('user__first_name', 'user__last_name', 'user__email', 'team__name',)
     filterset_class = GamePlayerFilterSet
+
+
+class GameGoalViewSet(BaseModelReadOnlyViewSet):
+    queryset = GameGoal.objects.all().select_related(
+        'team',
+        'scored_by__user',
+        'scored_by__team',
+        'assisted_by1__user',
+        'assisted_by1__team',
+        'assisted_by2__user',
+        'assisted_by2__team',
+    )
+    serializer_class = GameGoalReadOnlySerializer
+    ordering = ('-game__game_day__day', 'game__start', 'scored_by__user__email', 'team')
+    ordering_fields = ('game', 'team', 'period',)
+    search_fields = ('team__name',)
+    filterset_class = GameGoalFilterSet
