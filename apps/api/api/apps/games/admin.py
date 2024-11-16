@@ -57,7 +57,7 @@ class GameAdmin(BaseModelAdmin):
 class GameRefereeAdmin(BaseModelAdmin):
     list_display = ('game', 'user', 'type')
     list_filter = ('game__game_day__season', 'type',)
-    search_fields = ('user__first_name', 'user__last_name',)
+    search_fields = ('user__first_name', 'user__last_name', 'game__id',)
     ordering = ('-game__game_day__day', 'game__start',)
     autocomplete_fields = ('game', 'user',)
 
@@ -66,7 +66,7 @@ class GameRefereeAdmin(BaseModelAdmin):
 class GamePlayerAdmin(BaseModelAdmin):
     list_display = ('game', 'user', 'team', 'is_substitute', 'is_goalie')
     list_filter = ('game__game_day__season', 'is_substitute', 'is_goalie', 'team')
-    search_fields = ('user__first_name', 'user__last_name', 'team__name', 'game__game_day__day')
+    search_fields = ('user__first_name', 'user__last_name', 'team__name', 'game__game_day__day', 'game__id',)
     ordering = ('-game__game_day__day', 'game__start',)
     autocomplete_fields = ('game', 'user', 'team')
 
@@ -83,6 +83,7 @@ class GameGoalAdmin(BaseModelAdmin):
         'assisted_by2__user__first_name',
         'assisted_by2__user__last_name',
         'team__name',
+        'game__id',
     )
     ordering = ('-game__game_day__day', 'game__start', 'team', 'period')
     autocomplete_fields = ('game', 'team', 'scored_by', 'assisted_by1', 'assisted_by2')
