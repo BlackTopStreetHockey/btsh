@@ -44,7 +44,9 @@ class GameDayAdmin(BaseModelAdmin):
 
 @admin.register(Game)
 class GameAdmin(BaseModelAdmin):
-    list_display = ('game_day', 'start', 'end', 'duration', 'home_team', 'away_team', 'location', 'court', 'type')
+    list_display = (
+        'game_day', 'start', 'type', 'home_team', 'away_team', 'court', 'location', 'end', 'duration',
+    )
     list_filter = ('game_day__day', 'game_day__season', 'court', 'type', 'home_team', 'away_team', 'location')
     search_fields = ('game_day__day', 'start', 'home_team__name', 'away_team__name', 'court')
     ordering = ('-game_day__day', 'start')
