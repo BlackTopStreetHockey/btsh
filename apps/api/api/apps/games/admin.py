@@ -26,6 +26,12 @@ class GamePlayerInline(BaseModelTabularInline):
     ordering = ('team', 'user__email')
 
 
+class GameGoalInline(BaseModelTabularInline):
+    model = GameGoal
+    autocomplete_fields = ('team', 'scored_by', 'assisted_by1', 'assisted_by2',)
+    ordering = ('period', 'team')
+
+
 @admin.register(GameDay)
 class GameDayAdmin(BaseModelAdmin):
     list_display = ('day', 'season', 'opening_team', 'closing_team')
@@ -44,7 +50,7 @@ class GameAdmin(BaseModelAdmin):
     ordering = ('-game_day__day', 'start')
     autocomplete_fields = ('game_day', 'home_team', 'away_team')
     readonly_fields = ('end',)
-    inlines = [GameRefereeInline, GamePlayerInline]
+    inlines = [GameGoalInline, GameRefereeInline, GamePlayerInline]
 
 
 @admin.register(GameReferee)
