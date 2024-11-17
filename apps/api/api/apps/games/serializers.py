@@ -1,6 +1,9 @@
+from rest_framework import serializers
+
 from common.models import BASE_MODEL_FIELDS
 from common.serializers import BaseReadOnlyModelSerializer
 from seasons.serializers import SeasonReadOnlySerializer
+from teams.models import Team
 from teams.serializers import TeamReadOnlySerializer
 from users.serializers import UserReadOnlySerializer
 from .models import Game, GameDay, GameGoal, GamePlayer, GameReferee
@@ -19,11 +22,17 @@ class GameReadOnlySerializer(BaseReadOnlyModelSerializer):
     home_team = TeamReadOnlySerializer()
     away_team = TeamReadOnlySerializer()
 
+    home_team_num_goals = serializers.IntegerField()
+    away_team_num_goals = serializers.IntegerField()
+    winning_team_id = serializers.PrimaryKeyRelatedField(queryset=Team.objects.all())
+    losing_team_id = serializers.PrimaryKeyRelatedField(queryset=Team.objects.all())
+
     class Meta(BaseReadOnlyModelSerializer.Meta):
         model = Game
         fields = BaseReadOnlyModelSerializer.Meta.fields + (
             'game_day', 'start', 'duration', 'end', 'home_team', 'away_team', 'location', 'court', 'get_court_display',
-            'type', 'get_type_display',
+            'type', 'get_type_display', 'home_team_num_goals', 'away_team_num_goals', 'winning_team_id',
+            'losing_team_id',
         )
 
 
@@ -31,11 +40,17 @@ class GameDayGameReadOnlySerializer(BaseReadOnlyModelSerializer):
     home_team = TeamReadOnlySerializer(exclude=BASE_MODEL_FIELDS)
     away_team = TeamReadOnlySerializer(exclude=BASE_MODEL_FIELDS)
 
+    home_team_num_goals = serializers.IntegerField()
+    away_team_num_goals = serializers.IntegerField()
+    winning_team_id = serializers.PrimaryKeyRelatedField(queryset=Team.objects.all())
+    losing_team_id = serializers.PrimaryKeyRelatedField(queryset=Team.objects.all())
+
     class Meta(BaseReadOnlyModelSerializer.Meta):
         model = Game
         fields = BaseReadOnlyModelSerializer.Meta.fields + (
             'start', 'duration', 'end', 'home_team', 'away_team', 'location', 'court', 'get_court_display', 'type',
-            'get_type_display',
+            'get_type_display', 'home_team_num_goals', 'away_team_num_goals', 'winning_team_id',
+            'losing_team_id',
         )
 
 

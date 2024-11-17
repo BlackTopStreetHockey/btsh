@@ -6,6 +6,7 @@ from django.db.models import F
 
 from api.utils.datetime import format_datetime
 from common.models import BaseModel
+from games.managers import GameManager, GameQuerySet
 from teams.models import Team
 
 
@@ -62,6 +63,8 @@ class Game(BaseModel):
     location = models.CharField(max_length=256, default='Tompkins Square Park')
     court = models.CharField(max_length=8, choices=COURTS)
     type = models.CharField(max_length=8, choices=TYPES, default=REGULAR)
+
+    objects = GameManager.from_queryset(GameQuerySet)()
 
     @property
     def teams(self):

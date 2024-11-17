@@ -54,6 +54,9 @@ class GameAdmin(BaseModelAdmin):
     readonly_fields = ('end',)
     inlines = [GameGoalInline, GameRefereeInline, GamePlayerInline]
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).with_scores()
+
 
 @admin.register(GameReferee)
 class GameRefereeAdmin(BaseModelAdmin):
