@@ -10,14 +10,13 @@ class GameQuerySet(models.QuerySet):
             winning_team_id=Case(
                 When(home_team_num_goals__gt=F('away_team_num_goals'), then=F('home_team')),
                 When(home_team_num_goals__lt=F('away_team_num_goals'), then=F('away_team')),
-                default=Value(None),
+                When(home_team_num_goals=F('away_team_num_goals'), then=Value(None)),  # Tie
             ),
             losing_team_id=Case(
                 When(winning_team_id=F('home_team'), then=F('away_team')),
                 When(winning_team_id=F('away_team'), then=F('home_team')),
-                default=Value(None),
+                When(winning_team_id=None, then=Value(None)),  # Tie
             ),
-            # TODO handle ties, ot, so
         )
 
 
