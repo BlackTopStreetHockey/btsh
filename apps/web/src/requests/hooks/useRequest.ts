@@ -24,7 +24,7 @@ const promiseRequest = ({
   controller = undefined,
 }: RequestOptions) => {
   const promise = new Promise((resolve, reject) => {
-    const url = `${process.env.API_URL}/api/${route}`;
+    const url = `${process.env.API_URL}/api/${route}/`;
     const args = !!params
       ? `?${new URLSearchParams(params as Record<string, string>).toString()}`
       : "";
