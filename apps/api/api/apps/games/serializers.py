@@ -16,6 +16,8 @@ class GameReadOnlySerializer(BaseReadOnlyModelSerializer):
     away_team_num_goals = serializers.IntegerField()
     winning_team_id = serializers.PrimaryKeyRelatedField(queryset=Team.objects.all())
     losing_team_id = serializers.PrimaryKeyRelatedField(queryset=Team.objects.all())
+    result = serializers.CharField()
+    get_result_display = serializers.CharField()
 
     class Meta(BaseReadOnlyModelSerializer.Meta):
         model = Game
@@ -23,6 +25,7 @@ class GameReadOnlySerializer(BaseReadOnlyModelSerializer):
             'game_day', 'start', 'duration', 'end', 'home_team', 'away_team',
             'location', 'court', 'get_court_display', 'type', 'get_type_display', 'home_team_num_goals',
             'away_team_num_goals', 'winning_team_id', 'losing_team_id', 'status', 'get_status_display',
+            'home_team_display', 'away_team_display', 'result', 'get_result_display',
         )
 
 

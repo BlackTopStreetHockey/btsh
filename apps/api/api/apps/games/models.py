@@ -35,6 +35,12 @@ class GameDay(BaseModel):
         return format_datetime(self.day)
 
 
+class GameResultsEnum(models.TextChoices):
+    FINAL = 'final', 'Final'
+    FINAL_OT = 'final_ot', 'Final/OT'
+    FINAL_SO = 'final_so', 'Final/SO'
+
+
 class Game(BaseModel):
     EAST = 'east'
     WEST = 'west'
@@ -76,9 +82,32 @@ class Game(BaseModel):
 
     objects = GameManager.from_queryset(GameQuerySet)()
 
+    def _get_team_display(self, team: Team, num_goals: int):
+        if self.status != Game.COMPLETED:
+            return team.name
+
+        win_loss_tie = None
+        if self.winning_team_id == team.id:
+            win_loss_tie = 'W'
+        elif self.losing_team_id == team.id:
+            win_loss_tie = 'L'
+        elif self.winning_team_id is None and self.losing_team_id is None:
+            win_loss_tie = 'T'
+
+        team_display = f'{team.name} ({num_goals})'
+        return f'{team_display} - {win_loss_tie}' if win_loss_tie else team_display
+
     @property
     def teams(self):
         return [self.home_team, self.away_team]
+
+    @property
+    def home_team_display(self):
+        return self._get_team_display(self.home_team, self.home_team_num_goals)
+
+    @property
+    def away_team_display(self):
+        return self._get_team_display(self.away_team, self.away_team_num_goals)
 
     def __str__(self):
         return f'{self.game_day} {self.start.strftime("%I:%M%p")} {self.home_team.name} vs. {self.away_team.name}'
