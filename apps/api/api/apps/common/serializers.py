@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
 from common.models import BASE_MODEL_FIELDS
-from users.serializers import UserReadOnlySerializer
 
 
 class DynamicFieldsModelSerializerMixin:
@@ -22,9 +21,6 @@ class DynamicFieldsModelSerializerMixin:
 
 
 class BaseReadOnlyModelSerializer(DynamicFieldsModelSerializerMixin, serializers.ModelSerializer):
-    created_by = UserReadOnlySerializer()
-    updated_by = UserReadOnlySerializer()
-
     class Meta:
         fields = (*BASE_MODEL_FIELDS, 'id')
         read_only_fields = (*BASE_MODEL_FIELDS,)

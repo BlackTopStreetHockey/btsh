@@ -1,6 +1,6 @@
 from django_filters import rest_framework as filters
 
-from .models import Game, GameDay
+from .models import Game, GameDay, GameGoal, GamePlayer, GameReferee
 
 
 class GameDayFilterSet(filters.FilterSet):
@@ -20,3 +20,27 @@ class GameFilterSet(filters.FilterSet):
         fields = (
             'game_day', 'start', 'duration', 'end', 'home_team', 'away_team', 'location', 'court', 'game_day__season'
         )
+
+
+class GameRefereeFilterSet(filters.FilterSet):
+    game = filters.ModelChoiceFilter(queryset=Game.objects.all().select_related('game_day', 'home_team', 'away_team'))
+
+    class Meta:
+        model = GameReferee
+        fields = ('game', 'type',)
+
+
+class GamePlayerFilterSet(filters.FilterSet):
+    game = filters.ModelChoiceFilter(queryset=Game.objects.all().select_related('game_day', 'home_team', 'away_team'))
+
+    class Meta:
+        model = GamePlayer
+        fields = ('game', 'team', 'is_substitute', 'is_goalie',)
+
+
+class GameGoalFilterSet(filters.FilterSet):
+    game = filters.ModelChoiceFilter(queryset=Game.objects.all().select_related('game_day', 'home_team', 'away_team'))
+
+    class Meta:
+        model = GameGoal
+        fields = ('game', 'team', 'period',)

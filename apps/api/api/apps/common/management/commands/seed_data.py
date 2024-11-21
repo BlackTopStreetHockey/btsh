@@ -6,13 +6,17 @@ from django.core.files import File
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from django.utils.text import slugify
+from mimesis import Person
 
 from divisions.models import Division
 from games.models import Game, GameDay
 from seasons.models import Season
 from teams.models import Team
 from users.models import User
+from .utils import get_default_created_by, get_or_create, print_separator
 
+
+person = Person()
 
 CURRENT_YEAR = timezone.now().date().year
 YEAR_DIFF = 2
@@ -54,35 +58,18 @@ def get_sundays_for_date_range(start_date, end_date):
     return sundays
 
 
-def get_or_create(cls, get_kwargs, create_kwargs):
-    try:
-        obj = cls.objects.get(**get_kwargs)
-        created = False
-    except cls.DoesNotExist:
-        obj = cls(**create_kwargs)
-        obj.full_clean()
-        obj.save()
-        created = True
-    print(f'[{cls._meta.verbose_name}] {obj} {"created" if created else "already exists"}.')
-    return obj, created
-
-
-def print_separator():
-    print()
-    print('*' * 50)
-    print()
-
-
 class Command(BaseCommand):
     help = 'Seed data for local development purposes.'
 
-    def handle(self, *args, **options):
-        users = User.objects.filter(is_superuser=True)
-        if not users.exists():
-            print('Please create a superuser to continue.')
-            return
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--seed-users', action='store_true', help='Seed users that can be used for game refs, game players, etc.'
+        )
 
-        created_by = users.first()
+    def handle(self, *args, **options):
+        seed_users = options.get('seed_users')
+
+        created_by = get_default_created_by()
         divisions = []
         seasons = []
         teams = []
@@ -126,9 +113,36 @@ class Command(BaseCommand):
 
         print_separator()
 
+        if seed_users:
+            print(f'Seeding users.')
+            num_users = len(teams) * 20  # Assume 20ish users per team
+            users = []
+            for i in range(num_users):
+                email = person.email(unique=True, domains=['btsh.org'])
+                first_name = person.first_name()
+                last_name = person.last_name()
+
+                user, _ = get_or_create(
+                    User,
+                    get_kwargs={'pk': None},
+                    create_kwargs={
+                        'username': email,
+                        'email': email,
+                        'first_name': first_name,
+                        'last_name': last_name,
+                    },
+                    exclude=['password'],
+                )
+                users.append(user)
+
+            print(f'Seeded {len(users)} users.')
+
+        print_separator()
+
         for season in seasons:
             sundays = get_sundays_for_date_range(season.start, season.end)
             num_games_per_day = 10
+            playoff_start_date = datetime.date(year=season.year, month=10, day=1)
 
             print(f'Seeding game days and games for {season}.')
             for sunday in sundays:
@@ -161,6 +175,7 @@ class Command(BaseCommand):
                     start_offset = offsets[game_number]
                     start = datetime.time(hour=start_hour + start_offset, minute=0)
                     court = Game.EAST if game_number % 2 == 0 else Game.WEST
+                    game_type = Game.REGULAR if game_day.day <= playoff_start_date else Game.PLAYOFF
                     game, _ = get_or_create(
                         Game,
                         get_kwargs={
@@ -175,6 +190,7 @@ class Command(BaseCommand):
                             'home_team': home_team,
                             'away_team': away_team,
                             'court': court,
+                            'type': game_type,
                             'created_by': created_by,
                         },
                     )

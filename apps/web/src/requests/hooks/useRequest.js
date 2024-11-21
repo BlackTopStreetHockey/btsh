@@ -10,7 +10,7 @@ const promiseRequest = ({
   controller=undefined
 }) => {
   const promise = new Promise((resolve, reject) => {
-    const url = `${process.env.API_URL}/api/${route}`;
+    const url = `${process.env.API_URL}/api/${route}/`;
     const args = !!params ? `?${new URLSearchParams(params).toString()}` : '';
     fetch(`${url}${args}`, {
       method,
