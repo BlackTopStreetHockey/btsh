@@ -16,7 +16,7 @@ export default function TeamName({
   );
   if (link) {
     return (
-      <Link href={`/teams/${team.id}`}>
+      <Link href={`/teams/${team.short_name}`}>
         {content}
       </Link>
     )
