@@ -22,7 +22,7 @@ class GameReadOnlySerializer(BaseReadOnlyModelSerializer):
         fields = BaseReadOnlyModelSerializer.Meta.fields + (
             'game_day', 'start', 'duration', 'end', 'home_team', 'away_team',
             'location', 'court', 'get_court_display', 'type', 'get_type_display', 'home_team_num_goals',
-            'away_team_num_goals', 'winning_team_id', 'losing_team_id',
+            'away_team_num_goals', 'winning_team_id', 'losing_team_id', 'status', 'get_status_display',
         )
 
 

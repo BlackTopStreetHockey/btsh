@@ -50,6 +50,15 @@ class Game(BaseModel):
         PLAYOFF: 'Playoff',
     }
 
+    SCHEDULED = 'scheduled'
+    CANCELLED = 'cancelled'
+    COMPLETED = 'completed'
+    STATUSES = {
+        SCHEDULED: 'Scheduled',
+        CANCELLED: 'Cancelled',
+        COMPLETED: 'Completed',
+    }
+
     game_day = models.ForeignKey(GameDay, on_delete=models.PROTECT, related_name='games')
     start = models.TimeField()
     duration = models.DurationField(default=default_game_duration)
@@ -63,6 +72,7 @@ class Game(BaseModel):
     location = models.CharField(max_length=256, default='Tompkins Square Park')
     court = models.CharField(max_length=8, choices=COURTS)
     type = models.CharField(max_length=8, choices=TYPES, default=REGULAR)
+    status = models.CharField(max_length=16, choices=STATUSES, default=SCHEDULED)
 
     objects = GameManager.from_queryset(GameQuerySet)()
 
