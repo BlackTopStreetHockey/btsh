@@ -121,6 +121,7 @@ class Command(BaseCommand):
                 email = person.email(unique=True, domains=['btsh.org'])
                 first_name = person.first_name()
                 last_name = person.last_name()
+                gender = random.choice(list(User.GENDERS.keys()))
 
                 user, _ = get_or_create(
                     User,
@@ -130,6 +131,7 @@ class Command(BaseCommand):
                         'email': email,
                         'first_name': first_name,
                         'last_name': last_name,
+                        'gender': gender,
                     },
                     exclude=['password'],
                 )
