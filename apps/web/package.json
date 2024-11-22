@@ -32,6 +32,7 @@
     "lucide-react": "^0.446.0",
     "next": "14.2.13",
     "next-auth": "^4.24.8",
+    "quantize": "^1.0.2",
     "react": "^18",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18",
@@ -40,6 +41,7 @@
   },
   "devDependencies": {
     "@types/node": "^20",
+    "@types/quantize": "^1.0.2",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",

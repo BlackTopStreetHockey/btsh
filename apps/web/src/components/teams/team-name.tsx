@@ -1,6 +1,5 @@
 import Link from "next/link";
-
-
+import Image from "next/image";
 export default function TeamName({ 
   team,
   link 
@@ -10,7 +9,7 @@ export default function TeamName({
 }) {
   const content = (
     <div className="flex flex-row gap-2">
-      <img src={team.logo} alt={team.name} width={24} height={24} className='rounded' />
+      <Image src={team.logo} alt={team.name} width={24} height={24} className='rounded' />
       <div className="text-sm">{team.name}</div>
     </div>
   );

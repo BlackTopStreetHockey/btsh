@@ -5,11 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { Instagram, ArrowLeft } from "lucide-react";
 
+import useImageColor from "@/hooks/useImageColor";
 import { getContrastingColor } from "@/lib/utils";
 
-import { useDivisions } from "@/requests/hooks/useDivisions";
-import { useSeasons } from "@/requests/hooks/useSeasons";
-import { useTeams } from "@/requests/hooks/useTeams";
+import { useDivisions } from "@/hooks/requests/useDivisions";
+import { useSeasons } from "@/hooks/requests/useSeasons";
+import { useTeams } from "@/hooks/requests/useTeams";
 
 export default function TeamPage() {
   const { team } = useParams();
@@ -19,6 +20,13 @@ export default function TeamPage() {
   const { data: divisions } = useDivisions({});
   const { data: seasons } = useSeasons({});
 
+  const { colors } = useImageColor(data?.logo, {
+    colors: 2,
+    cors: true,
+    format: "hex",
+  });
+
+  console.log("colors:", colors);
   console.log("divisions:", divisions);
   console.log("seasons:", seasons);
 
@@ -75,29 +83,43 @@ export default function TeamPage() {
                 <h3 className="text-lg font-semibold mb-2">Team Colors</h3>
               )}
               <div className="flex gap-2">
-                {data.jersey_colors?.map((color: string, index: number) => (
-                  <span
-                    key={index}
-                    className="px-3 py-1 rounded-full text-sm border"
-                    style={{
-                      backgroundColor: color,
-                      color: getContrastingColor(color),
-                    }}
-                  >
-                    {!color.startsWith("#") ? (
-                      <span
-                        style={{
-                          filter: "invert(1)",
-                          mixBlendMode: "difference",
-                        }}
-                      >
-                        {color}
-                      </span>
-                    ) : (
-                      color
-                    )}
-                  </span>
-                ))}
+                {colors &&
+                  colors.map((color: string, index: number) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 rounded-full text-sm border"
+                      style={{
+                        backgroundColor: color,
+                        color: getContrastingColor(color),
+                      }}
+                    >
+                      {color}
+                    </span>
+                  ))}
+                {data.jersey_colors &&
+                  data.jersey_colors.map((color: string, index: number) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 rounded-full text-sm border"
+                      style={{
+                        backgroundColor: color,
+                        color: getContrastingColor(color),
+                      }}
+                    >
+                      {!color.startsWith("#") ? (
+                        <span
+                          style={{
+                            filter: "invert(1)",
+                            mixBlendMode: "difference",
+                          }}
+                        >
+                          {color}
+                        </span>
+                      ) : (
+                        color
+                      )}
+                    </span>
+                  ))}
               </div>
             </div>
 
