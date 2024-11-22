@@ -1,4 +1,4 @@
-import { useSeasons } from "@/requests/hooks/useSeasons";
+import { useSeasons } from "@/hooks/requests/useSeasons";
 import { useSelect } from "../ui/hooks/useSelect"
 
 
