@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
 import Image from "next/image";
 
 type Period = "1st" | "2nd" | "3rd" | "OT" | "SO";
@@ -146,7 +147,6 @@ export function Scoreboard({
             </Button>
           </div>
         </div>
-
         <div className="flex flex-col items-center">
           <Image
             className="mb-2 rounded-full"

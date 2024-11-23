@@ -27,21 +27,33 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { teams } from "@/data/teams";
 
+const courts = ["West", "East"];
+
 export default function GameDetails({
   date,
   setDate,
   setHomeTeam,
   setAwayTeam,
+  setCourt,
+  stringRef = "",
+  setStringRef,
+  fenceRef = "",
+  setFenceRef,
 }: {
   date?: Date;
   setDate: (date: Date) => void;
   setHomeTeam: (team: Team) => void;
   setAwayTeam: (team: Team) => void;
+  setCourt: (court: string) => void;
+  stringRef: string;
+  setStringRef: (ref: string) => void;
+  fenceRef: string;
+  setFenceRef: (ref: string) => void;
 }) {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline">Open Game Details</Button>
+        <Button variant="outline">&larr; Open Game Details</Button>
       </SheetTrigger>
       <SheetContent>
         <SheetHeader>
@@ -55,13 +67,23 @@ export default function GameDetails({
             <Label htmlFor="ref1" className="text-right">
               String Referee
             </Label>
-            <Input id="ref1" value="Alex M" className="col-span-3" />
+            <Input
+              id="ref1"
+              value={stringRef}
+              onChange={(e) => setStringRef(e.target.value)}
+              className="col-span-3"
+            />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="ref2" className="text-right">
               Fence Referee
             </Label>
-            <Input id="ref2" value="Zac H" className="col-span-3" />
+            <Input
+              id="ref2"
+              value={fenceRef}
+              onChange={(e) => setFenceRef(e.target.value)}
+              className="col-span-3"
+            />
           </div>
 
           <div className="grid grid-cols-4 items-center gap-4">
@@ -70,6 +92,32 @@ export default function GameDetails({
             </Label>
             <Input id="time" value="12:00PM" className="col-span-3" />
           </div>
+
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="court" className="text-right">
+              Court
+            </Label>
+            <div className="col-span-3">
+              <Select
+                defaultValue={"West"}
+                onValueChange={(value) => {
+                  setCourt(value);
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Court" />
+                </SelectTrigger>
+                <SelectContent>
+                  {courts.map((court) => (
+                    <SelectItem key={court} value={court}>
+                      {court}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="awayTeam" className="text-right">
               Away Team
@@ -132,7 +180,9 @@ export default function GameDetails({
           <Calendar
             mode="single"
             selected={date}
-            onSelect={(newDate: Date | undefined) => newDate && setDate(newDate)}
+            onSelect={(newDate: Date | undefined) =>
+              newDate && setDate(newDate)
+            }
             className="flex rounded-md border justify-center items-center"
           />
 
