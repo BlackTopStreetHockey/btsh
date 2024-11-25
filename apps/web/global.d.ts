@@ -117,6 +117,31 @@ interface NestedGameDay {
   closing_team: NestedTeam;
 }
 
+interface GamePlayer {
+  id: number;
+  game: Game;
+  user: User;
+  team: Team;
+  is_substitute: boolean;
+  is_goalie: boolean;
+}
+
+interface GameReferee {
+  id: number;
+  game: Game;
+  user: User;
+  type: string;
+}
+
+interface GameGoal {
+  id: number;
+  game: Game;
+  team: Team;
+  period: string;
+  scored_by: GamePlayer;
+  assisted_by1: GamePlayer;
+  assisted_by2: GamePlayer;
+}
 interface Game {
   id: number;
   game_day: NestedGameDay;
@@ -176,3 +201,4 @@ interface GameGoal {
   assisted_by1?: GamePlayer;
   assisted_by2?: GamePlayer;
 }
+
