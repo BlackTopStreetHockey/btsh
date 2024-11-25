@@ -8,7 +8,6 @@ import BTSHNavLinkList from "./btsh-nav-link-list";
 
 export default function BTSHTopbar({}) {
   const [open, setOpen] = useState(false);
-  console.log('rendering topbar', open)
   return (
     // justify contet space between
     <div>
