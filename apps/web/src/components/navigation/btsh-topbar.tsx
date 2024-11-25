@@ -13,7 +13,7 @@ export default function BTSHTopbar({}) {
     <div>
       <div className="h-16 w-screen bg-gray-800 text-white fixed top-0 left-0 p-2 shadow-b-md">
         <div className='flex flex-row items-center justify-between'>
-          <BTSHLogo />
+          <BTSHLogo row/>
           <button 
             className="inline-flex items-center justify-center p-2 w-10 h-10 text-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-200"
             onClick={() => setOpen(!open)}
