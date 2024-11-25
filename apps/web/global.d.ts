@@ -28,10 +28,6 @@ interface Division {
   name: string;
 }
 
-interface Game {
-  id: number;
-}
-
 interface GameDay {
   id: number;
   day: Date;
@@ -41,6 +37,31 @@ interface GameDay {
   games: Game[];
 }
 
+interface GamePlayer {
+  id: number;
+  game: Game;
+  user: User;
+  team: Team;
+  is_substitute: boolean;
+  is_goalie: boolean;
+}
+
+interface GameReferee {
+  id: number;
+  game: Game;
+  user: User;
+  type: string;
+}
+
+interface GameGoal {
+  id: number;
+  game: Game;
+  team: Team;
+  period: string;
+  scored_by: GamePlayer;
+  assisted_by1: GamePlayer;
+  assisted_by2: GamePlayer;
+}
 interface Game {
   id: number;
   start: Date;
@@ -51,5 +72,16 @@ interface Game {
   location: string;
   court: string;
   get_court_display: string;
+  get_status_display: string;
+  get_type_display: string;
+  status: string;
   game_day?: GameDay;
+  home_team_num_goals: number;
+  away_team_num_goals: number;
+  winning_team_id: number;
+  losing_team_id: number;
+  goals: GameGoal[];
+  players: GamePlayer[];
+  referees: GameReferee[];
 }
+
