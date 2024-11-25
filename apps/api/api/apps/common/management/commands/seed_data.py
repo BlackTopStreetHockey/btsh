@@ -10,7 +10,7 @@ from mimesis import Person
 
 from divisions.models import Division
 from games.models import Game, GameDay
-from seasons.models import Season
+from seasons.models import Season, SeasonRegistration
 from teams.models import Team
 from users.models import User
 from .utils import get_default_created_by, get_or_create, print_separator
@@ -20,6 +20,7 @@ person = Person()
 
 CURRENT_YEAR = timezone.now().date().year
 YEAR_DIFF = 2
+USERS_PER_TEAM = 20
 
 DIVISIONS = ['Division 1', 'Division 2', 'Division 3', 'Division 4']
 SEASONS = list(range(CURRENT_YEAR - YEAR_DIFF, CURRENT_YEAR + YEAR_DIFF))
@@ -58,6 +59,11 @@ def get_sundays_for_date_range(start_date, end_date):
     return sundays
 
 
+def chunks(lst, n):
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
+
+
 class Command(BaseCommand):
     help = 'Seed data for local development purposes.'
 
@@ -65,9 +71,13 @@ class Command(BaseCommand):
         parser.add_argument(
             '--seed-users', action='store_true', help='Seed users that can be used for game refs, game players, etc.'
         )
+        parser.add_argument(
+            '--seed-season-registrations', action='store_true', help='Seed user season registrations.'
+        )
 
     def handle(self, *args, **options):
         seed_users = options.get('seed_users')
+        seed_season_registrations = options.get('seed_season_registrations')
 
         created_by = get_default_created_by()
         divisions = []
@@ -115,7 +125,7 @@ class Command(BaseCommand):
 
         if seed_users:
             print(f'Seeding users.')
-            num_users = len(teams) * 20  # Assume 20ish users per team
+            num_users = len(teams) * USERS_PER_TEAM  # Assume 20ish users per team
             users = []
             for i in range(num_users):
                 email = person.email(unique=True, domains=['btsh.org'])
@@ -138,8 +148,34 @@ class Command(BaseCommand):
                 users.append(user)
 
             print(f'Seeded {len(users)} users.')
+            print_separator()
 
-        print_separator()
+        # TODO clean this up when we tie teams to divisions + seasons, can seed all of that data at once
+        if seed_season_registrations:
+            print('Seeding user season registrations.')
+            chunked_users = list(chunks(User.objects.all(), USERS_PER_TEAM))
+            season = Season.objects.order_by('start').first()
+            for i, team in enumerate(teams):
+                team_users = chunked_users[i]
+                for team_user in team_users:
+                    get_or_create(
+                        SeasonRegistration,
+                        get_kwargs={'user': team_user, 'team': team, 'season': season},
+                        create_kwargs={
+                            'user': team_user,
+                            'season': season,
+                            'team': team,
+                            'is_captain': random.randint(0, 20) % 3 == 0,
+                            'position': random.choice(list(SeasonRegistration.POSITIONS.keys())),
+                            'signature': team_user.get_full_name(),
+                            'location': random.choice(list(SeasonRegistration.LOCATIONS.keys())),
+                            'interested_in': None,
+                            'mid_season_party_ideas': None,
+                        }
+                    )
+
+            print('Seeded user season registrations.')
+            print_separator()
 
         for season in seasons:
             sundays = get_sundays_for_date_range(season.start, season.end)
