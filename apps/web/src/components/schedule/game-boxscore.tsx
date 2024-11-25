@@ -11,7 +11,7 @@ export default function GameBoxscore({ game }: { game: Game }) {
   return (
     <div>
       <Link href={`/games/${game.id}`} className='block rounded-md shadow-sm border w-80'>
-        <div className="flex flex-row gap-3 p-1">
+        <div className="flex flex-row gap-3 p-1 items-center">
           <div>
             <div className="text-sm text-gray-400">{startTime}</div>
             <div className='text-gray-400 text-sm'>{game.get_court_display}</div>
