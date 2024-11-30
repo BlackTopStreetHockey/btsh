@@ -8,7 +8,7 @@ import { useTeams } from "@/requests/hooks/useTeams";
 import { useSeasons } from "@/requests/hooks/useSeasons";
 import { useDivisions } from "@/requests/hooks/useDivisions";
 export default function SchedulePage() {
-  const { teams, placeholder, error } = useTeams({});
+  const { teams } = useTeams({});
   const { seasons } = useSeasons({});
   const { divisions } = useDivisions({});
 

@@ -5,6 +5,7 @@ interface User {
   full_name: string;
   date_joined: string;
 }
+
 interface Team {
   id: number;
   name: string;
