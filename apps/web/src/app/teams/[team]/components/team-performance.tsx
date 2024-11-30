@@ -3,21 +3,26 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Bar, BarChart, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
-
 const goalData = [
-  { month: "Oct", goalsFor: 45, goalsAgainst: 30 },
-  { month: "Nov", goalsFor: 52, goalsAgainst: 35 },
-  { month: "Dec", goalsFor: 48, goalsAgainst: 40 },
-  { month: "Jan", goalsFor: 55, goalsAgainst: 38 },
-  { month: "Feb", goalsFor: 50, goalsAgainst: 32 },
+  { month: "Mar", goalsFor: 22, goalsAgainst: 15 },
+  { month: "Apr", goalsFor: 25, goalsAgainst: 17 },
+  { month: "May", goalsFor: 28, goalsAgainst: 20 },
+  { month: "Jun", goalsFor: 32, goalsAgainst: 22 },
+  { month: "Jul", goalsFor: 35, goalsAgainst: 25 },
+  { month: "Aug", goalsFor: 14, goalsAgainst: 18 },
+  { month: "Sep", goalsFor: 2, goalsAgainst: 4 },
+  { month: "Oct", goalsFor: 0, goalsAgainst: 0 },
 ]
 
 const winLossData = [
-  { month: "Oct", wins: 8, losses: 4 },
-  { month: "Nov", wins: 10, losses: 3 },
-  { month: "Dec", wins: 7, losses: 6 },
-  { month: "Jan", wins: 11, losses: 2 },
-  { month: "Feb", wins: 9, losses: 3 },
+  { month: "Mar", wins: 2, losses: 2 },
+  { month: "Apr", wins: 4, losses: 0 },
+  { month: "May", wins: 3, losses: 1 },
+  { month: "Jun", wins: 3, losses: 1 },
+  { month: "Jul", wins: 1, losses: 3 },
+  { month: "Aug", wins: 2, losses: 2 },
+  { month: "Sep", wins: 1, losses: 1 },
+  { month: "Oct", wins: 0, losses: 0 },
 ]
 
 export function TeamPerformance() {
@@ -63,7 +68,7 @@ export function TeamPerformance() {
           <CardDescription>Key performance indicators</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
             <div className="flex flex-col items-center">
               <span className="text-2xl font-bold text-blue-600">3.5</span>
               <span className="text-sm text-gray-500">Goals/Game</span>
@@ -75,10 +80,6 @@ export function TeamPerformance() {
             <div className="flex flex-col items-center">
               <span className="text-2xl font-bold text-green-600">54.5%</span>
               <span className="text-sm text-gray-500">Shootout %</span>
-            </div>
-            <div className="flex flex-col items-center">
-              <span className="text-2xl font-bold text-yellow-600">2.3</span>
-              <span className="text-sm text-gray-500">GAA</span>
             </div>
           </div>
         </CardContent>

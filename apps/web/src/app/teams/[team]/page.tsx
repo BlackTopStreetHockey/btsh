@@ -43,7 +43,7 @@ export default function TeamPage() {
 
             <div className="grid gap-8 md:grid-cols-3">
               <div className="md:col-span-2">
-                <TeamRoster />
+                <TeamRoster team={data.name} />
               </div>
               <div>
                 <TeamSchedule />

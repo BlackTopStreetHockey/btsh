@@ -10,8 +10,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { mockPlayers } from "@/data/__mocks__/players";
 
 type SortField =
   | "number"
@@ -24,103 +25,12 @@ type SortField =
   | "points";
 type SortDirection = "asc" | "desc";
 
-export function TeamRoster() {
+export function TeamRoster({ team }: { team: string }) {
   const [sortField, setSortField] = useState<SortField>("number");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
   // Mock data - replace with actual data from API
-  const players: Player[] = [
-    {
-      number: 97,
-      name: "Connor McDavid",
-      gender: "M",
-      position: "F",
-      gp: 78,
-      goals: 64,
-      assists: 89,
-      points: 153,
-    },
-    {
-      number: 29,
-      name: "Leon Draisaitl",
-      gender: "M",
-      position: "F",
-      gp: 78,
-      goals: 52,
-      assists: 76,
-      points: 128,
-    },
-    {
-      number: 93,
-      name: "Ryan Nugent-Hopkins",
-      gender: "M",
-      position: "F",
-      gp: 78,
-      goals: 37,
-      assists: 67,
-      points: 104,
-    },
-    {
-      number: 25,
-      name: "Darnell Nurse",
-      gender: "M",
-      position: "D",
-      gp: 78,
-      goals: 12,
-      assists: 31,
-      points: 43,
-    },
-    {
-      number: 22,
-      name: "Tyson Barrie",
-      gender: "M",
-      position: "D",
-      gp: 78,
-      goals: 13,
-      assists: 42,
-      points: 55,
-    },
-    {
-      number: 19,
-      name: "Kailer Yamamoto",
-      gender: "W",
-      position: "F",
-      gp: 78,
-      goals: 26,
-      assists: 36,
-      points: 62,
-    },
-    {
-      number: 14,
-      name: "Jesse Puljujarvi",
-      gender: "W",
-      position: "D",
-      gp: 78,
-      goals: 22,
-      assists: 28,
-      points: 50,
-    },
-    {
-      number: 17,
-      name: "Zach Hyman",
-      gender: "W",
-      position: "W",
-      gp: 78,
-      goals: 21,
-      assists: 25,
-      points: 46,
-    },
-    {
-      number: 13,
-      name: "Hendrix Lundvist",
-      gender: "M",
-      position: "G",
-      gp: 78,
-      goals: 20,
-      assists: 23,
-      points: 43,
-    },
-  ];
+  const players = mockPlayers.filter((player) => player.team == team);
 
   const handleSort = (field: SortField) => {
     if (field === sortField) {
@@ -157,7 +67,7 @@ export function TeamRoster() {
       className="h-8 flex items-center gap-1"
     >
       {children}
-      <ArrowUpDown
+      <ArrowUp
         size={16}
         className={`
         transition-transform
@@ -178,10 +88,10 @@ export function TeamRoster() {
           <TableHeader>
             <TableRow>
               <TableHead>
-                <SortableHeader field="number">#</SortableHeader>
+                <SortableHeader field="name">Name</SortableHeader>
               </TableHead>
               <TableHead>
-                <SortableHeader field="name">Name</SortableHeader>
+                <SortableHeader field="number">#</SortableHeader>
               </TableHead>
               <TableHead>
                 <SortableHeader field="position">Position</SortableHeader>
@@ -196,24 +106,20 @@ export function TeamRoster() {
                 <SortableHeader field="goals">Goals</SortableHeader>
               </TableHead>
               <TableHead className="text-right">
-                <SortableHeader field="assists">Assists</SortableHeader>
-              </TableHead>
-              <TableHead className="text-right">
-                <SortableHeader field="points">Points</SortableHeader>
+                <SortableHeader field="assists">GAA</SortableHeader>
               </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {sortedPlayers.map((player) => (
-              <TableRow key={player.number}>
-                <TableCell className="text-center">{player.number}</TableCell>
+              <TableRow key={player.name}>
                 <TableCell>{player.name}</TableCell>
+                <TableCell className="text-center">{player.number}</TableCell>
                 <TableCell className="text-center">{player.position}</TableCell>
-                <TableCell className="text-center">{player.gender}</TableCell>
+                <TableCell className={`text-center ${player.gender === "M" ? "text-blue-600" : "text-pink-600"}`}>{player.gender}</TableCell>
                 <TableCell className="text-center">{player.gp}</TableCell>
                 <TableCell className="text-center">{player.goals}</TableCell>
-                <TableCell className="text-center">{player.assists}</TableCell>
-                <TableCell className="text-center">{player.points}</TableCell>
+                <TableCell className="text-center">{(player.goals && player.gp? Math.round(player.goals / player.gp * 100) / 100 : 0)}</TableCell>
               </TableRow>
             ))}
           </TableBody>

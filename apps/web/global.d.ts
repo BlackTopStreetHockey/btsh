@@ -21,13 +21,7 @@ interface Player {
   number?: number;
   position?: string;
   gp?: number;
-  g?: number;
-  a?: number;
-  pts?: number;
-  position?: string;
   goals?: number;
-  assists?: number;
-  points?: number;
 }
 
 interface Season {
