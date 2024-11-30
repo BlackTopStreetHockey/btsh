@@ -37,7 +37,7 @@ export function BoxScore({
                   width={24}
                   height={24}
                   className="rounded-full shadow-lg"
-                  src={event.player.team === homeTeam.name ? homeTeam.logoUrl || "" : awayTeam.logoUrl || ""}
+                  src={event.player.team === homeTeam.name ? homeTeam.logo || "" : awayTeam.logo || ""}
                   alt="Event Team"
                 />
               </span>
