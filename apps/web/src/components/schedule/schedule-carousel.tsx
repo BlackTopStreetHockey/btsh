@@ -7,30 +7,41 @@ import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
 
 interface GameTimeSlot {
-  start: string;
-  east: Game;
-  west: Game;
+  start: Date;
+  east: Game | null;
+  west: Game | null;
 }
 
 export default function ScheduleCarousel() {
-  const ref = useRef(null);
-  const { selectedSeason } = useSeasonSelect({ defaultActive: true });
-  const { data } = useGameDays({ season: selectedSeason?.id });
-  console.log(data);
-  const handleScroll = () => {
-    if (ref.current) {
-      ref.current.scroll += 100;
+  const viewportRef = useRef<HTMLDivElement>(null);
+
+
+  const clickHandler = (direction: "left" | "right") => {
+    console.log(">", viewportRef.current?.scrollLeft);
+    if (viewportRef !== null && viewportRef.current !== null) {
+      viewportRef.current.style.scrollBehavior = "smooth";
+      viewportRef.current.scrollLeft += direction === "left" ? -250 : 250;
     }
   };
 
+  const { selectedSeason } = useSeasonSelect({ defaultActive: true });
+  const { data } = useGameDays({ season: selectedSeason?.id });
+
+  console.log(data);
+
   const getGamesByTime = (games: Game[]) => {
     return games
-      .reduce((acc: any, game: Game) => {
-        let slot = acc.find((a: any) => a.start === game.start);
+      .reduce((acc: GameTimeSlot[], game: Game) => {
+        let slot = acc.find((a: GameTimeSlot) => a.start === game.start);
         if (!slot) {
-          slot = { start: game.start };
+          slot = {
+            start: game.start,
+            east: null,
+            west: null,
+          };
           acc.push(slot);
         }
         slot[game.court] = game;
@@ -43,15 +54,19 @@ export default function ScheduleCarousel() {
   };
 
   return (
-    <div>
-      <ScrollArea className="w-full h-36">
-        <div ref={ref} className="flex flex-row gap-1 overflow-x-hidden">
+    <div className="m-1">
+      <ScrollArea
+        viewportRef={viewportRef}
+        className="w-full h-36"
+        scrollHideDelay={100}
+      >
+        <div className="flex flex-row gap-1">
           {data?.results.map((gameDay: GameDay) => {
             const gamesByTime = getGamesByTime(gameDay.games);
             console.log(gamesByTime);
             return (
-              <div key={gameDay.id} className="flex flex-row rounded border shadow">
-                <div className="border h-32 flex flex-col justify-center">
+              <div key={gameDay.id} className="flex flex-row rounded-xl border">
+                <div className="h-full border-r flex flex-col justify-center">
                   <div className="text-xs font-bold text-center w-16">
                     <div>{formatDateNoTimezone(gameDay.day, "MMM do")}</div>
                     <div>{formatDateNoTimezone(gameDay.day, "y")}</div>
@@ -71,33 +86,34 @@ export default function ScheduleCarousel() {
                     <div className="text-xs text-center">
                       {formatTime(timeSlot.start, false)}
                     </div>
-                    <div className="flex flex-col gap-1">
-                      {[timeSlot.east, timeSlot.west].map((game: Game, i) => (
-                        <div
-                          key={game.id}
-                          className={`w-8 pb-1 ${i === 0 ? "border-b" : ""}`}
-                        >
-                          <Link
-                            href={`/games/${game.id}`}
-                            className="flex flex-col justify-center items-center rounded hover:shadow-inner-lg cursor-pointer"
-                          >
-                            <Image
-                              className="rounded"
-                              src={game.away_team.logo}
-                              alt={game.away_team.short_name}
-                              width={24}
-                              height={24}
-                            />
-                            <Image
-                              className="rounded"
-                              src={game.home_team.logo}
-                              alt={game.home_team.short_name}
-                              width={24}
-                              height={24}
-                            />
-                          </Link>
-                        </div>
-                      ))}
+                    <div className="flex flex-col divide-y">
+                      {[timeSlot.east, timeSlot.west].map(
+                        (game: Game | null) =>
+                          game && (
+                            <Link
+                              key={game.id}
+                              href={`/games/${game.id}`}
+                              className="w-8 py-1 flex flex-col gap-1 justify-center items-center cursor-pointer hover:bg-gray-400"
+                            >
+                              <Image
+                                className="rounded"
+                                src={game.away_team.logo}
+                                alt={game.away_team.short_name}
+                                width={24}
+                                height={24}
+                                loading="lazy"
+                              />
+                              <Image
+                                className="rounded"
+                                src={game.home_team.logo}
+                                alt={game.home_team.short_name}
+                                width={24}
+                                height={24}
+                                loading="lazy"
+                              />
+                            </Link>
+                          )
+                      )}
                     </div>
                   </div>
                 ))}
@@ -107,7 +123,10 @@ export default function ScheduleCarousel() {
         </div>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
-      <button onClick={() => handleScroll()}>Click</button>
+      <div className="flex flex-row gap-1">
+        <Button onClick={() => clickHandler("left")}>&larr;</Button>
+        <Button onClick={() => clickHandler("right")}>&rarr;</Button>
+      </div>
     </div>
   );
 }
