@@ -84,7 +84,7 @@ function useRequest({
 
   useEffect(() => {
     fetchData();
-  }, [skip, JSON.stringify(body), JSON.stringify(params), fetchData]);
+  }, [skip, JSON.stringify(body), JSON.stringify(params)]);
 
   return state;
 }
