@@ -1,4 +1,4 @@
-import { usePlaceholder, useRequest } from ".";
+import { usePlaceholder, useRequest } from "..";
 
 export const usePaginated = ({
   route,
