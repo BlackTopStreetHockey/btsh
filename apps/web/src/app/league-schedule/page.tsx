@@ -8,7 +8,6 @@ export default function Schedule() {
   const { select, selectedValue } = useSeasonSelect({ defaultActive: true });
   const { data, placeholder } = useGameDays({ season: selectedValue });
 
-
   return (
     <div>
       <div className="container p-2">

@@ -6,7 +6,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../dropdown-menu";
-import { ChevronDown } from "lucide-react";
 
 export type DropdownOptions = {
   label: string;
@@ -21,17 +20,15 @@ export type DropdownOptions = {
 export const useDropdownMenu = ({
   trigger,
   options,
-  showCaret = true,
 }: {
   trigger: React.ReactNode | JSX.Element | string;
   options: DropdownOptions[];
-  showCaret?: boolean;
 }) => {
   const dropdownMenu = (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <div className="cursor-pointer inline-block flex-row gap-2">
-          {trigger} {showCaret && <ChevronDown />}
+          {trigger}
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 
 type RequestParams =
   | Record<string, string[] | string | number | boolean | undefined>
@@ -64,7 +64,7 @@ function useRequest({
     error: undefined,
   });
 
-  const fetchData = useCallback(() => {
+  const fetchData = () => {
     if (skip) return;
     setState({ loading: true, data: undefined, error: undefined });
     const promise = promiseRequest({
@@ -80,11 +80,11 @@ function useRequest({
       .catch((err) => {
         setState({ loading: false, data: undefined, error: err });
       });
-  }, [body, params, skip, route, method]);
+  };
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+  }, [skip, JSON.stringify(body), JSON.stringify(params), fetchData]);
 
   return state;
 }

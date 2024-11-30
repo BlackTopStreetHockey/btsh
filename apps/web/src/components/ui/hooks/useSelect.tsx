@@ -24,7 +24,7 @@ export const useSelect = ({
     if (updateOnInitialChange) {
       setSelectedValue(initialSelectedValue);
     }
-  }, [initialSelectedValue, updateOnInitialChange])
+  }, [initialSelectedValue])
 
   const dropdownOptions = options?.map((o) => ({
     ...o,
