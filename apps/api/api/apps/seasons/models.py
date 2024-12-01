@@ -4,6 +4,7 @@ from django.utils import timezone
 
 from api.utils.datetime import format_datetime
 from common.models import BaseModel
+from seasons.managers import SeasonRegistrationManager, SeasonRegistrationQuerySet
 
 
 class Season(BaseModel):
@@ -92,6 +93,8 @@ class SeasonRegistration(BaseModel):
     location = models.CharField(max_length=16, choices=LOCATIONS)
     interested_in = models.TextField(null=True, blank=True)
     mid_season_party_ideas = models.TextField(null=True, blank=True)
+
+    objects = SeasonRegistrationManager.from_queryset(SeasonRegistrationQuerySet)()
 
     def clean(self):
         super().clean()
