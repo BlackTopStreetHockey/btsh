@@ -7,7 +7,9 @@ import { Scoreboard } from "@/components/scoreboard";
 import { BoxScore } from "@/components/box-score";
 import { Timer } from "@/components/timer";
 import GameDetails from "@/components/game-details";
+
 import { teams } from "@/data/teams";
+//import { useTeams } from "@/requests/hooks/useTeams";
 import { mockPlayers } from "@/data/__mocks__/players";
 
 type Period = "1st" | "2nd" | "3rd" | "OT" | "SO";
@@ -19,8 +21,9 @@ type GoalEvent = {
 };
 
 export default function RefPage() {
-  const [homeTeam, setHomeTeam] = useState<Team>(teams[9] as Team);
-  const [awayTeam, setAwayTeam] = useState<Team>(teams[10] as Team);
+  // const { teams } = useTeams({});
+  const [homeTeam, setHomeTeam] = useState<Team>(teams[9]);
+  const [awayTeam, setAwayTeam] = useState<Team>(teams[10]);
   const [goalEvents, setGoalEvents] = useState<GoalEvent[]>([]);
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [totalSeconds, setTotalSeconds] = useState(25 * 60); // 25 minutes
@@ -47,17 +50,19 @@ export default function RefPage() {
               <CardTitle>Scoresheet</CardTitle>
             </CardHeader>
             <CardContent>
-              <Scoreboard
-                homeTeam={homeTeam}
-                awayTeam={awayTeam}
-                goalEvents={goalEvents}
-                setGoalEvents={setGoalEvents}
-                players={mockPlayers}
-                totalSeconds={totalSeconds}
-                timeLeft={timeLeft}
-                period={period}
-                onTimeout={handleTimeout}
-              />
+              {homeTeam && awayTeam && (
+                <Scoreboard
+                  homeTeam={homeTeam}
+                  awayTeam={awayTeam}
+                  goalEvents={goalEvents}
+                  setGoalEvents={setGoalEvents}
+                  players={mockPlayers}
+                  totalSeconds={totalSeconds}
+                  timeLeft={timeLeft}
+                  period={period}
+                  onTimeout={handleTimeout}
+                />
+              )}
             </CardContent>
           </Card>
 

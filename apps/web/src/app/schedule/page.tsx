@@ -173,12 +173,14 @@ export default function HockeyLeagueSchedule() {
               onMonthChange={setCurrentMonth}
               className="rounded-md border"
               components={{
-                day: ({ date, ...props }) => (
-                  <div {...props} className={`relative ${props.className}`}>
-                    {props.children}
+                day: ({ date, ...props }) => {
+                  console.log("date:", date);
+                  return (
+                    <div {...props} className={`relative ${props.className}`}>
+                      {props.children}
                     <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-500 rounded-full" />
                   </div>
-                ),
+                )},
               }}
             />
           </CardContent>

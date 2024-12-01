@@ -104,8 +104,8 @@ export function Scoreboard({
         <div className="flex flex-col items-center">
           <Image
             className="mb-2 rounded-full"
-            src={homeTeam?.logoUrl || "/teams/btsh.jpg"}
-            alt={homeTeam?.name || "BTSH"}
+            src={homeTeam.logo || "/teams/btsh.jpg"}
+            alt={homeTeam.name || "BTSH"}
             width={48}
             height={48}
           />
@@ -150,7 +150,7 @@ export function Scoreboard({
         <div className="flex flex-col items-center">
           <Image
             className="mb-2 rounded-full"
-            src={awayTeam?.logoUrl || "/teams/btsh.jpg"}
+            src={awayTeam.logo || "/teams/btsh.jpg"}
             alt={awayTeam?.name || "BTSH"}
             width={48}
             height={48}

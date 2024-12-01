@@ -1,7 +1,6 @@
 "use client";
 
 import TeamName from "../teams/team-name";
-import { Card } from "../ui/card";
 import { formatTime } from "@/lib/dates";
 
 export default function Game({ game }: { game: Game }) {

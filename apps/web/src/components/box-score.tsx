@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-
+import { formatSeconds } from "@/lib/dates";
 type Period = "1st" | "2nd" | "3rd" | "OT" | "SO";
 
 type Player = {
@@ -26,14 +26,6 @@ export function BoxScore({
   homeTeam: Team;
   awayTeam: Team;
 }) {
-  const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes.toString().padStart(2, "0")}:${remainingSeconds
-      .toString()
-      .padStart(2, "0")}`;
-  };
-
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="w-full max-w-md">
@@ -45,13 +37,13 @@ export function BoxScore({
                   width={24}
                   height={24}
                   className="rounded-full shadow-lg"
-                  src={event.player.team === homeTeam.name ? homeTeam.logoUrl || "" : awayTeam.logoUrl || ""}
+                  src={event.player.team === homeTeam.name ? homeTeam.logo || "" : awayTeam.logo || ""}
                   alt="Event Team"
                 />
               </span>
               <div className="items-center justify-between p-4 bg-white border border-gray-200 rounded-lg shadow-sm sm:flex dark:bg-gray-700 dark:border-gray-600">
                 <time className="mb-1 text-xs font-normal text-gray-400 sm:order-last sm:mb-0">
-                  {formatTime(event.time)} - {event.period}
+                  {formatSeconds(event.time)} - {event.period}
                 </time>
                 <div className="text-sm font-normal text-gray-500 dark:text-gray-300">
                   <span className="font-semibold text-blue-600 dark:text-blue-500">

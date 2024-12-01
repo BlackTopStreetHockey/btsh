@@ -2,15 +2,11 @@
 
 import GameDay from "@/components/schedule/game-day";
 import { useSeasonSelect } from "@/components/schedule/useSeasonSelect";
-import { Button } from "@/components/ui/button";
-import { useDropdownMenu } from "@/components/ui/hooks/useDropdownMenu";
-import { useSelect } from "@/components/ui/hooks/useSelect";
-import { useGameDays } from "@/hooks/requests/useGameDays";
+import { useGameDays } from "@/requests/hooks/useGameDays";
 
 export default function Schedule() {
   const { select, selectedValue } = useSeasonSelect({ defaultActive: true });
   const { data, placeholder } = useGameDays({ season: selectedValue });
-
 
   return (
     <div>
