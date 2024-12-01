@@ -1,5 +1,5 @@
 import formatDateNoTimezone from "@/lib/dates";
-import Game from "./game";
+import GameBoxscore from "./game-boxscore";
 import { GAME_COURTS } from "@/constants/games";
 import Link from "next/link";
 export default function GameDay({ gameDay }: { gameDay: GameDay }) {
@@ -39,7 +39,7 @@ export default function GameDay({ gameDay }: { gameDay: GameDay }) {
               <div className="font-bold text-sm">{label}</div>
               <div className="flex flex-col gap-1">
                 {games.map((g) => (
-                  <Game key={g.id} game={g} />
+                  <GameBoxscore key={g.id} game={g} />
                 ))}
               </div>
             </div>

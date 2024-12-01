@@ -15,7 +15,7 @@ export default function Schedule() {
   return (
     <div>
       <div className="container p-2">
-        <h1 className="text-3xl font-bold mb-6 text-center">BTSH Schedule</h1>
+        <h1 className="text-3xl font-bold mb-2 text-center">BTSH Schedule</h1>
       </div>
       
       <div className="container mx-auto p-2 text-center">

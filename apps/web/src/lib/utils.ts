@@ -45,3 +45,20 @@ export function getContrastingColor(backgroundColor: string): string {
   const luminance = getLuminance(rgb.r, rgb.g, rgb.b);
   return luminance > 0.179 ? '#000000' : '#FFFFFF';
 }
+
+
+export function numberToOrdinal(arg: number) {
+  var i = arg;
+  var j = i % 10,
+      k = i % 100;
+  if (j == 1 && k != 11) {
+      return i + "st";
+  }
+  if (j == 2 && k != 12) {
+      return i + "nd";
+  }
+  if (j == 3 && k != 13) {
+      return i + "rd";
+  }
+  return i + "th";
+}

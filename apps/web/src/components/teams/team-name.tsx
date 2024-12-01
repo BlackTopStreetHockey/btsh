@@ -1,17 +1,22 @@
+import clsx from "clsx";
 import Link from "next/link";
 
 
 export default function TeamName({ 
   team,
-  link 
+  link,
+  className='text-sm',
+  imWidth=32
 }: { 
   team: Team,
-  link?: boolean
+  link?: boolean,
+  className?: string,
+  imWidth?: number
 }) {
   const content = (
-    <div className="flex flex-row gap-2">
-      <img src={team.logo} alt={team.name} width={24} height={24} className='rounded' />
-      <div className="text-sm">{team.name}</div>
+    <div className={clsx("flex flex-row gap-2", className)}>
+      <img src={team.logo} alt={team.name} width={imWidth} className='rounded' />
+      <div>{team.name}</div>
     </div>
   );
   if (link) {

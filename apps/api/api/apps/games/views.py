@@ -8,6 +8,7 @@ from .serializers import (
     GameGoalReadOnlySerializer,
     GamePlayerReadOnlySerializer,
     GameReadOnlySerializer,
+    IndividualGameReadOnlySerializer,
     GameRefereeReadOnlySerializer
 )
 
@@ -25,8 +26,12 @@ class GameDayViewSet(BaseModelReadOnlyViewSet):
 
 
 class GameViewSet(BaseModelReadOnlyViewSet):
-    queryset = Game.objects.with_scores().select_related('home_team', 'away_team')
-    serializer_class = GameReadOnlySerializer
+    queryset = Game.objects.with_scores().select_related(
+        'home_team', 'away_team', 'game_day'
+    ).prefetch_related(
+        Prefetch('goals', queryset=GameGoal.objects.select_related('scored_by')),
+    )
+    serializer_class = IndividualGameReadOnlySerializer
     ordering = ('-game_day__day', 'start')
     ordering_fields = ('game_day__day', 'start', 'duration', 'end', 'home_team', 'away_team', 'location', 'court')
     search_fields = ('home_team__name', 'away_team__name', 'location', 'court')

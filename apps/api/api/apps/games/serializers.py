@@ -28,6 +28,10 @@ class GameReadOnlySerializer(BaseReadOnlyModelSerializer):
             'home_team_display', 'away_team_display', 'result', 'get_result_display',
         )
 
+class NestedGameDaySerializer(BaseReadOnlyModelSerializer):
+    class Meta(BaseReadOnlyModelSerializer.Meta):
+        model = GameDay
+        fields = BaseReadOnlyModelSerializer.Meta.fields + ('day', 'season', 'opening_team', 'closing_team')
 
 class GameDayReadOnlySerializer(BaseReadOnlyModelSerializer):
     opening_team = TeamReadOnlySerializer()
@@ -38,7 +42,7 @@ class GameDayReadOnlySerializer(BaseReadOnlyModelSerializer):
     class Meta(BaseReadOnlyModelSerializer.Meta):
         model = GameDay
         fields = BaseReadOnlyModelSerializer.Meta.fields + ('day', 'season', 'opening_team', 'closing_team', 'games')
-
+    
 
 class GameRefereeReadOnlySerializer(BaseReadOnlyModelSerializer):
     user = UserReadOnlySerializer()
@@ -68,3 +72,13 @@ class GameGoalReadOnlySerializer(BaseReadOnlyModelSerializer):
         fields = BaseReadOnlyModelSerializer.Meta.fields + (
             'game', 'team', 'period', 'get_period_display', 'scored_by', 'assisted_by1', 'assisted_by2',
         )
+
+
+class IndividualGameReadOnlySerializer(GameReadOnlySerializer):
+    game_day = NestedGameDaySerializer()
+    players = GamePlayerReadOnlySerializer(many=True, exclude=('game',))
+    goals = GameGoalReadOnlySerializer(many=True, exclude=('game',))
+    referees = GameRefereeReadOnlySerializer(many=True, exclude=('game',))
+
+    class Meta(GameReadOnlySerializer.Meta):
+        fields = GameReadOnlySerializer.Meta.fields + ('game_day', 'players', 'goals', 'referees')

@@ -3,7 +3,7 @@ import random
 from django.conf import settings
 from django.core.management import BaseCommand
 from django.utils import timezone
-from django.utils.dateparse import parse_datetime
+from django.utils.dateparse import parse_date as django_parse_date
 
 from common.management.commands.utils import get_default_created_by, get_or_create, print_separator
 from games.models import Game, GameGoal, GamePlayer, GameReferee
@@ -15,7 +15,7 @@ NUM_REFS = 2
 
 
 def parse_date(d):
-    return timezone.now().date() if d == NOW else parse_datetime(d).date()
+    return timezone.now().date() if d == NOW else django_parse_date(d)
 
 
 class Command(BaseCommand):
