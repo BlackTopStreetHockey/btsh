@@ -4,9 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
 
-import { useTeams } from "@/requests/hooks/useTeams";
-import { useSeasons } from "@/requests/hooks/useSeasons";
-import { useDivisions } from "@/requests/hooks/useDivisions";
+import { useTeams } from "@/hooks/requests/useTeams";
+import { useSeasons } from "@/hooks/requests/useSeasons";
+import { useDivisions } from "@/hooks/requests/useDivisions";
 export default function SchedulePage() {
   const { teams, placeholder, error } = useTeams({});
   const { seasons } = useSeasons({});
