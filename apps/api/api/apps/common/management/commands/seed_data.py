@@ -46,6 +46,28 @@ TEAMS = [
     'Moby Dekes',
     'What the Puck',
 ]
+SHORT_NAMES = {
+    'Butchers': 'BTCH',
+    'Cobra Kai': 'CK',
+    'Corlears Hookers': 'HOOK',
+    'Dark Rainbows': 'DRKR',
+    'Denim Demons': 'DEMS',
+    'Filthier': 'FLTH',
+    'Fresh Kills': 'FK',
+    'Fuzz': 'FUZZ',
+    'Gouging Anklebiters': 'GANK',
+    'Gremlins': 'GREM',
+    'Instant Karma': 'IK',
+    'Lbs': 'LBS',
+    'Mega Touch': 'MEGA',
+    'Moby Dekes': 'MOBY',
+    'Poutine Machine': 'POUT',
+    'Renaissance': 'RENS',
+    'Riots': 'RIOT',
+    'Sky Fighters': 'SKYF',
+    'Vertz': 'VERT',
+    'What the Puck': 'WTP',
+}
 JERSEY_COLORS = ['Red', 'Orange', 'Yellow', 'Green', 'Blue', 'White', 'Black', 'Purple', 'Gray']
 
 
@@ -117,7 +139,13 @@ class Command(BaseCommand):
                 team, _ = get_or_create(
                     Team,
                     get_kwargs={'name': t},
-                    create_kwargs={'name': t, 'logo': logo, 'jersey_colors': jersey_colors, 'created_by': created_by}
+                    create_kwargs={
+                        'name': t,
+                        'short_name': SHORT_NAMES.get(t),
+                        'logo': logo,
+                        'jersey_colors': jersey_colors,
+                        'created_by': created_by
+                    }
                 )
                 teams.append(team)
 
