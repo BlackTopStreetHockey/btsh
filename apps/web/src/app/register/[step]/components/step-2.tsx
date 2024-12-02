@@ -63,7 +63,7 @@ export default function RegistrationStep2() {
 
       <CardContent className="space-y-4">
         {formData.waiverAccepted && (
-          <div className="bg-green-50 p-4 rounded-lg mb-4">
+          <div className="bg-green-50 p-4 rounded-lg mb-4 border border-green-300">
             <h3 className="font-semibold text-green-800">Waiver Accepted</h3>
             <p className="text-sm text-green-700">
               Signed by {formData.waiverSignature} on {new Date().toLocaleDateString()}

@@ -47,7 +47,7 @@ export default function Register() {
               REGISTRATION & WAIVER 2024
             </h2>
 
-            <div className="bg-yellow-50 p-4 rounded-lg mb-6">
+            <div className="bg-yellow-50 p-4 rounded-lg mb-6 border border-yellow-300">
               <p className="font-medium">
                 BLACK TOP STREET HOCKEY, INC. OF NEW YORK CITY LIABILITY WAIVER
                 and SPORTSMANSHIP AND FAIR PLAY AGREEMENT RELEASE OF LIABILITY,
