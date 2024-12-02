@@ -37,5 +37,5 @@ const generatePlayersForTeam = (teamName: string, count: number): Player[] => {
 };
 
 export const mockPlayers: Player[] = teams.flatMap((team) =>
-  generatePlayersForTeam(team.name, 7)
+  generatePlayersForTeam(team.name, 7),
 );

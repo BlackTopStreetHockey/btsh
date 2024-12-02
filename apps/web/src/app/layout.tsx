@@ -30,10 +30,8 @@ export default function BTSHLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div>
-          <BTSHSidebar/>
-          <div className="ml-32 min-h-screen">
-            {children}
-          </div>
+          <BTSHSidebar />
+          <div className="ml-32 min-h-screen">{children}</div>
         </div>
       </body>
     </html>

@@ -26,8 +26,8 @@ export default function SchedulePage() {
           </CardHeader>
         </Card>
       ))}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {teams?.map((team: Team) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {teams?.map((team: Team) => (
           <Link href={`/teams/${team.short_name}`} key={team.id}>
             <Card key={team.id}>
               <CardHeader>

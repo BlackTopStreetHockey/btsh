@@ -15,25 +15,25 @@ export const getTeam = (sn: string) => {
 };
 
 const _findByDivision = (
-    collection: Record<string, unknown>[],
-    key: string,
-    value: string
-  ): Record<string, unknown> | undefined => {
-    for (const o of collection) {
-      for (const [k, v] of Object.entries(o)) {
-        if (k === key && v === value) {
-          return o;
-        }
-        if (Array.isArray(v)) {
-          const _o = _findByDivision(v, key, value);
-          if (_o) {
-            return { ..._o, division: o };
-          }
+  collection: Record<string, unknown>[],
+  key: string,
+  value: string,
+): Record<string, unknown> | undefined => {
+  for (const o of collection) {
+    for (const [k, v] of Object.entries(o)) {
+      if (k === key && v === value) {
+        return o;
+      }
+      if (Array.isArray(v)) {
+        const _o = _findByDivision(v, key, value);
+        if (_o) {
+          return { ..._o, division: o };
         }
       }
     }
-  };
-  
+  }
+};
+
 // Note: Less efficient than the above, but it's a one-off
 export const getTeamByDivison = (sn: string) => {
   return _findByDivision(teams, "shortName", sn);
