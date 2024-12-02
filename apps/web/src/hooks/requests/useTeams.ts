@@ -4,7 +4,7 @@ export const useTeams = () => {
   const { data, placeholder, loading, error, ...rest } = usePlaceholder(
     useRequest({
       route: "teams",
-    })
+    }),
   );
   return {
     data,
