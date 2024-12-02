@@ -132,7 +132,9 @@ export default function GameDetails({
           <Calendar
             mode="single"
             selected={date}
-            onSelect={(newDate: Date | undefined) => newDate && setDate(newDate)}
+            onSelect={(newDate: Date | undefined) =>
+              newDate && setDate(newDate)
+            }
             className="flex rounded-md border justify-center items-center"
           />
 

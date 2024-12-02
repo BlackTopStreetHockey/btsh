@@ -25,31 +25,35 @@ const requestCache: Record<string, Promise<GameDaysResponse>> = {};
 // Update the getGameDays function with caching and better error handling
 async function getGameDays(
   month: number,
-  year: number
+  year: number,
 ): Promise<GameDaysResponse> {
   const cacheKey = `${month}-${year}`;
-  
+
   // Return cached request if it exists
   if (await requestCache[cacheKey]) {
     return requestCache[cacheKey];
   }
 
   // Create the request promise
-  const requestPromise = new Promise<GameDaysResponse>(async (resolve, reject) => {
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/game_days`);
-      if (!res.ok) {
-        throw new Error(`Failed to fetch game days: ${res.statusText}`);
+  const requestPromise = new Promise<GameDaysResponse>(
+    async (resolve, reject) => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/game_days`,
+        );
+        if (!res.ok) {
+          throw new Error(`Failed to fetch game days: ${res.statusText}`);
+        }
+        const data = await res.json();
+        resolve(data);
+      } catch (error) {
+        console.error("Error fetching game days:", error);
+        // Remove failed request from cache
+        delete requestCache[cacheKey];
+        reject(error);
       }
-      const data = await res.json();
-      resolve(data);
-    } catch (error) {
-      console.error("Error fetching game days:", error);
-      // Remove failed request from cache
-      delete requestCache[cacheKey];
-      reject(error);
-    }
-  });
+    },
+  );
 
   // Store in cache
   requestCache[cacheKey] = requestPromise;
@@ -67,7 +71,7 @@ function GameList({ selectedDate }: { selectedDate: Date }) {
       setError(null);
       const data = await getGameDays(
         selectedDate.getMonth(),
-        selectedDate.getFullYear()
+        selectedDate.getFullYear(),
       );
       setGames(data.games);
     } catch (err) {
@@ -90,7 +94,7 @@ function GameList({ selectedDate }: { selectedDate: Date }) {
         </CardHeader>
         <CardContent>
           <div className="text-red-500">{error}</div>
-          <button 
+          <button
             onClick={fetchGames}
             className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
           >
@@ -102,7 +106,7 @@ function GameList({ selectedDate }: { selectedDate: Date }) {
   }
 
   const gamesForSelectedDate = games.filter((game) =>
-    isSameDay(new Date(game.date), selectedDate)
+    isSameDay(new Date(game.date), selectedDate),
   );
 
   return (

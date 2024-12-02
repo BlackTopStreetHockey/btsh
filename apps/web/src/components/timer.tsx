@@ -133,7 +133,14 @@ export function Timer({
         // Game ends after shootout
         break;
     }
-  }, [period, setPeriod, setTimeLeft, resetTimeouts, OT_DURATION, PERIOD_DURATION]);
+  }, [
+    period,
+    setPeriod,
+    setTimeLeft,
+    resetTimeouts,
+    OT_DURATION,
+    PERIOD_DURATION,
+  ]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -150,7 +157,14 @@ export function Timer({
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isActive, timeLeft, handlePeriodEnd, isTimeout, setIsActive, setTimeLeft]);
+  }, [
+    isActive,
+    timeLeft,
+    handlePeriodEnd,
+    isTimeout,
+    setIsActive,
+    setTimeLeft,
+  ]);
 
   return (
     <div className="flex flex-col justify-center items-center">
