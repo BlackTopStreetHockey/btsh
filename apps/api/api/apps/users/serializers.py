@@ -12,4 +12,4 @@ class UserReadOnlySerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         # Intentionally omit username/email so we don't include more PII than we need to
-        fields = ('id', 'first_name', 'last_name', 'full_name', 'date_joined')
+        fields = ('id', 'first_name', 'last_name', 'full_name', 'date_joined', 'gender', 'get_gender_display')

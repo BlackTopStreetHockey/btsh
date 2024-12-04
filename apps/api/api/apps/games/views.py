@@ -28,7 +28,8 @@ class GameViewSet(BaseModelReadOnlyViewSet):
     queryset = Game.objects.with_scores().select_related('home_team', 'away_team')
     serializer_class = GameReadOnlySerializer
     ordering = ('-game_day__day', 'start')
-    ordering_fields = ('game_day__day', 'start', 'duration', 'end', 'home_team', 'away_team', 'location', 'court')
+    ordering_fields = ('game_day__day', 'start', 'duration', 'end', 'home_team', 'away_team', 'location', 'court',
+                       'status', 'result')
     search_fields = ('home_team__name', 'away_team__name', 'location', 'court')
     filterset_class = GameFilterSet
 
