@@ -3,10 +3,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
-import { useDivisions } from "@/hooks/requests/useDivisions";
-import { useSeasons } from "@/hooks/requests/useSeasons";
 import { useTeam } from "@/hooks/requests/useTeam";
-import { useRoster } from "@/hooks/requests/useRoster";
 
 import { TeamInfo } from "./components/team-info";
 import { TeamRoster } from "./components/team-roster";
@@ -15,15 +12,20 @@ import { TeamPerformance } from "./components/team-performance";
 
 export default function TeamPage() {
   const { team } = useParams();
+  // const searchParams = useSearchParams();
   const { data, placeholder, loading, error } = useTeam({
     short_name: team as string,
   });
-  const { data: divisions } = useDivisions({});
-  const { data: seasons } = useSeasons({});
+  // const { data: divisions } = useDivisions({});
+  // const { data: seasons } = useSeasons({});
+
+  // // Get the current season ID from URL params or use the current season
+  // const currentSeason = seasons?.results.find(season => season.is_current);
+  // const seasonId = searchParams.get('season') || currentSeason?.id.toString() || "1";
 
   console.log("data:", data);
-  console.log("divisions:", divisions);
-  console.log("seasons:", seasons);
+  // console.log("divisions:", divisions);
+  // console.log("seasons:", seasons);
 
   return error ? (
     <div>{error.message}</div>
@@ -45,7 +47,7 @@ export default function TeamPage() {
 
             <div className="grid gap-4 md:grid-cols-3">
               <div className="md:col-span-2">
-                <TeamRoster teamId={data.id} seasonId="1" />
+                <TeamRoster teamId={data.id} />
               </div>
               <div>
                 <TeamSchedule />

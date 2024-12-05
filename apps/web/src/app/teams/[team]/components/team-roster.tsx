@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Select,
   SelectContent,
@@ -22,24 +22,36 @@ import { Button } from "@/components/ui/button";
 
 import { useRoster } from "@/hooks/requests/useRoster";
 import { useSeasons } from "@/hooks/requests/useSeasons";
+import { useRouter, usePathname } from "next/navigation";
 
 type SortField = "name" | "position" | "gender" | "gp" | "goals" | "gpg";
 type SortDirection = "asc" | "desc";
 
-export function TeamRoster({
-  seasonId,
-  teamId,
-}: {
-  seasonId: string;
-  teamId: string;
-}) {
+export function TeamRoster({ teamId }: { teamId: string }) {
   const [sortField, setSortField] = useState<SortField>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+  const [seasonId, setSeasonId] = useState<string>("");
+  const router = useRouter();
+  const pathname = usePathname();
 
-  const { roster } = useRoster({ seasonId, teamId });
   const { seasons } = useSeasons({});
 
-  console.log("seasons:", seasons);
+  useEffect(() => {
+    setSeasonId(
+      seasons?.filter((season: Season) => season.is_current)[0].id
+    );
+  }, []);
+
+  console.log("seasonId:", seasonId);
+  const { roster } = useRoster({ seasonId, teamId });
+
+  const handleSeasonChange = (newSeasonId: string) => {
+    // Update the URL with the new season ID
+    const searchParams = new URLSearchParams(window.location.search);
+    searchParams.set("season", newSeasonId);
+    router.push(`${pathname}?${searchParams.toString()}`);
+    setSeasonId(newSeasonId);
+  };
 
   const handleSort = (field: SortField) => {
     if (field === sortField) {
@@ -97,20 +109,22 @@ export function TeamRoster({
         <div className="flex justify-between items-center">
           <CardTitle>Roster</CardTitle>
           <div className="w-32">
-            <Select>
+            <Select value={seasonId} onValueChange={handleSeasonChange}>
               <SelectTrigger>
                 <SelectValue placeholder="Select Season" />
               </SelectTrigger>
               <SelectContent>
-                {seasons?.map((season) => (
-                  <SelectItem
-                    key={season.id}
-                    value={season.id.toString()}
-                    defaultChecked={season.is_current}
-                  >
-                    {season.year}
-                  </SelectItem>
-                ))}
+                {seasons?.map(
+                  (season: {
+                    id: number;
+                    year: string;
+                    is_current: boolean;
+                  }) => (
+                    <SelectItem key={season.id} value={season.id.toString()}>
+                      {season.year}
+                    </SelectItem>
+                  )
+                )}
               </SelectContent>
             </Select>
           </div>
