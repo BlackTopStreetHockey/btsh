@@ -8,11 +8,19 @@ const scheduleData = [
   { date: "2023-10-21", opponent: "What the Puck", result: "W 4-3" },
 ];
 
-export function TeamSchedule() {
+export function TeamSchedule({
+  seasonId,
+  teamId,
+  seasonYear,
+}: {
+  seasonId: string;
+  teamId: string;
+  seasonYear: string;
+}) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Schedule</CardTitle>
+        <CardTitle>{seasonYear} Schedule</CardTitle>
       </CardHeader>
       <CardContent>
         <ul className="space-y-4">
