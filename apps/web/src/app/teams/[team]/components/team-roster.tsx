@@ -12,32 +12,22 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { mockPlayers } from "@/data/__mocks__/players";
-
 import { useRoster } from "@/hooks/requests/useRoster";
 
 type SortField =
-  | "number"
   | "name"
   | "position"
   | "gender"
   | "gp"
   | "goals"
-  | "assists"
-  | "points";
+  | "gpg";
 type SortDirection = "asc" | "desc";
 
-export function TeamRoster({ team, data }: { team: string; data: any }) {
-  const [sortField, setSortField] = useState<SortField>("number");
+export function TeamRoster({ seasonId, teamId }: { seasonId: string, teamId: string;  }) {
+  const [sortField, setSortField] = useState<SortField>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
-  const { roster } = useRoster({ id: team });
-  console.log("roster:", roster);
-  console.log("team data:", data);
-
-  // Mock data - replace with actual data from API
-  // const players = roster.filter((player) => player.team == team);
-  const players = mockPlayers.filter((player) => player.team == team);
+  const { roster } = useRoster({ seasonId, teamId });
 
   const handleSort = (field: SortField) => {
     if (field === sortField) {
@@ -48,8 +38,9 @@ export function TeamRoster({ team, data }: { team: string; data: any }) {
     }
   };
 
-  const sortedPlayers = [...players].sort((a, b) => {
-    const multiplier = sortDirection === "asc" ? 1 : -1;
+  const sortedPlayers = roster ? [...roster].sort((a, b) => {
+      console.log("sP:", a, b);
+      const multiplier = sortDirection === "asc" ? 1 : -1;
 
     if (typeof a[sortField] === "string") {
       return (
@@ -59,7 +50,7 @@ export function TeamRoster({ team, data }: { team: string; data: any }) {
     }
 
     return multiplier * ((a[sortField] as number) - (b[sortField] as number));
-  });
+  }) : [];
 
   const SortableHeader = ({
     field,
@@ -98,9 +89,6 @@ export function TeamRoster({ team, data }: { team: string; data: any }) {
                 <SortableHeader field="name">Name</SortableHeader>
               </TableHead>
               <TableHead>
-                <SortableHeader field="number">#</SortableHeader>
-              </TableHead>
-              <TableHead>
                 <SortableHeader field="position">Position</SortableHeader>
               </TableHead>
               <TableHead>
@@ -113,20 +101,19 @@ export function TeamRoster({ team, data }: { team: string; data: any }) {
                 <SortableHeader field="goals">Goals</SortableHeader>
               </TableHead>
               <TableHead className="text-right">
-                <SortableHeader field="assists">GAA</SortableHeader>
+                <SortableHeader field="gpg">GPG</SortableHeader>
               </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {sortedPlayers.map((player) => (
-              <TableRow key={player.name}>
-                <TableCell>{player.name}</TableCell>
-                <TableCell className="text-center">{player.number}</TableCell>
-                <TableCell className="text-center">{player.position}</TableCell>
+              <TableRow key={player.user.id}>
+                <TableCell>{player.user.full_name}</TableCell>
+                <TableCell className="text-center uppercase text-xs">{player.is_captain ? "⭐️ " : ""} {player.position.substring(0, 1)}</TableCell>
                 <TableCell
-                  className={`text-center ${player.gender === "M" ? "text-blue-600" : "text-pink-600"}`}
+                  className={`text-center ${player.user.gender === "male" ? "text-blue-600" : "text-pink-600"}`}
                 >
-                  {player.gender}
+                  {player.user.gender === "male" ? "M" : "F"}
                 </TableCell>
                 <TableCell className="text-center">{player.gp}</TableCell>
                 <TableCell className="text-center">{player.goals}</TableCell>

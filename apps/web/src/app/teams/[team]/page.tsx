@@ -45,7 +45,7 @@ export default function TeamPage() {
 
             <div className="grid gap-4 md:grid-cols-3">
               <div className="md:col-span-2">
-                <TeamRoster team={data.name} data={data} />
+                <TeamRoster teamId={data.id} seasonId="1" />
               </div>
               <div>
                 <TeamSchedule />

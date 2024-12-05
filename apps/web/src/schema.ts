@@ -39,6 +39,77 @@ export type SeasonsListParams = {
   start_before?: string;
 };
 
+export type SeasonRegistrationsListPosition =
+  (typeof SeasonRegistrationsListPosition)[keyof typeof SeasonRegistrationsListPosition];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SeasonRegistrationsListPosition = {
+  defense: "defense",
+  forward: "forward",
+  goalie: "goalie",
+} as const;
+
+export type SeasonRegistrationsListLocation =
+  (typeof SeasonRegistrationsListLocation)[keyof typeof SeasonRegistrationsListLocation];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const SeasonRegistrationsListLocation = {
+  bronx: "bronx",
+  brooklyn: "brooklyn",
+  connecticut: "connecticut",
+  long_island: "long_island",
+  manhattan: "manhattan",
+  new_jersey: "new_jersey",
+  queens: "queens",
+  westchester: "westchester",
+} as const;
+
+export type SeasonRegistrationsListParams = {
+  is_captain?: boolean;
+  /**
+   * * `brooklyn` - Brooklyn
+   * `bronx` - Bronx
+   * `manhattan` - Manhattan
+   * `queens` - Queens
+   * `long_island` - Long Island
+   * `new_jersey` - New Jersey
+   * `connecticut` - Connecticut
+   * `westchester` - Westchester
+   */
+  location?: SeasonRegistrationsListLocation;
+  /**
+   * Which field to use when ordering the results.
+   */
+  ordering?: string;
+  /**
+   * A page number within the paginated result set.
+   */
+  page?: number;
+  /**
+   * * `defense` - Defense
+   * `forward` - Forward
+   * `goalie` - Goalie
+   */
+  position?: SeasonRegistrationsListPosition;
+  /**
+   * A search term.
+   */
+  search?: string;
+  season?: number;
+  team?: number;
+  user?: number;
+};
+
+export type GamesListStatus =
+  (typeof GamesListStatus)[keyof typeof GamesListStatus];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GamesListStatus = {
+  cancelled: "cancelled",
+  completed: "completed",
+  scheduled: "scheduled",
+} as const;
+
 export type GamesListCourt =
   (typeof GamesListCourt)[keyof typeof GamesListCourt];
 
@@ -71,11 +142,21 @@ export type GamesListParams = {
    */
   page?: number;
   /**
+   * Result
+   */
+  result?: string;
+  /**
    * A search term.
    */
   search?: string;
   start_after?: string;
   start_before?: string;
+  /**
+   * * `scheduled` - Scheduled
+   * `cancelled` - Cancelled
+   * `completed` - Completed
+   */
+  status?: GamesListStatus;
 };
 
 export type GameRefereesListType =
@@ -197,11 +278,27 @@ export type DivisionsListParams = {
   search?: string;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UserReadOnlyGender = {
+  ...GenderEnum,
+  ...BlankEnum,
+  ...NullEnum,
+} as const;
+/**
+ * @nullable
+ */
+export type UserReadOnlyGender =
+  | (typeof UserReadOnlyGender)[keyof typeof UserReadOnlyGender]
+  | null;
+
 export interface UserReadOnly {
   date_joined?: string;
   /** @maxLength 150 */
   first_name?: string;
   readonly full_name: string;
+  /** @nullable */
+  gender?: UserReadOnlyGender;
+  readonly get_gender_display: string;
   readonly id: number;
   /** @maxLength 150 */
   last_name?: string;
@@ -231,6 +328,20 @@ export interface TeamReadOnly {
 }
 
 /**
+ * * `scheduled` - Scheduled
+ * `cancelled` - Cancelled
+ * `completed` - Completed
+ */
+export type StatusEnum = (typeof StatusEnum)[keyof typeof StatusEnum];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const StatusEnum = {
+  scheduled: "scheduled",
+  cancelled: "cancelled",
+  completed: "completed",
+} as const;
+
+/**
  * Reference: https://www.django-rest-framework.org/api-guide/serializers/#dynamically-modifying-fields
  */
 export interface SeasonReadOnly {
@@ -247,6 +358,42 @@ export interface SeasonReadOnly {
   /** @nullable */
   readonly updated_by: number | null;
   readonly year: string;
+}
+
+/**
+ * * `defense` - Defense
+ * `forward` - Forward
+ * `goalie` - Goalie
+ */
+export type PositionEnum = (typeof PositionEnum)[keyof typeof PositionEnum];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const PositionEnum = {
+  defense: "defense",
+  forward: "forward",
+  goalie: "goalie",
+} as const;
+
+/**
+ * Reference: https://www.django-rest-framework.org/api-guide/serializers/#dynamically-modifying-fields
+ */
+export interface SeasonRegistrationReadOnly {
+  readonly created_at: string;
+  /** @nullable */
+  readonly created_by: number | null;
+  readonly get_location_display: string;
+  readonly get_position_display: string;
+  readonly id: number;
+  is_captain: boolean;
+  location: LocationEnum;
+  position: PositionEnum;
+  registered_at?: string;
+  season: SeasonReadOnly;
+  team: TeamReadOnly;
+  readonly updated_at: string;
+  /** @nullable */
+  readonly updated_by: number | null;
+  user: UserReadOnly;
 }
 
 /**
@@ -272,6 +419,15 @@ export interface PaginatedTeamReadOnlyList {
   /** @nullable */
   previous?: string | null;
   results: TeamReadOnly[];
+}
+
+export interface PaginatedSeasonRegistrationReadOnlyList {
+  count: number;
+  /** @nullable */
+  next?: string | null;
+  /** @nullable */
+  previous?: string | null;
+  results: SeasonRegistrationReadOnly[];
 }
 
 export interface PaginatedSeasonReadOnlyList {
@@ -337,6 +493,49 @@ export interface PaginatedDivisionReadOnlyList {
   results: DivisionReadOnly[];
 }
 
+export type NullEnum = (typeof NullEnum)[keyof typeof NullEnum];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const NullEnum = {} as const;
+
+/**
+ * * `brooklyn` - Brooklyn
+ * `bronx` - Bronx
+ * `manhattan` - Manhattan
+ * `queens` - Queens
+ * `long_island` - Long Island
+ * `new_jersey` - New Jersey
+ * `connecticut` - Connecticut
+ * `westchester` - Westchester
+ */
+export type LocationEnum = (typeof LocationEnum)[keyof typeof LocationEnum];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const LocationEnum = {
+  brooklyn: "brooklyn",
+  bronx: "bronx",
+  manhattan: "manhattan",
+  queens: "queens",
+  long_island: "long_island",
+  new_jersey: "new_jersey",
+  connecticut: "connecticut",
+  westchester: "westchester",
+} as const;
+
+/**
+ * * `male` - Male
+ * `female` - Female
+ * `non_binary` - Non-binary
+ */
+export type GenderEnum = (typeof GenderEnum)[keyof typeof GenderEnum];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const GenderEnum = {
+  male: "male",
+  female: "female",
+  non_binary: "non_binary",
+} as const;
+
 /**
  * * `string` - String
  * `fence` - Fence
@@ -385,6 +584,7 @@ export const GameReadOnlyTypeEnum = {
  */
 export interface GameReadOnly {
   away_team: TeamReadOnly;
+  readonly away_team_display: string;
   away_team_num_goals: number;
   court: CourtEnum;
   readonly created_at: string;
@@ -393,14 +593,19 @@ export interface GameReadOnly {
   duration?: string;
   readonly end: string;
   readonly get_court_display: string;
+  get_result_display: string;
+  readonly get_status_display: string;
   readonly get_type_display: string;
   home_team: TeamReadOnly;
+  readonly home_team_display: string;
   home_team_num_goals: number;
   readonly id: number;
   /** @maxLength 256 */
   location?: string;
   losing_team_id: number;
+  result: string;
   start: string;
+  status?: StatusEnum;
   type?: GameReadOnlyTypeEnum;
   readonly updated_at: string;
   /** @nullable */
@@ -488,6 +693,13 @@ export type CourtEnum = (typeof CourtEnum)[keyof typeof CourtEnum];
 export const CourtEnum = {
   east: "east",
   west: "west",
+} as const;
+
+export type BlankEnum = (typeof BlankEnum)[keyof typeof BlankEnum];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const BlankEnum = {
+  "": "",
 } as const;
 
 export type divisionsListResponse = {
@@ -826,6 +1038,64 @@ export const gamesRetrieve = async (
   return { status: res.status, data, headers: res.headers };
 };
 
+export type seasonRegistrationsListResponse = {
+  data: PaginatedSeasonRegistrationReadOnlyList;
+  status: number;
+  headers: Headers;
+};
+
+export const getSeasonRegistrationsListUrl = (
+  params?: SeasonRegistrationsListParams,
+) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  return normalizedParams.size
+    ? `http://localhost:8000/api/season-registrations/?${normalizedParams.toString()}`
+    : `http://localhost:8000/api/season-registrations/`;
+};
+
+export const seasonRegistrationsList = async (
+  params?: SeasonRegistrationsListParams,
+  options?: RequestInit,
+): Promise<seasonRegistrationsListResponse> => {
+  const res = await fetch(getSeasonRegistrationsListUrl(params), {
+    ...options,
+    method: "GET",
+  });
+  const data = await res.json();
+
+  return { status: res.status, data, headers: res.headers };
+};
+
+export type seasonRegistrationsRetrieveResponse = {
+  data: SeasonRegistrationReadOnly;
+  status: number;
+  headers: Headers;
+};
+
+export const getSeasonRegistrationsRetrieveUrl = (id: number) => {
+  return `http://localhost:8000/api/season-registrations/${id}/`;
+};
+
+export const seasonRegistrationsRetrieve = async (
+  id: number,
+  options?: RequestInit,
+): Promise<seasonRegistrationsRetrieveResponse> => {
+  const res = await fetch(getSeasonRegistrationsRetrieveUrl(id), {
+    ...options,
+    method: "GET",
+  });
+  const data = await res.json();
+
+  return { status: res.status, data, headers: res.headers };
+};
+
 export type seasonsListResponse = {
   data: PaginatedSeasonReadOnlyList;
   status: number;
@@ -874,29 +1144,6 @@ export const seasonsRetrieve = async (
   options?: RequestInit,
 ): Promise<seasonsRetrieveResponse> => {
   const res = await fetch(getSeasonsRetrieveUrl(id), {
-    ...options,
-    method: "GET",
-  });
-  const data = await res.json();
-
-  return { status: res.status, data, headers: res.headers };
-};
-
-export type teamRetrieveResponse = {
-  data: TeamReadOnly;
-  status: number;
-  headers: Headers;
-};
-
-export const getTeamRetrieveUrl = (shortName: string) => {
-  return `http://localhost:8000/api/team/${shortName}/`;
-};
-
-export const teamRetrieve = async (
-  shortName: string,
-  options?: RequestInit,
-): Promise<teamRetrieveResponse> => {
-  const res = await fetch(getTeamRetrieveUrl(shortName), {
     ...options,
     method: "GET",
   });
