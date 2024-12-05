@@ -2,6 +2,13 @@
 
 import { useState } from "react";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Table,
   TableBody,
   TableCell,
@@ -12,22 +19,27 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useRoster } from "@/hooks/requests/useRoster";
 
-type SortField =
-  | "name"
-  | "position"
-  | "gender"
-  | "gp"
-  | "goals"
-  | "gpg";
+import { useRoster } from "@/hooks/requests/useRoster";
+import { useSeasons } from "@/hooks/requests/useSeasons";
+
+type SortField = "name" | "position" | "gender" | "gp" | "goals" | "gpg";
 type SortDirection = "asc" | "desc";
 
-export function TeamRoster({ seasonId, teamId }: { seasonId: string, teamId: string;  }) {
+export function TeamRoster({
+  seasonId,
+  teamId,
+}: {
+  seasonId: string;
+  teamId: string;
+}) {
   const [sortField, setSortField] = useState<SortField>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
   const { roster } = useRoster({ seasonId, teamId });
+  const { seasons } = useSeasons({});
+
+  console.log("seasons:", seasons);
 
   const handleSort = (field: SortField) => {
     if (field === sortField) {
@@ -38,19 +50,22 @@ export function TeamRoster({ seasonId, teamId }: { seasonId: string, teamId: str
     }
   };
 
-  const sortedPlayers = roster ? [...roster].sort((a, b) => {
-      console.log("sP:", a, b);
-      const multiplier = sortDirection === "asc" ? 1 : -1;
+  const sortedPlayers = roster
+    ? [...roster].sort((a, b) => {
+        const multiplier = sortDirection === "asc" ? 1 : -1;
 
-    if (typeof a[sortField] === "string") {
-      return (
-        multiplier *
-        (a[sortField] as string).localeCompare(b[sortField] as string)
-      );
-    }
+        if (typeof a[sortField] === "string") {
+          return (
+            multiplier *
+            (a[sortField] as string).localeCompare(b[sortField] as string)
+          );
+        }
 
-    return multiplier * ((a[sortField] as number) - (b[sortField] as number));
-  }) : [];
+        return (
+          multiplier * ((a[sortField] as number) - (b[sortField] as number))
+        );
+      })
+    : [];
 
   const SortableHeader = ({
     field,
@@ -79,7 +94,27 @@ export function TeamRoster({ seasonId, teamId }: { seasonId: string, teamId: str
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Roster</CardTitle>
+        <div className="flex justify-between items-center">
+          <CardTitle>Roster</CardTitle>
+          <div className="w-32">
+            <Select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select Season" />
+              </SelectTrigger>
+              <SelectContent>
+                {seasons?.map((season) => (
+                  <SelectItem
+                    key={season.id}
+                    value={season.id.toString()}
+                    defaultChecked={season.is_current}
+                  >
+                    {season.year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         <Table>
@@ -109,7 +144,10 @@ export function TeamRoster({ seasonId, teamId }: { seasonId: string, teamId: str
             {sortedPlayers.map((player) => (
               <TableRow key={player.user.id}>
                 <TableCell>{player.user.full_name}</TableCell>
-                <TableCell className="text-center uppercase text-xs">{player.is_captain ? "⭐️ " : ""} {player.position.substring(0, 1)}</TableCell>
+                <TableCell className="text-center uppercase text-xs">
+                  {player.is_captain ? "⭐️ " : ""}{" "}
+                  {player.position.substring(0, 1)}
+                </TableCell>
                 <TableCell
                   className={`text-center ${player.user.gender === "male" ? "text-blue-600" : "text-pink-600"}`}
                 >
