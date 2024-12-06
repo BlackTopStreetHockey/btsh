@@ -1,50 +1,110 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
-const scheduleData = [
-  { date: "2023-10-11", opponent: "Gouging Anklebiters", result: "W 5-3" },
-  { date: "2023-10-14", opponent: "Cobra Kai", result: "L 3-4 (OT)" },
-  { date: "2023-10-17", opponent: "Butchers", result: "W 4-2" },
-  { date: "2023-10-19", opponent: "Mega Touch", result: "W 3-1" },
-  { date: "2023-10-21", opponent: "What the Puck", result: "W 4-3" },
-];
+import { ScrollArea } from "@/components/ui/scroll-area";
 
-export function TeamSchedule() {
+import { useSchedule } from "@/hooks/requests/useSchedule";
+import { formatTime } from "@/lib/dates";
+export function TeamSchedule({
+  seasonId = "2",
+  teamId = "2",
+  seasonYear,
+}: {
+  seasonId: string;
+  teamId: string;
+  seasonYear: string;
+}) {
+  const { schedule } = useSchedule({ seasonId, teamId });
+
+  const seasonSchedule = schedule?.filter(
+    (game: GameDay) => game.season.id.toString() === seasonId
+  );
+
+  const teamSchedule = seasonSchedule?.filter((gameDay: GameDay) => {
+    return gameDay.games.find(
+      (g) =>
+        g.home_team.id.toString() === teamId.toString() ||
+        g.away_team.id.toString() === teamId.toString()
+    );
+  });
+
+  console.log("teamSchedule:", teamSchedule);
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Schedule</CardTitle>
+        <CardTitle>{seasonYear} Schedule</CardTitle>
       </CardHeader>
       <CardContent>
         <ul className="space-y-4">
-          {scheduleData.map((game, index) => (
-            <li
-              key={index}
-              className="flex justify-between items-center border-b pb-2 last:border-b-0"
-            >
-              <div className="flex items-center space-x-2">
-                <Image
-                  src="/teams/btsh.jpg"
-                  alt={game.opponent}
-                  width={30}
-                  height={30}
-                />
-                <div>
-                  <p className="font-semibold">{game.opponent}</p>
-                  <p className="text-xs text-gray-500">{game.date}</p>
-                </div>
-              </div>
-
-              <span
-                className={`font-bold ${
-                  game.result.startsWith("W")
-                    ? "text-green-600"
-                    : "text-red-600"
-                }`}
+          <ScrollArea className="h-[500px]">
+            {teamSchedule?.map((gameDay: GameDay) => (
+              <li
+                key={gameDay.id}
+                className="flex justify-between items-center border-b pb-2 last:border-b-0"
               >
-                {game.result}
-              </span>
-            </li>
-          ))}
+                {gameDay.games
+                  .filter(
+                    (g) =>
+                      g.home_team.id.toString() === teamId.toString() ||
+                      g.away_team.id.toString() === teamId.toString()
+                  )
+                  .map((game) => {
+                    const isHomeGame =
+                      game.home_team.id.toString() === teamId.toString();
+                    return (
+                      <div
+                        key={game.id}
+                        className="flex flex-col justify-between"
+                      >
+                        <p className="text-xs text-gray-500">
+                          {gameDay.day} - {formatTime(game.start.toString())} -{" "}
+                          {game.get_court_display}
+                        </p>
+                        <div className="flex items-center space-x-2">
+                          <Image
+                            src={
+                              isHomeGame
+                                ? game.away_team.logo
+                                : game.home_team.logo
+                            }
+                            alt={
+                              isHomeGame
+                                ? game.away_team.name
+                                : game.home_team.name
+                            }
+                            width={30}
+                            height={30}
+                          />
+                          <p className="font-semibold leading-2">
+                            {isHomeGame
+                              ? "vs " + game.away_team.name
+                              : "@ " + game.home_team.name}
+                          </p>
+
+                          {game.away_team_num_goals &&
+                            game.home_team_num_goals && (
+                              <span
+                                className={`font-bold text-sm ${
+                                  isHomeGame &&
+                                  game.home_team_num_goals >
+                                    game.away_team_num_goals
+                                    ? "text-red-500"
+                                    : "text-green-500"
+                                }`}
+                              >
+                                ({game.away_team_num_goals} &ndash;{" "}
+                                {game.home_team_num_goals})
+                              </span>
+                            )}
+                        </div>
+                      </div>
+                    );
+                  })}
+              </li>
+            ))}
+          </ScrollArea>
         </ul>
       </CardContent>
     </Card>
