@@ -25,7 +25,9 @@ class GameDayViewSet(BaseModelReadOnlyViewSet):
 
 
 class GameViewSet(BaseModelReadOnlyViewSet):
-    queryset = Game.objects.with_scores().select_related('home_team', 'away_team')
+    queryset = Game.objects.with_scores().select_related(
+        'game_day__season', 'game_day__opening_team', 'game_day__closing_team', 'home_team', 'away_team',
+    )
     serializer_class = GameReadOnlySerializer
     ordering = ('-game_day__day', 'start')
     ordering_fields = ('game_day__day', 'start', 'duration', 'end', 'home_team', 'away_team', 'location', 'court',
