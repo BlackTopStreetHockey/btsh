@@ -1,5 +1,7 @@
+from django.db.models import Q
 from django_filters import rest_framework as filters
 
+from teams.models import Team
 from .models import Game, GameDay, GameGoal, GamePlayer, GameReferee, GameResultsEnum
 
 
@@ -15,6 +17,10 @@ class GameFilterSet(filters.FilterSet):
     start = filters.TimeRangeFilter()
     end = filters.TimeRangeFilter()
     result = filters.ChoiceFilter(label='Result', choices=GameResultsEnum)
+    team = filters.ModelChoiceFilter(label='Team', queryset=Team.objects.all(), method='filter_team')
+
+    def filter_team(self, queryset, name, value):
+        return queryset.filter(Q(home_team=value) | Q(away_team=value))
 
     class Meta:
         model = Game
