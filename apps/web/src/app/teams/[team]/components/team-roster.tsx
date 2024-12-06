@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Table,
   TableBody,
@@ -90,6 +91,7 @@ export function TeamRoster({
         </div>
       </CardHeader>
       <CardContent>
+        <ScrollArea className="h-[500px]">
         <Table>
           <TableHeader>
             <TableRow>
@@ -137,6 +139,7 @@ export function TeamRoster({
             ))}
           </TableBody>
         </Table>
+        </ScrollArea>
       </CardContent>
     </Card>
   );
