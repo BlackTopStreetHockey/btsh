@@ -1,4 +1,5 @@
 "use client";
+
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -80,7 +81,7 @@ export default function RegistrationStep1() {
                 <Label htmlFor="male">Male</Label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="non-binary" id="non-binary" />
+                <RadioGroupItem value="non_binary" id="non-binary" />
                 <Label htmlFor="non-binary">Non-binary</Label>
               </div>
             </RadioGroup>
@@ -109,7 +110,8 @@ export default function RegistrationStep1() {
           {/* Team Selection */}
           <div className="space-y-2">
             <Label htmlFor="team" className="text-base font-semibold">
-              2025 BTSH Team <span className="text-red-500">*</span>
+              {new Date().getFullYear()} BTSH Team{" "}
+              <span className="text-red-500">*</span>
             </Label>
             <Select
               value={formData.team}
@@ -125,7 +127,7 @@ export default function RegistrationStep1() {
               <SelectContent>
                 {teams &&
                   teams?.results.map((team: Team) => (
-                    <SelectItem key={team.id} value={team.short_name}>
+                    <SelectItem key={team.id} value={team.id.toString()}>
                       {team.name}
                     </SelectItem>
                   ))}
@@ -148,6 +150,54 @@ export default function RegistrationStep1() {
               value={formData.location}
               onChange={(e) => updateFormData({ location: e.target.value })}
             />
+            <RadioGroup
+              defaultValue="brooklyn"
+              value={formData.location}
+              onChange={(e) => updateFormData({ location: e.target.value })}
+            >
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="manhattan" id="r1" />
+                    <Label htmlFor="r1">Manhattan</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="brooklyn" id="r2" />
+                    <Label htmlFor="r2">Brooklyn</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="queens" id="r3" />
+                    <Label htmlFor="r3">Queens</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="new_jersey" id="r4" />
+                    <Label htmlFor="r3">New Jersey</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="westchester" id="r5" />
+                    <Label htmlFor="r3">Westchester</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="long_island" id="r6" />
+                    <Label htmlFor="r3">Long Island</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="connecticut" id="r7" />
+                    <Label htmlFor="r7">Connecticut</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="bronx" id="r8" />
+                    <Label htmlFor="r7">Bronx</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="staten_island" id="r9" />
+                    <Label htmlFor="r7">Staten Island</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="other" id="r10" />
+                    <Label htmlFor="r8">Other</Label>
+                </div>
+              </div>
+            </RadioGroup>
           </div>
 
           {/* League Help */}
