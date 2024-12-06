@@ -144,16 +144,11 @@ export default function RegistrationStep1() {
             <Label htmlFor="location" className="text-base font-semibold">
               Where do you live? <span className="text-red-500">*</span>
             </Label>
-            <Input
-              id="location"
-              required
-              value={formData.location}
-              onChange={(e) => updateFormData({ location: e.target.value })}
-            />
+
             <RadioGroup
               defaultValue="brooklyn"
               value={formData.location}
-              onChange={(e) => updateFormData({ location: e.target.value })}
+              onValueChange={(value) => updateFormData({ location: value })}
             >
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-center space-x-2">
