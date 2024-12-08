@@ -1,6 +1,6 @@
 "use client";
 
-import { useGameDays } from "@/requests/hooks";
+import { useGameDays } from "@/hooks/requests/useGameDays";
 import { useSeasonSelect } from "./useSeasonSelect";
 import formatDateNoTimezone, { formatTime, timeToHours } from "@/lib/dates";
 import { useRef } from "react";
