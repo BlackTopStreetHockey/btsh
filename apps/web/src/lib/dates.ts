@@ -13,9 +13,15 @@ export default function formatDateNoTimezone(
   return formatDate(tzAgnostic, formatStr, opts);
 }
 
-export const formatTime = (timeStr: string) => {
-  const [hours, minutes] = timeStr.split(":").map(Number);
-  const period = hours >= 12 ? "PM" : "AM";
+export const timeToHours = (timeStr: string) => {
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  return hours + minutes / 60;
+};
+
+export const formatTime = (timeStr: string | Date, showPeriod = true) => {
+  if (timeStr instanceof Date) timeStr = timeStr.toTimeString();
+  const [hours, minutes] = timeStr.split(':').map(Number);
+  const period = hours >= 12 ? 'PM' : 'AM';
   const displayHours = hours % 12 || 12; // Convert 0 to 12 for 12 AM
-  return `${displayHours}:${minutes.toString().padStart(2, "0")} ${period}`;
+  return `${displayHours}:${minutes.toString().padStart(2, '0')} ${showPeriod ? period : ''}`;
 };
