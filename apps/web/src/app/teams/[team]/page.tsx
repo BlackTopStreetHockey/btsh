@@ -7,13 +7,13 @@ import { Instagram, ArrowLeft } from "lucide-react";
 
 import { getContrastingColor } from "@/lib/utils";
 
-import { useDivisions } from "@/requests/hooks/useDivisions";
-import { useSeasons } from "@/requests/hooks/useSeasons";
-import { useTeams } from "@/requests/hooks/useTeams";
+import { useDivisions } from "@/hooks/requests/useDivisions";
+import { useSeasons } from "@/hooks/requests/useSeasons";
+import { useTeam } from "@/hooks/requests/useTeam";
 
 export default function TeamPage() {
   const { team } = useParams();
-  const { data, placeholder, loading, error } = useTeams({
+  const { data, placeholder, loading, error } = useTeam({
     short_name: team as string,
   });
   const { data: divisions } = useDivisions({});

@@ -4,9 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
 
-import { useTeams } from "@/requests/hooks/useTeams";
-import { useSeasons } from "@/requests/hooks/useSeasons";
-import { useDivisions } from "@/requests/hooks/useDivisions";
+import { useTeams } from "@/hooks/requests/useTeams";
+import { useSeasons } from "@/hooks/requests/useSeasons";
+import { useDivisions } from "@/hooks/requests/useDivisions";
 export default function SchedulePage() {
   const { teams, placeholder, error } = useTeams({});
   const { seasons } = useSeasons({});
@@ -26,8 +26,8 @@ export default function SchedulePage() {
           </CardHeader>
         </Card>
       ))}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {teams?.map((team: Team) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {teams?.map((team: Team) => (
           <Link href={`/teams/${team.short_name}`} key={team.id}>
             <Card key={team.id}>
               <CardHeader>

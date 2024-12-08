@@ -28,8 +28,6 @@ export default function ScheduleCarousel() {
   const { selectedSeason } = useSeasonSelect({ defaultActive: true });
   const { data } = useGameDays({ season: selectedSeason?.id });
 
-  console.log(data);
-
   const getGamesByTime = (games: Game[]) => {
     return games
       .reduce((acc: GameTimeSlot[], game: Game) => {

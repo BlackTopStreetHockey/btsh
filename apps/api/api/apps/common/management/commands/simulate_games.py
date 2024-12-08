@@ -115,4 +115,7 @@ class Command(BaseCommand):
                                 }
                             )
 
+            game.status = Game.COMPLETED
+            game.save()
+
             print_separator()
