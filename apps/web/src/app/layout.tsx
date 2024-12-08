@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import BTSHSidebar from "@/components/navigation/btsh-sidebar";
+import BTSHNavbar from "@/components/navigation/btsh-navbar";
+import clsx from "clsx";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -24,14 +25,18 @@ export default function BTSHLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // get the width of window
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <div>
-          <BTSHSidebar />
-          <div className="ml-32 min-h-screen">{children}</div>
+          <BTSHNavbar />
+          {/* tailwind class to push content to the right on lg screens and push down on small screens and xs screens */}
+          <div className="min-h-screen mt-16 md:mt-0 ml-0 md:ml-32">
+            {children}
+          </div>
         </div>
       </body>
     </html>
