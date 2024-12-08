@@ -8,7 +8,22 @@ from users.serializers import UserReadOnlySerializer
 from .models import Game, GameDay, GameGoal, GamePlayer, GameReferee
 
 
+GAME_DAY_FIELDS = ('day', 'season', 'opening_team', 'closing_team',)
+
+
+class NestedGameDayReadOnlySerializer(BaseReadOnlyModelSerializer):
+    """Circular dependency issue hence us re-defining this"""
+    opening_team = TeamReadOnlySerializer()
+    closing_team = TeamReadOnlySerializer()
+    season = SeasonReadOnlySerializer()
+
+    class Meta(BaseReadOnlyModelSerializer.Meta):
+        model = GameDay
+        fields = BaseReadOnlyModelSerializer.Meta.fields + GAME_DAY_FIELDS
+
+
 class GameReadOnlySerializer(BaseReadOnlyModelSerializer):
+    game_day = NestedGameDayReadOnlySerializer()
     home_team = TeamReadOnlySerializer()
     away_team = TeamReadOnlySerializer()
 
@@ -16,13 +31,16 @@ class GameReadOnlySerializer(BaseReadOnlyModelSerializer):
     away_team_num_goals = serializers.IntegerField()
     winning_team_id = serializers.PrimaryKeyRelatedField(queryset=Team.objects.all())
     losing_team_id = serializers.PrimaryKeyRelatedField(queryset=Team.objects.all())
+    result = serializers.CharField()
+    get_result_display = serializers.CharField()
 
     class Meta(BaseReadOnlyModelSerializer.Meta):
         model = Game
         fields = BaseReadOnlyModelSerializer.Meta.fields + (
             'game_day', 'start', 'duration', 'end', 'home_team', 'away_team',
             'location', 'court', 'get_court_display', 'type', 'get_type_display', 'home_team_num_goals',
-            'away_team_num_goals', 'winning_team_id', 'losing_team_id',
+            'away_team_num_goals', 'winning_team_id', 'losing_team_id', 'status', 'get_status_display',
+            'home_team_display', 'away_team_display', 'result', 'get_result_display',
         )
 
 
@@ -34,7 +52,7 @@ class GameDayReadOnlySerializer(BaseReadOnlyModelSerializer):
 
     class Meta(BaseReadOnlyModelSerializer.Meta):
         model = GameDay
-        fields = BaseReadOnlyModelSerializer.Meta.fields + ('day', 'season', 'opening_team', 'closing_team', 'games')
+        fields = BaseReadOnlyModelSerializer.Meta.fields + (*GAME_DAY_FIELDS, 'games')
 
 
 class GameRefereeReadOnlySerializer(BaseReadOnlyModelSerializer):

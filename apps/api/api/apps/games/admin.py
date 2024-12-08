@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from common.admin import BaseModelAdmin, BaseModelTabularInline
-from .models import Game, GameDay, GameGoal, GamePlayer, GameReferee
+from .models import Game, GameDay, GameGoal, GamePlayer, GameReferee, GameResultsEnum
 
 
 class GameInline(BaseModelTabularInline):
@@ -42,17 +42,48 @@ class GameDayAdmin(BaseModelAdmin):
     inlines = [GameInline]
 
 
+class GameResultListFilter(admin.SimpleListFilter):
+    title = 'Result'
+    parameter_name = 'result'
+
+    def lookups(self, request, model_admin):
+        return [
+            (GameResultsEnum.FINAL.value, GameResultsEnum.FINAL.label),
+            (GameResultsEnum.FINAL_OT.value, GameResultsEnum.FINAL_OT.label),
+            (GameResultsEnum.FINAL_SO.value, GameResultsEnum.FINAL_SO.label),
+        ]
+
+    def queryset(self, request, queryset):
+        return queryset.filter(result=self.value()) if self.value() else queryset
+
+
 @admin.register(Game)
 class GameAdmin(BaseModelAdmin):
     list_display = (
-        'game_day', 'start', 'type', 'home_team', 'away_team', 'court', 'location', 'end', 'duration',
+        'game_day', 'start', 'status', 'type', 'home_team_display', 'away_team_display', 'get_result_display', 'court',
+        'location', 'end', 'duration',
     )
-    list_filter = ('game_day__day', 'game_day__season', 'court', 'type', 'home_team', 'away_team', 'location')
+    list_filter = (
+        'game_day__day', 'game_day__season', 'status', GameResultListFilter, 'court', 'type', 'home_team', 'away_team',
+        'location'
+    )
     search_fields = ('game_day__day', 'start', 'home_team__name', 'away_team__name', 'court')
     ordering = ('-game_day__day', 'start')
     autocomplete_fields = ('game_day', 'home_team', 'away_team')
     readonly_fields = ('end',)
     inlines = [GameGoalInline, GameRefereeInline, GamePlayerInline]
+
+    @admin.display(description='Home Team')
+    def home_team_display(self, obj):
+        return obj.home_team_display
+
+    @admin.display(description='Away Team')
+    def away_team_display(self, obj):
+        return obj.away_team_display
+
+    @admin.display(description='Result')
+    def get_result_display(self, obj):
+        return obj.get_result_display
 
     def get_queryset(self, request):
         return super().get_queryset(request).with_scores()
