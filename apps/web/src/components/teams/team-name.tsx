@@ -1,30 +1,27 @@
 import clsx from "clsx";
 import Link from "next/link";
 
-
-export default function TeamName({ 
+export default function TeamName({
   team,
   link,
-  className='text-sm',
-  imWidth=32
-}: { 
-  team: Team,
-  link?: boolean,
-  className?: string,
-  imWidth?: number
+}: {
+  team: Team;
+  link?: boolean;
 }) {
   const content = (
-    <div className={clsx("flex flex-row gap-2", className)}>
-      <img src={team.logo} alt={team.name} width={imWidth} className='rounded' />
-      <div>{team.name}</div>
+    <div className="flex flex-row gap-2">
+      <img
+        src={team.logo}
+        alt={team.name}
+        width={24}
+        height={24}
+        className="rounded"
+      />
+      <div className="text-sm">{team.name}</div>
     </div>
   );
   if (link) {
-    return (
-      <Link href={`/teams/${team.short_name}`}>
-        {content}
-      </Link>
-    )
+    return <Link href={`/teams/${team.short_name}`}>{content}</Link>;
   }
   return content;
 }

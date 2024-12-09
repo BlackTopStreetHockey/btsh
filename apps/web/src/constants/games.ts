@@ -1,6 +1,4 @@
-
-
 export const GAME_COURTS = {
-  east: 'east',
-  west: 'west'
-}
+  east: "east",
+  west: "west",
+};

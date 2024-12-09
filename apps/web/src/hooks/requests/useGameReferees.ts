@@ -1,20 +1,24 @@
 import { usePlaceholder } from "./usePlaceholder";
 import { useRequest } from "./useRequest";
 
-export const useGameDays = ({ 
-  season 
+export const useGameReferees = ({ 
+  gameId 
 }: { 
-  season: number | string
+  gameId: number | string
 }) => {
   const { data, placeholder, ...rest } = usePlaceholder(useRequest({
-    route: 'game_days',
+    route: 'game_referees',
     params: {
-      season
+      game: gameId
     },
-    skip: !season
+    skip: !gameId
   }));
+
+  const referees = data?.results;
+  
   return {
     data,
+    referees,
     placeholder,
     ...rest
   }
