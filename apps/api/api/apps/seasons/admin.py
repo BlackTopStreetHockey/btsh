@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from common.admin import BaseModelAdmin
+from teams.admin import TeamSeasonRegistrationInline
 from .models import Season, SeasonRegistration
 
 
@@ -10,6 +11,7 @@ class SeasonAdmin(BaseModelAdmin):
     list_filter = ('start', 'end',)
     search_fields = ('start', 'end')
     ordering = ('start', 'end')
+    inlines = [TeamSeasonRegistrationInline]
 
     @admin.display(boolean=True)
     def is_past(self, obj):
