@@ -9,7 +9,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('divisions', '0002_division_created_by_division_updated_by'),
-        ('seasons', '0003_seasonregistration'),
         ('teams', '0003_team_short_name'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]

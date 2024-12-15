@@ -3,13 +3,12 @@ from copy import deepcopy
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from common.admin import BaseModelTabularInline
-from seasons.models import SeasonRegistration
-from .models import User
+from common.admin import BaseModelAdmin, BaseModelTabularInline
+from .models import User, UserSeasonRegistration
 
 
-class SeasonRegistrationInline(BaseModelTabularInline):
-    model = SeasonRegistration
+class UserSeasonRegistrationInline(BaseModelTabularInline):
+    model = UserSeasonRegistration
     fk_name = 'user'
     autocomplete_fields = ('season', 'team',)
     ordering = ('season', 'team')
@@ -26,7 +25,7 @@ class UserAdmin(BaseUserAdmin):
     search_fields = ('id',) + BaseUserAdmin.search_fields
     date_hierarchy = 'date_joined'
     ordering = ('first_name', 'last_name')
-    inlines = [SeasonRegistrationInline]
+    inlines = [UserSeasonRegistrationInline]
 
     def get_fieldsets(self, request, obj=None):
         fieldsets = deepcopy(super().get_fieldsets(request, obj))
@@ -34,3 +33,14 @@ class UserAdmin(BaseUserAdmin):
             personal_info_fields = fieldsets[1][1]['fields']
             fieldsets[1][1]['fields'] = (*personal_info_fields, 'gender',)
         return fieldsets
+
+
+@admin.register(UserSeasonRegistration)
+class UserSeasonRegistrationAdmin(BaseModelAdmin):
+    list_display = (
+        'user', 'season', 'team', 'is_captain', 'position', 'registered_at', 'signature', 'location',
+    )
+    list_filter = ('season', 'team', 'is_captain', 'position', 'location')
+    search_fields = ('user__username', 'user__email', 'user__first_name', 'user__last_name', 'season', 'team__name')
+    ordering = ('season', 'team', 'user__first_name', 'user__last_name')
+    autocomplete_fields = ('user', 'season', 'team',)

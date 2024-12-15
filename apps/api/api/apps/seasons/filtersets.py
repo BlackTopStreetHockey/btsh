@@ -1,6 +1,6 @@
 from django_filters import rest_framework as filters
 
-from .models import Season, SeasonRegistration
+from .models import Season
 
 
 class SeasonFilterSet(filters.FilterSet):
@@ -10,9 +10,3 @@ class SeasonFilterSet(filters.FilterSet):
     class Meta:
         model = Season
         fields = ('start', 'end')
-
-
-class SeasonRegistrationFilterSet(filters.FilterSet):
-    class Meta:
-        model = SeasonRegistration
-        fields = ('user', 'season', 'team', 'is_captain', 'position', 'location')

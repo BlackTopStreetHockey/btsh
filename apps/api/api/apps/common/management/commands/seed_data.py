@@ -10,9 +10,9 @@ from mimesis import Person
 
 from divisions.models import Division
 from games.models import Game, GameDay
-from seasons.models import Season, SeasonRegistration
+from seasons.models import Season
 from teams.models import Team, TeamSeasonRegistration
-from users.models import User
+from users.models import User, UserSeasonRegistration
 from .utils import get_default_created_by, get_or_create, print_separator
 
 
@@ -197,7 +197,7 @@ def seed_team_season_registrations(seasons, teams, divisions, created_by):
 def seed_user_season_registrations(seasons, teams, users, created_by):
     print('Seeding user season registrations.')
     user_season_registrations = []
-    if SeasonRegistration.objects.exists():
+    if UserSeasonRegistration.objects.exists():
         print('User season registrations already exist.')
     else:
         for season in seasons:
@@ -206,16 +206,16 @@ def seed_user_season_registrations(seasons, teams, users, created_by):
             for team in teams:
                 for u in _users[:USERS_PER_TEAM]:
                     usr, _ = get_or_create(
-                        SeasonRegistration,
+                        UserSeasonRegistration,
                         get_kwargs={'user': u, 'team': team, 'season': season},
                         create_kwargs={
                             'user': u,
                             'season': season,
                             'team': team,
                             'is_captain': random.randint(0, 20) % 3 == 0,
-                            'position': random.choice(list(SeasonRegistration.POSITIONS.keys())),
+                            'position': random.choice(list(UserSeasonRegistration.POSITIONS.keys())),
                             'signature': u.get_full_name(),
-                            'location': random.choice(list(SeasonRegistration.LOCATIONS.keys())),
+                            'location': random.choice(list(UserSeasonRegistration.LOCATIONS.keys())),
                             'interested_in': None,
                             'mid_season_party_ideas': None,
                             'created_by': created_by,
@@ -224,7 +224,7 @@ def seed_user_season_registrations(seasons, teams, users, created_by):
                     user_season_registrations.append(usr)
                 _users = _users[USERS_PER_TEAM:]
         print(f'Seeded {len(user_season_registrations)} user season registrations.')
-    return SeasonRegistration.objects.all().order_by('season__year', 'user__first_name', 'user__last_name')
+    return UserSeasonRegistration.objects.all().order_by('season__year', 'user__first_name', 'user__last_name')
 
 
 def seed_games(seasons, teams, created_by):
