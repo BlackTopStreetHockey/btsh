@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class SeasonRegistrationQuerySet(models.QuerySet):
+class UserSeasonRegistrationQuerySet(models.QuerySet):
     def for_team(self, team, season=None):
         kwargs = {'team': team}
         if season:
@@ -9,5 +9,5 @@ class SeasonRegistrationQuerySet(models.QuerySet):
         return self.filter(**kwargs).select_related('user', 'team', 'season')
 
 
-class SeasonRegistrationManager(models.Manager):
+class UserSeasonRegistrationManager(models.Manager):
     ...
