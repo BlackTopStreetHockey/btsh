@@ -24,11 +24,15 @@ class NestedGameDayReadOnlySerializer(BaseReadOnlyModelSerializer):
 
 class GameReadOnlySerializer(BaseReadOnlyModelSerializer):
     game_day = NestedGameDayReadOnlySerializer()
-    home_team = TeamReadOnlySerializer(exclude=('seasons',))
-    away_team = TeamReadOnlySerializer(exclude=('seasons',))
 
+    home_team = TeamReadOnlySerializer(exclude=('seasons',))
+    home_team_division_name = serializers.CharField()
     home_team_num_goals = serializers.IntegerField()
+
+    away_team = TeamReadOnlySerializer(exclude=('seasons',))
+    away_team_division_name = serializers.CharField()
     away_team_num_goals = serializers.IntegerField()
+
     winning_team_id = serializers.PrimaryKeyRelatedField(queryset=Team.objects.all())
     losing_team_id = serializers.PrimaryKeyRelatedField(queryset=Team.objects.all())
     result = serializers.CharField()
@@ -37,10 +41,10 @@ class GameReadOnlySerializer(BaseReadOnlyModelSerializer):
     class Meta(BaseReadOnlyModelSerializer.Meta):
         model = Game
         fields = BaseReadOnlyModelSerializer.Meta.fields + (
-            'game_day', 'start', 'duration', 'end', 'home_team', 'away_team',
-            'location', 'court', 'get_court_display', 'type', 'get_type_display', 'home_team_num_goals',
-            'away_team_num_goals', 'winning_team_id', 'losing_team_id', 'status', 'get_status_display',
-            'home_team_display', 'away_team_display', 'result', 'get_result_display',
+            'game_day', 'start', 'duration', 'end', 'home_team', 'home_team_division_name', 'home_team_num_goals',
+            'home_team_display', 'away_team', 'away_team_division_name', 'away_team_num_goals', 'away_team_display',
+            'location', 'court', 'get_court_display', 'type', 'get_type_display', 'winning_team_id', 'losing_team_id',
+            'status', 'get_status_display', 'result', 'get_result_display',
         )
 
 
