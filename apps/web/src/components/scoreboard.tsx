@@ -207,7 +207,7 @@ export function Scoreboard({
               .filter(
                 (player) =>
                   player.team === homeTeam?.name ||
-                  player.team === awayTeam?.name
+                  player.team === awayTeam?.name,
               )
               .map((player) => (
                 <SelectItem key={player.id} value={player.id}>

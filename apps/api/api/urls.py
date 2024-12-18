@@ -20,6 +20,8 @@ from django.contrib.auth import views as auth_views
 from django.urls import include, path
 from django.views import generic
 
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+
 
 project_name = 'BTSH'
 admin.site.site_header = project_name
@@ -62,17 +64,21 @@ urlpatterns = [
 
     # API
     path('api/', include([
+        path('docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+        path('schema/', SpectacularAPIView.as_view(), name='schema'),
         path('auth/', include('rest_framework.urls')),
         path('', include('divisions.urls')),
         path('', include('seasons.urls')),
         path('', include('teams.urls')),
         path('', include('games.urls')),
+        path('', include('users.urls')),
     ])),
 ]
 
 if settings.DEBUG:
     from debug_toolbar.toolbar import debug_toolbar_urls
     from django.conf.urls.static import static
+
 
     urlpatterns += debug_toolbar_urls()
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

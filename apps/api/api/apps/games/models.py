@@ -6,8 +6,9 @@ from django.db.models import F
 
 from api.utils.datetime import format_datetime
 from common.models import BaseModel
+from divisions.models import Division
 from games.managers import GameManager, GameQuerySet
-from teams.models import Team
+from teams.models import Team, TeamSeasonRegistration
 
 
 def default_game_duration():
@@ -35,6 +36,12 @@ class GameDay(BaseModel):
         return format_datetime(self.day)
 
 
+class GameResultsEnum(models.TextChoices):
+    FINAL = 'final', 'Final'
+    FINAL_OT = 'final_ot', 'Final/OT'
+    FINAL_SO = 'final_so', 'Final/SO'
+
+
 class Game(BaseModel):
     EAST = 'east'
     WEST = 'west'
@@ -50,6 +57,15 @@ class Game(BaseModel):
         PLAYOFF: 'Playoff',
     }
 
+    SCHEDULED = 'scheduled'
+    CANCELLED = 'cancelled'
+    COMPLETED = 'completed'
+    STATUSES = {
+        SCHEDULED: 'Scheduled',
+        CANCELLED: 'Cancelled',
+        COMPLETED: 'Completed',
+    }
+
     game_day = models.ForeignKey(GameDay, on_delete=models.PROTECT, related_name='games')
     start = models.TimeField()
     duration = models.DurationField(default=default_game_duration)
@@ -63,12 +79,54 @@ class Game(BaseModel):
     location = models.CharField(max_length=256, default='Tompkins Square Park')
     court = models.CharField(max_length=8, choices=COURTS)
     type = models.CharField(max_length=8, choices=TYPES, default=REGULAR)
+    status = models.CharField(max_length=16, choices=STATUSES, default=SCHEDULED)
 
     objects = GameManager.from_queryset(GameQuerySet)()
 
+    def _get_team_display(self, team: Team, num_goals: int) -> str:
+        if self.status != Game.COMPLETED:
+            return team.name
+
+        win_loss_tie = None
+        if self.winning_team_id == team.id:
+            win_loss_tie = 'W'
+        elif self.losing_team_id == team.id:
+            win_loss_tie = 'L'
+        elif self.winning_team_id is None and self.losing_team_id is None:
+            win_loss_tie = 'T'
+
+        team_display = f'{team.name} ({num_goals})'
+        return f'{team_display} - {win_loss_tie}' if win_loss_tie else team_display
+
+    def get_team_season_registration(self, team: Team) -> TeamSeasonRegistration | None:
+        try:
+            return TeamSeasonRegistration.objects.get(team=team, season=self.game_day.season)
+        except TeamSeasonRegistration.DoesNotExist:
+            return None
+
+    def _get_team_division(self, team: Team) -> Division | None:
+        team_season_registration = self.get_team_season_registration(team)
+        return team_season_registration.division if team_season_registration else None
+
     @property
-    def teams(self):
+    def teams(self) -> list[Team]:
         return [self.home_team, self.away_team]
+
+    @property
+    def home_team_division(self):
+        return self._get_team_division(self.home_team)
+
+    @property
+    def away_team_division(self):
+        return self._get_team_division(self.away_team)
+
+    @property
+    def home_team_display(self):
+        return self._get_team_display(self.home_team, self.home_team_num_goals)
+
+    @property
+    def away_team_display(self):
+        return self._get_team_display(self.away_team, self.away_team_num_goals)
 
     def __str__(self):
         return f'{self.game_day} {self.start.strftime("%I:%M%p")} {self.home_team.name} vs. {self.away_team.name}'

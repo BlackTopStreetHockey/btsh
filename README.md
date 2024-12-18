@@ -16,9 +16,8 @@ Built with: Django, Django REST Framework, Postgres.
   * `$ make build`
 * Apply django migrations
   * `$ make migrate`
-* Create a superuser
+* Create a superuser so you can log into the django admin
   * `$ make manage C="createsuperuser"`
-  * You can use this user to log into the django admin
 * Start your local server
   * `$ make up`
 * Go to your local admin http://localhost:8000/admin/
@@ -26,6 +25,10 @@ Built with: Django, Django REST Framework, Postgres.
   * Under `Users` find the superuser you created and set your first name and last name
 * Seed some data
   * `$ make manage C="seed_data"`
+* Simulate some games
+  * `$ make manage C="simulate_games FROM TO"`
+    * Where FROM and TO can either be `now` or a date `YYYY-MM-DD`
+      * ex: `$ make manage C="simulate_games 2022-03-31 2022-10-31"`
 
 ### Development
 

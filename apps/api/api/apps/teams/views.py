@@ -1,28 +1,26 @@
 from common.views import BaseModelReadOnlyViewSet
-from .models import Team
-from .serializers import TeamReadOnlySerializer
-from rest_framework import viewsets, generics
-from rest_framework.exceptions import NotFound
+from .filtersets import TeamFilterSet
+from .models import Team, TeamSeasonRegistration
+from .serializers import TeamReadOnlySerializer, TeamSeasonRegistrationReadOnlySerializer
 
 
 class TeamViewSet(BaseModelReadOnlyViewSet):
-    queryset = Team.objects.all()
+    queryset = Team.objects.all().prefetch_related(
+        'team_season_registrations__season',
+        'team_season_registrations__division',
+    )
     lookup_field = 'short_name'
     serializer_class = TeamReadOnlySerializer
     ordering = ('name',)
     ordering_fields = ('name', 'short_name')
     search_fields = ('name', 'short_name')
+    filterset_class = TeamFilterSet
 
 
-class TeamDetailByShortNameView(generics.RetrieveAPIView):
-    serializer_class = TeamReadOnlySerializer
-    lookup_field = 'short_name'
-    lookup_url_kwarg = 'short_name'
-    queryset = Team.objects.all()
-
-    def get_object(self):
-        short_name = self.kwargs.get('short_name')
-        try:
-            return Team.objects.get(short_name=short_name)
-        except Team.DoesNotExist:
-            raise NotFound(f"No team found with short name: {short_name}")
+class TeamSeasonRegistrationViewSet(BaseModelReadOnlyViewSet):
+    queryset = TeamSeasonRegistration.objects.all().select_related('team', 'season', 'division')
+    serializer_class = TeamSeasonRegistrationReadOnlySerializer
+    ordering = ('-season__start', 'division', 'team',)
+    ordering_fields = ('season', 'division', 'team',)
+    search_fields = ('division__name', 'team__name',)
+    filterset_fields = ('season', 'team', 'division',)
