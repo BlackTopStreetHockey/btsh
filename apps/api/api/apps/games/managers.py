@@ -1,5 +1,7 @@
 from django.db import models
-from django.db.models import Case, Count, F, Q, Value, When
+from django.db.models import Case, Count, F, OuterRef, Q, Subquery, Value, When
+
+from teams.models import TeamSeasonRegistration
 
 
 class GameQuerySet(models.QuerySet):
@@ -42,6 +44,19 @@ class GameQuerySet(models.QuerySet):
                 When(result=GameResultsEnum.FINAL_OT.value, then=Value(GameResultsEnum.FINAL_OT.label)),
                 default=Value(GameResultsEnum.FINAL.label),
             )
+        )
+
+    def with_team_divisions(self):
+        season_registrations = TeamSeasonRegistration.objects.filter(season=OuterRef('game_day__season'))
+        home_team_season_registrations = season_registrations.filter(team=OuterRef('home_team'))
+        away_team_season_registrations = season_registrations.filter(team=OuterRef('away_team'))
+
+        return self.annotate(
+            home_team_division_id=Subquery(home_team_season_registrations.values('division_id')),
+            home_team_division_name=Subquery(home_team_season_registrations.values('division__name')),
+
+            away_team_division_id=Subquery(away_team_season_registrations.values('division_id')),
+            away_team_division_name=Subquery(away_team_season_registrations.values('division__name')),
         )
 
 

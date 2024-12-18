@@ -6,8 +6,9 @@ from django.db.models import F
 
 from api.utils.datetime import format_datetime
 from common.models import BaseModel
+from divisions.models import Division
 from games.managers import GameManager, GameQuerySet
-from teams.models import Team
+from teams.models import Team, TeamSeasonRegistration
 
 
 def default_game_duration():
@@ -82,7 +83,7 @@ class Game(BaseModel):
 
     objects = GameManager.from_queryset(GameQuerySet)()
 
-    def _get_team_display(self, team: Team, num_goals: int):
+    def _get_team_display(self, team: Team, num_goals: int) -> str:
         if self.status != Game.COMPLETED:
             return team.name
 
@@ -97,9 +98,27 @@ class Game(BaseModel):
         team_display = f'{team.name} ({num_goals})'
         return f'{team_display} - {win_loss_tie}' if win_loss_tie else team_display
 
+    def get_team_season_registration(self, team: Team) -> TeamSeasonRegistration | None:
+        try:
+            return TeamSeasonRegistration.objects.get(team=team, season=self.game_day.season)
+        except TeamSeasonRegistration.DoesNotExist:
+            return None
+
+    def _get_team_division(self, team: Team) -> Division | None:
+        team_season_registration = self.get_team_season_registration(team)
+        return team_season_registration.division if team_season_registration else None
+
     @property
-    def teams(self):
+    def teams(self) -> list[Team]:
         return [self.home_team, self.away_team]
+
+    @property
+    def home_team_division(self):
+        return self._get_team_division(self.home_team)
+
+    @property
+    def away_team_division(self):
+        return self._get_team_division(self.away_team)
 
     @property
     def home_team_display(self):
