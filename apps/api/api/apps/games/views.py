@@ -16,7 +16,10 @@ class GameDayViewSet(BaseModelReadOnlyViewSet):
     queryset = GameDay.objects.all().select_related(
         'opening_team', 'closing_team', 'season'
     ).prefetch_related(
-        Prefetch('games', queryset=Game.objects.select_related('home_team', 'away_team').with_scores()),
+        Prefetch(
+            'games',
+            queryset=Game.objects.select_related('home_team', 'away_team').with_scores().with_team_divisions()
+        ),
     )
     serializer_class = GameDayReadOnlySerializer
     ordering = ('day',)
