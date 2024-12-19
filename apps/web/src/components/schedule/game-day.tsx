@@ -10,7 +10,7 @@ export default function GameDay({ gameDay }: { gameDay: GameDay }) {
     { label: "East", games: eastGames },
   ];
   return (
-    <div className="p-4 border">
+    <div className="p-4 border mb-4">
       <div className="text-lg font-bold">
         {formatDateNoTimezone(gameDay.day, "eeee, MMMM do y")}
       </div>
