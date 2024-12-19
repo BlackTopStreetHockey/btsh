@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { BarChart, BookOpenText, Calendar, Clock, Settings2, Table, Users, Whistle } from "lucide-react";
+import { BarChart, BookOpenText, Calendar, Clock, Settings2, Speech, Table, Users } from "lucide-react";
 
 import BTSHLogo from "@/components/navigation/btsh-logo";
 import { NavPages } from "./navigation/nav-pages";
@@ -44,11 +44,6 @@ const data = {
       icon: BarChart,
     },
     {
-      title: "Settings",
-      url: "/settings",
-      icon: Settings2,
-    },
-    {
       title: "Rules",
       url: "/rules",
       icon: BookOpenText,
@@ -61,8 +56,13 @@ const data = {
     {
       title: "Ref",
       url: "/ref",
-      icon: Whistle,
-    }
+      icon: Speech,
+    },
+    {
+        title: "Settings",
+        url: "/settings",
+        icon: Settings2,
+      },
   ],
 };
 
