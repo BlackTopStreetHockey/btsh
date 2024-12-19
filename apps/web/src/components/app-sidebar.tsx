@@ -1,10 +1,20 @@
 "use client";
 
 import * as React from "react";
-import { BarChart, Calendar, Settings2, Table, Users } from "lucide-react";
+import {
+  BarChart,
+  Calendar,
+  GithubIcon,
+  Settings2,
+  Table,
+  Users,
+  LifeBuoy,
+  Send,
+} from "lucide-react";
 
 import BTSHLogo from "@/components/navigation/btsh-logo";
 import { NavPages } from "./navigation/nav-pages";
+import { NavSecondary } from "@/components/navigation/nav-secondary";
 import { NavUser } from "@/components/navigation/nav-user";
 import { SeasonSelector } from "@/components/season-selector";
 import {
@@ -15,7 +25,6 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 
-// This is sample data.
 const data = {
   user: {
     name: "Justin",
@@ -49,6 +58,23 @@ const data = {
       icon: Settings2,
     },
   ],
+  navSecondary: [
+    {
+      title: "Contribute",
+      url: "https://github.com/blacktopstreethockey/btsh",
+      icon: GithubIcon,
+    },
+    {
+      title: "Support",
+      url: "#",
+      icon: LifeBuoy,
+    },
+    {
+      title: "Feedback",
+      url: "#",
+      icon: Send,
+    },
+  ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -64,6 +90,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavPages items={data.pages} />
       </SidebarContent>
       <SidebarFooter>
+        <NavSecondary items={data.navSecondary} />
         <NavUser user={data.user} />
       </SidebarFooter>
       <SidebarRail />

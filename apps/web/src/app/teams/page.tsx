@@ -52,7 +52,9 @@ export default function TeamsPage() {
 
   return (
     <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-bold mb-6">Teams</h1>
+      <h1 className="text-3xl font-bold mb-6">
+        {currentSeason?.year} Teams
+      </h1>
 
       <div className="space-y-8">
         {teamsByDivision &&

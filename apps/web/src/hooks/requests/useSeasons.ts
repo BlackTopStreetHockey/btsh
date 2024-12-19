@@ -16,3 +16,10 @@ export const useSeasons = () => {
     ...rest,
   };
 };
+
+export const useSeason = (seasonId: number) => {
+  const { data } = useRequest({
+    route: `seasons/${seasonId}`,
+  });
+  return data;
+};
