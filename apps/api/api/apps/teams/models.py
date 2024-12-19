@@ -2,6 +2,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 from common.models import BaseModel
+from .managers import TeamSeasonRegistrationManager, TeamSeasonRegistrationQuerySet
 
 
 class Team(BaseModel):
@@ -26,6 +27,8 @@ class TeamSeasonRegistration(BaseModel):
     division = models.ForeignKey(
         'divisions.Division', on_delete=models.PROTECT, related_name='division_season_registrations'
     )
+
+    objects = TeamSeasonRegistrationManager.from_queryset(TeamSeasonRegistrationQuerySet)()
 
     def __str__(self):
         return f'{self.team} - {self.division} - {self.season}'
