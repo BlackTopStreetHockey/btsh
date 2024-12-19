@@ -196,7 +196,7 @@ const Standings: FC = () => {
                             </td>
                             <td className="change text-center">
                               <div
-                                className={`ml-2 px-2 py-1 rounded text-white text-sm ${
+                                className={`ml-2 px-2 py-1 rounded text-white text-sm font-mono ${
                                   data.diff >= 0
                                     ? data.diff
                                       ? "bg-[#66AA66]"
