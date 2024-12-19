@@ -6,7 +6,7 @@ import { BarChart, Calendar, Settings2, Table, Users } from "lucide-react";
 import BTSHLogo from "@/components/navigation/btsh-logo";
 import { NavPages } from "./navigation/nav-pages";
 import { NavUser } from "@/components/navigation/nav-user";
-
+import { SeasonSelector } from "@/components/season-selector";
 import {
   Sidebar,
   SidebarContent,
@@ -55,7 +55,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <BTSHLogo />
+        <div className="flex items-center justify-between">
+          <BTSHLogo />
+          <SeasonSelector />
+        </div>
       </SidebarHeader>
       <SidebarContent>
         <NavPages items={data.pages} />
