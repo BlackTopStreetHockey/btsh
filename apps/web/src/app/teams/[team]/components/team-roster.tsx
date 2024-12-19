@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -32,6 +32,7 @@ export function TeamRoster({
   const [sortField, setSortField] = useState<SortField>("full_name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
   const { roster } = useRoster({ seasonId, teamId });
+  const viewportRef = useRef<HTMLDivElement>(null);
 
   const handleSort = (field: SortField) => {
     if (field === sortField) {
@@ -91,7 +92,7 @@ export function TeamRoster({
         </div>
       </CardHeader>
       <CardContent>
-        <ScrollArea className="h-[500px]">
+        <ScrollArea className="h-[500px]" viewportRef={viewportRef}>
           <Table>
             <TableHeader>
               <TableRow>

@@ -8,7 +8,22 @@ from users.serializers import UserReadOnlySerializer
 from .models import Game, GameDay, GameGoal, GamePlayer, GameReferee
 
 
+GAME_DAY_FIELDS = ('day', 'season', 'opening_team', 'closing_team',)
+
+
+class NestedGameDayReadOnlySerializer(BaseReadOnlyModelSerializer):
+    """Circular dependency issue hence us re-defining this"""
+    opening_team = TeamReadOnlySerializer()
+    closing_team = TeamReadOnlySerializer()
+    season = SeasonReadOnlySerializer()
+
+    class Meta(BaseReadOnlyModelSerializer.Meta):
+        model = GameDay
+        fields = BaseReadOnlyModelSerializer.Meta.fields + GAME_DAY_FIELDS
+
+
 class GameReadOnlySerializer(BaseReadOnlyModelSerializer):
+    game_day = NestedGameDayReadOnlySerializer()
     home_team = TeamReadOnlySerializer()
     away_team = TeamReadOnlySerializer()
 
@@ -37,7 +52,7 @@ class GameDayReadOnlySerializer(BaseReadOnlyModelSerializer):
 
     class Meta(BaseReadOnlyModelSerializer.Meta):
         model = GameDay
-        fields = BaseReadOnlyModelSerializer.Meta.fields + ('day', 'season', 'opening_team', 'closing_team', 'games')
+        fields = BaseReadOnlyModelSerializer.Meta.fields + (*GAME_DAY_FIELDS, 'games')
 
 
 class GameRefereeReadOnlySerializer(BaseReadOnlyModelSerializer):

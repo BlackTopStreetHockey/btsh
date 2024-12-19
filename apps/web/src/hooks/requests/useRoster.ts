@@ -9,7 +9,7 @@ export const useRoster = ({
 }) => {
   const { data, placeholder, loading, error, ...rest } = usePlaceholder(
     useRequest({
-      route: "season-registrations",
+      route: "user-season-registrations",
       params: {
         seasons: seasonId,
         team: teamId,

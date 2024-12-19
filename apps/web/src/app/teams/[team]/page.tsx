@@ -57,7 +57,7 @@ export default function TeamPage() {
                   <SelectValue placeholder="Select Season" />
                 </SelectTrigger>
                 <SelectContent>
-                  {seasons?.map(
+                  {seasons?.sort((a, b) => b.year - a.year).map(
                     (season: {
                       id: number;
                       year: string;
