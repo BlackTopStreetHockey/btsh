@@ -5,7 +5,72 @@
  * BTSH
  * OpenAPI spec version: 1.0.0
  */
+export type UserSeasonRegistrationsListPosition =
+  (typeof UserSeasonRegistrationsListPosition)[keyof typeof UserSeasonRegistrationsListPosition];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UserSeasonRegistrationsListPosition = {
+  defense: "defense",
+  forward: "forward",
+  goalie: "goalie",
+} as const;
+
+export type UserSeasonRegistrationsListLocation =
+  (typeof UserSeasonRegistrationsListLocation)[keyof typeof UserSeasonRegistrationsListLocation];
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const UserSeasonRegistrationsListLocation = {
+  bronx: "bronx",
+  brooklyn: "brooklyn",
+  connecticut: "connecticut",
+  long_island: "long_island",
+  manhattan: "manhattan",
+  new_jersey: "new_jersey",
+  queens: "queens",
+  westchester: "westchester",
+} as const;
+
+export type UserSeasonRegistrationsListParams = {
+  is_captain?: boolean;
+  /**
+   * * `brooklyn` - Brooklyn
+   * `bronx` - Bronx
+   * `manhattan` - Manhattan
+   * `queens` - Queens
+   * `long_island` - Long Island
+   * `new_jersey` - New Jersey
+   * `connecticut` - Connecticut
+   * `westchester` - Westchester
+   */
+  location?: UserSeasonRegistrationsListLocation;
+  /**
+   * Which field to use when ordering the results.
+   */
+  ordering?: string;
+  /**
+   * A page number within the paginated result set.
+   */
+  page?: number;
+  /**
+   * * `defense` - Defense
+   * `forward` - Forward
+   * `goalie` - Goalie
+   */
+  position?: UserSeasonRegistrationsListPosition;
+  /**
+   * A search term.
+   */
+  search?: string;
+  season?: number;
+  team?: number;
+  user?: number;
+};
+
 export type TeamsListParams = {
+  /**
+   * Division
+   */
+  division?: string;
   /**
    * Which field to use when ordering the results.
    */
@@ -18,6 +83,28 @@ export type TeamsListParams = {
    * A search term.
    */
   search?: string;
+  /**
+   * Season
+   */
+  season?: string;
+};
+
+export type TeamSeasonRegistrationsListParams = {
+  division?: number;
+  /**
+   * Which field to use when ordering the results.
+   */
+  ordering?: string;
+  /**
+   * A page number within the paginated result set.
+   */
+  page?: number;
+  /**
+   * A search term.
+   */
+  search?: string;
+  season?: number;
+  team?: number;
 };
 
 export type SeasonsListParams = {
@@ -37,67 +124,6 @@ export type SeasonsListParams = {
   search?: string;
   start_after?: string;
   start_before?: string;
-};
-
-export type SeasonRegistrationsListPosition =
-  (typeof SeasonRegistrationsListPosition)[keyof typeof SeasonRegistrationsListPosition];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SeasonRegistrationsListPosition = {
-  defense: "defense",
-  forward: "forward",
-  goalie: "goalie",
-} as const;
-
-export type SeasonRegistrationsListLocation =
-  (typeof SeasonRegistrationsListLocation)[keyof typeof SeasonRegistrationsListLocation];
-
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export const SeasonRegistrationsListLocation = {
-  bronx: "bronx",
-  brooklyn: "brooklyn",
-  connecticut: "connecticut",
-  long_island: "long_island",
-  manhattan: "manhattan",
-  new_jersey: "new_jersey",
-  queens: "queens",
-  westchester: "westchester",
-} as const;
-
-export type SeasonRegistrationsListParams = {
-  is_captain?: boolean;
-  /**
-   * * `brooklyn` - Brooklyn
-   * `bronx` - Bronx
-   * `manhattan` - Manhattan
-   * `queens` - Queens
-   * `long_island` - Long Island
-   * `new_jersey` - New Jersey
-   * `connecticut` - Connecticut
-   * `westchester` - Westchester
-   */
-  location?: SeasonRegistrationsListLocation;
-  /**
-   * Which field to use when ordering the results.
-   */
-  ordering?: string;
-  /**
-   * A page number within the paginated result set.
-   */
-  page?: number;
-  /**
-   * * `defense` - Defense
-   * `forward` - Forward
-   * `goalie` - Goalie
-   */
-  position?: SeasonRegistrationsListPosition;
-  /**
-   * A search term.
-   */
-  search?: string;
-  season?: number;
-  team?: number;
-  user?: number;
 };
 
 export type GamesListStatus =
@@ -157,6 +183,10 @@ export type GamesListParams = {
    * `completed` - Completed
    */
   status?: GamesListStatus;
+  /**
+   * Team
+   */
+  team?: string;
 };
 
 export type GameRefereesListType =
@@ -307,6 +337,15 @@ export interface UserReadOnly {
 /**
  * Reference: https://www.django-rest-framework.org/api-guide/serializers/#dynamically-modifying-fields
  */
+export interface TeamSeasonRegistrationReadOnly {
+  division: DivisionReadOnly;
+  season: SeasonReadOnly;
+  team: NestedTeamReadOnly;
+}
+
+/**
+ * Reference: https://www.django-rest-framework.org/api-guide/serializers/#dynamically-modifying-fields
+ */
 export interface TeamReadOnly {
   readonly created_at: string;
   /** @nullable */
@@ -377,7 +416,7 @@ export const PositionEnum = {
 /**
  * Reference: https://www.django-rest-framework.org/api-guide/serializers/#dynamically-modifying-fields
  */
-export interface SeasonRegistrationReadOnly {
+export interface UserSeasonRegistrationReadOnly {
   readonly created_at: string;
   /** @nullable */
   readonly created_by: number | null;
@@ -412,6 +451,24 @@ export const PeriodEnum = {
   so: "so",
 } as const;
 
+export interface PaginatedUserSeasonRegistrationReadOnlyList {
+  count: number;
+  /** @nullable */
+  next?: string | null;
+  /** @nullable */
+  previous?: string | null;
+  results: UserSeasonRegistrationReadOnly[];
+}
+
+export interface PaginatedTeamSeasonRegistrationReadOnlyList {
+  count: number;
+  /** @nullable */
+  next?: string | null;
+  /** @nullable */
+  previous?: string | null;
+  results: TeamSeasonRegistrationReadOnly[];
+}
+
 export interface PaginatedTeamReadOnlyList {
   count: number;
   /** @nullable */
@@ -419,15 +476,6 @@ export interface PaginatedTeamReadOnlyList {
   /** @nullable */
   previous?: string | null;
   results: TeamReadOnly[];
-}
-
-export interface PaginatedSeasonRegistrationReadOnlyList {
-  count: number;
-  /** @nullable */
-  next?: string | null;
-  /** @nullable */
-  previous?: string | null;
-  results: SeasonRegistrationReadOnly[];
 }
 
 export interface PaginatedSeasonReadOnlyList {
@@ -497,6 +545,29 @@ export type NullEnum = (typeof NullEnum)[keyof typeof NullEnum];
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export const NullEnum = {} as const;
+
+/**
+ * Circular dependency issue hence us re-defining this
+ */
+export interface NestedTeamReadOnly {
+  readonly created_at: string;
+  /** @nullable */
+  created_by?: number | null;
+  readonly id: number;
+  /**
+   * Comma separated list of jersey colors.
+   * @nullable
+   */
+  jersey_colors?: string[] | null;
+  logo: string;
+  /** @maxLength 64 */
+  name: string;
+  /** @maxLength 10 */
+  short_name: string;
+  readonly updated_at: string;
+  /** @nullable */
+  updated_by?: number | null;
+}
 
 /**
  * * `brooklyn` - Brooklyn
@@ -585,6 +656,7 @@ export const GameReadOnlyTypeEnum = {
 export interface GameReadOnly {
   away_team: TeamReadOnly;
   readonly away_team_display: string;
+  away_team_division_name: string;
   away_team_num_goals: number;
   court: CourtEnum;
   readonly created_at: string;
@@ -598,6 +670,7 @@ export interface GameReadOnly {
   readonly get_type_display: string;
   home_team: TeamReadOnly;
   readonly home_team_display: string;
+  home_team_division_name: string;
   home_team_num_goals: number;
   readonly id: number;
   /** @maxLength 256 */
@@ -1038,64 +1111,6 @@ export const gamesRetrieve = async (
   return { status: res.status, data, headers: res.headers };
 };
 
-export type seasonRegistrationsListResponse = {
-  data: PaginatedSeasonRegistrationReadOnlyList;
-  status: number;
-  headers: Headers;
-};
-
-export const getSeasonRegistrationsListUrl = (
-  params?: SeasonRegistrationsListParams,
-) => {
-  const normalizedParams = new URLSearchParams();
-
-  Object.entries(params || {}).forEach(([key, value]) => {
-    if (value !== undefined) {
-      normalizedParams.append(key, value === null ? "null" : value.toString());
-    }
-  });
-
-  return normalizedParams.size
-    ? `http://localhost:8000/api/season-registrations/?${normalizedParams.toString()}`
-    : `http://localhost:8000/api/season-registrations/`;
-};
-
-export const seasonRegistrationsList = async (
-  params?: SeasonRegistrationsListParams,
-  options?: RequestInit,
-): Promise<seasonRegistrationsListResponse> => {
-  const res = await fetch(getSeasonRegistrationsListUrl(params), {
-    ...options,
-    method: "GET",
-  });
-  const data = await res.json();
-
-  return { status: res.status, data, headers: res.headers };
-};
-
-export type seasonRegistrationsRetrieveResponse = {
-  data: SeasonRegistrationReadOnly;
-  status: number;
-  headers: Headers;
-};
-
-export const getSeasonRegistrationsRetrieveUrl = (id: number) => {
-  return `http://localhost:8000/api/season-registrations/${id}/`;
-};
-
-export const seasonRegistrationsRetrieve = async (
-  id: number,
-  options?: RequestInit,
-): Promise<seasonRegistrationsRetrieveResponse> => {
-  const res = await fetch(getSeasonRegistrationsRetrieveUrl(id), {
-    ...options,
-    method: "GET",
-  });
-  const data = await res.json();
-
-  return { status: res.status, data, headers: res.headers };
-};
-
 export type seasonsListResponse = {
   data: PaginatedSeasonReadOnlyList;
   status: number;
@@ -1152,6 +1167,64 @@ export const seasonsRetrieve = async (
   return { status: res.status, data, headers: res.headers };
 };
 
+export type teamSeasonRegistrationsListResponse = {
+  data: PaginatedTeamSeasonRegistrationReadOnlyList;
+  status: number;
+  headers: Headers;
+};
+
+export const getTeamSeasonRegistrationsListUrl = (
+  params?: TeamSeasonRegistrationsListParams,
+) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  return normalizedParams.size
+    ? `http://localhost:8000/api/team-season-registrations/?${normalizedParams.toString()}`
+    : `http://localhost:8000/api/team-season-registrations/`;
+};
+
+export const teamSeasonRegistrationsList = async (
+  params?: TeamSeasonRegistrationsListParams,
+  options?: RequestInit,
+): Promise<teamSeasonRegistrationsListResponse> => {
+  const res = await fetch(getTeamSeasonRegistrationsListUrl(params), {
+    ...options,
+    method: "GET",
+  });
+  const data = await res.json();
+
+  return { status: res.status, data, headers: res.headers };
+};
+
+export type teamSeasonRegistrationsRetrieveResponse = {
+  data: TeamSeasonRegistrationReadOnly;
+  status: number;
+  headers: Headers;
+};
+
+export const getTeamSeasonRegistrationsRetrieveUrl = (id: number) => {
+  return `http://localhost:8000/api/team-season-registrations/${id}/`;
+};
+
+export const teamSeasonRegistrationsRetrieve = async (
+  id: number,
+  options?: RequestInit,
+): Promise<teamSeasonRegistrationsRetrieveResponse> => {
+  const res = await fetch(getTeamSeasonRegistrationsRetrieveUrl(id), {
+    ...options,
+    method: "GET",
+  });
+  const data = await res.json();
+
+  return { status: res.status, data, headers: res.headers };
+};
+
 export type teamsListResponse = {
   data: PaginatedTeamReadOnlyList;
   status: number;
@@ -1200,6 +1273,64 @@ export const teamsRetrieve = async (
   options?: RequestInit,
 ): Promise<teamsRetrieveResponse> => {
   const res = await fetch(getTeamsRetrieveUrl(shortName), {
+    ...options,
+    method: "GET",
+  });
+  const data = await res.json();
+
+  return { status: res.status, data, headers: res.headers };
+};
+
+export type userSeasonRegistrationsListResponse = {
+  data: PaginatedUserSeasonRegistrationReadOnlyList;
+  status: number;
+  headers: Headers;
+};
+
+export const getUserSeasonRegistrationsListUrl = (
+  params?: UserSeasonRegistrationsListParams,
+) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  return normalizedParams.size
+    ? `http://localhost:8000/api/user-season-registrations/?${normalizedParams.toString()}`
+    : `http://localhost:8000/api/user-season-registrations/`;
+};
+
+export const userSeasonRegistrationsList = async (
+  params?: UserSeasonRegistrationsListParams,
+  options?: RequestInit,
+): Promise<userSeasonRegistrationsListResponse> => {
+  const res = await fetch(getUserSeasonRegistrationsListUrl(params), {
+    ...options,
+    method: "GET",
+  });
+  const data = await res.json();
+
+  return { status: res.status, data, headers: res.headers };
+};
+
+export type userSeasonRegistrationsRetrieveResponse = {
+  data: UserSeasonRegistrationReadOnly;
+  status: number;
+  headers: Headers;
+};
+
+export const getUserSeasonRegistrationsRetrieveUrl = (id: number) => {
+  return `http://localhost:8000/api/user-season-registrations/${id}/`;
+};
+
+export const userSeasonRegistrationsRetrieve = async (
+  id: number,
+  options?: RequestInit,
+): Promise<userSeasonRegistrationsRetrieveResponse> => {
+  const res = await fetch(getUserSeasonRegistrationsRetrieveUrl(id), {
     ...options,
     method: "GET",
   });

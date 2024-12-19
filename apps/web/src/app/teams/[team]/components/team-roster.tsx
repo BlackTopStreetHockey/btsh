@@ -1,13 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { useState, useRef } from "react";
+
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Table,
   TableBody,
@@ -17,41 +12,27 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowUp } from "lucide-react";
+import { ArrowUp, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 import { useRoster } from "@/hooks/requests/useRoster";
-import { useSeasons } from "@/hooks/requests/useSeasons";
-import { useRouter, usePathname } from "next/navigation";
 
-type SortField = "name" | "position" | "gender" | "gp" | "goals" | "gpg";
+type SortField = "full_name" | "position" | "gender" | "gp" | "goals" | "gpg";
 type SortDirection = "asc" | "desc";
 
-export function TeamRoster({ teamId }: { teamId: string }) {
-  const [sortField, setSortField] = useState<SortField>("name");
+export function TeamRoster({
+  seasonId,
+  teamId,
+  seasonYear,
+}: {
+  seasonId: string;
+  teamId: string;
+  seasonYear: string;
+}) {
+  const [sortField, setSortField] = useState<SortField>("full_name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
-  const [seasonId, setSeasonId] = useState<string>("");
-  const router = useRouter();
-  const pathname = usePathname();
-
-  const { seasons } = useSeasons({});
-
-  useEffect(() => {
-    setSeasonId(
-      seasons?.filter((season: Season) => season.is_current)[0].id
-    );
-  }, []);
-
-  console.log("seasonId:", seasonId);
   const { roster } = useRoster({ seasonId, teamId });
-
-  const handleSeasonChange = (newSeasonId: string) => {
-    // Update the URL with the new season ID
-    const searchParams = new URLSearchParams(window.location.search);
-    searchParams.set("season", newSeasonId);
-    router.push(`${pathname}?${searchParams.toString()}`);
-    setSeasonId(newSeasonId);
-  };
+  const viewportRef = useRef<HTMLDivElement>(null);
 
   const handleSort = (field: SortField) => {
     if (field === sortField) {
@@ -107,77 +88,65 @@ export function TeamRoster({ teamId }: { teamId: string }) {
     <Card>
       <CardHeader>
         <div className="flex justify-between items-center">
-          <CardTitle>Roster</CardTitle>
-          <div className="w-32">
-            <Select value={seasonId} onValueChange={handleSeasonChange}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select Season" />
-              </SelectTrigger>
-              <SelectContent>
-                {seasons?.map(
-                  (season: {
-                    id: number;
-                    year: string;
-                    is_current: boolean;
-                  }) => (
-                    <SelectItem key={season.id} value={season.id.toString()}>
-                      {season.year}
-                    </SelectItem>
-                  )
-                )}
-              </SelectContent>
-            </Select>
-          </div>
+          <CardTitle>{seasonYear} Roster</CardTitle>
         </div>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>
-                <SortableHeader field="name">Name</SortableHeader>
-              </TableHead>
-              <TableHead>
-                <SortableHeader field="position">Position</SortableHeader>
-              </TableHead>
-              <TableHead>
-                <SortableHeader field="gender">Gender</SortableHeader>
-              </TableHead>
-              <TableHead>
-                <SortableHeader field="gp">GP</SortableHeader>
-              </TableHead>
-              <TableHead className="text-right">
-                <SortableHeader field="goals">Goals</SortableHeader>
-              </TableHead>
-              <TableHead className="text-right">
-                <SortableHeader field="gpg">GPG</SortableHeader>
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {sortedPlayers.map((player) => (
-              <TableRow key={player.user.id}>
-                <TableCell>{player.user.full_name}</TableCell>
-                <TableCell className="text-center uppercase text-xs">
-                  {player.is_captain ? "⭐️ " : ""}{" "}
-                  {player.position.substring(0, 1)}
-                </TableCell>
-                <TableCell
-                  className={`text-center ${player.user.gender === "male" ? "text-blue-600" : "text-pink-600"}`}
-                >
-                  {player.user.gender === "male" ? "M" : "F"}
-                </TableCell>
-                <TableCell className="text-center">{player.gp}</TableCell>
-                <TableCell className="text-center">{player.goals}</TableCell>
-                <TableCell className="text-center">
-                  {player.goals && player.gp
-                    ? Math.round((player.goals / player.gp) * 100) / 100
-                    : 0}
-                </TableCell>
+        <ScrollArea className="h-[500px]" viewportRef={viewportRef}>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[150px]">
+                  <SortableHeader field="full_name">Name</SortableHeader>
+                </TableHead>
+                <TableHead>
+                  <SortableHeader field="position">Position</SortableHeader>
+                </TableHead>
+                <TableHead>
+                  <SortableHeader field="gender">Gender</SortableHeader>
+                </TableHead>
+                <TableHead>
+                  <SortableHeader field="gp">GP</SortableHeader>
+                </TableHead>
+                <TableHead className="text-right">
+                  <SortableHeader field="goals">Goals</SortableHeader>
+                </TableHead>
+                <TableHead className="text-right">
+                  <SortableHeader field="gpg">GPG</SortableHeader>
+                </TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {sortedPlayers.map((player) => (
+                <TableRow key={player.user.id}>
+                  <TableCell className="flex w-[150px] items-center gap-1">
+                    {player.user.full_name}
+                    {player.is_captain ? (
+                      <Star size={16} className="text-yellow-500" />
+                    ) : (
+                      ""
+                    )}
+                  </TableCell>
+                  <TableCell className="text-center uppercase text-xs">
+                    {player.position.substring(0, 1)}
+                  </TableCell>
+                  <TableCell
+                    className={`text-center ${player.user.gender === "male" ? "text-blue-600" : "text-pink-600"}`}
+                  >
+                    {player.user.gender === "male" ? "M" : "F"}
+                  </TableCell>
+                  <TableCell className="text-center">{player.gp}</TableCell>
+                  <TableCell className="text-center">{player.goals}</TableCell>
+                  <TableCell className="text-center">
+                    {player.goals && player.gp
+                      ? Math.round((player.goals / player.gp) * 100) / 100
+                      : 0}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </ScrollArea>
       </CardContent>
     </Card>
   );

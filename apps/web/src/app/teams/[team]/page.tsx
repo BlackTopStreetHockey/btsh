@@ -1,8 +1,19 @@
 "use client";
+
+import { useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+// import { useSeasons } from "@/hooks/requests/useSeasons";
 import { useTeam } from "@/hooks/requests/useTeam";
 
 import { TeamInfo } from "./components/team-info";
@@ -10,22 +21,24 @@ import { TeamRoster } from "./components/team-roster";
 import { TeamSchedule } from "./components/team-schedule";
 import { TeamPerformance } from "./components/team-performance";
 
+
+
 export default function TeamPage() {
   const { team } = useParams();
+
   // const searchParams = useSearchParams();
   const { data, placeholder, loading, error } = useTeam({
     short_name: team as string,
   });
-  // const { data: divisions } = useDivisions({});
-  // const { data: seasons } = useSeasons({});
-
-  // // Get the current season ID from URL params or use the current season
-  // const currentSeason = seasons?.results.find(season => season.is_current);
-  // const seasonId = searchParams.get('season') || currentSeason?.id.toString() || "1";
-
   console.log("data:", data);
-  // console.log("divisions:", divisions);
-  // console.log("seasons:", seasons);
+  const [seasonId, setSeasonId] = useState<string>("");
+  // // Get the current season ID from URL params or use the current season
+  const currentSeason = data?.seasons[0]?.season.id;
+  // find((season: Season) => season.is_current);
+  console.log("currentSeason:", currentSeason);
+  const handleSeasonChange = (newSeasonId: string) => {
+    setSeasonId(newSeasonId);
+  };
 
   return error ? (
     <div>{error.message}</div>
@@ -35,22 +48,61 @@ export default function TeamPage() {
     data && (
       <main>
         <div className="container mx-auto p-4">
-          <div className="flex mb-4">
+          <div className="flex justify-between items-center mb-4">
             <Link href="/teams" className="text-muted-foreground">
               <span className="flex text-sm gap-2 items-center">
                 <ArrowLeft size={24} /> Back to Teams
               </span>
             </Link>
+
+            <div className="w-32">
+              <Select value={seasonId} onValueChange={handleSeasonChange}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Season" />
+                </SelectTrigger>
+                <SelectContent>
+                  {data?.seasons
+                    ?.sort(
+                      (a: TeamSeason, b: TeamSeason) =>
+                        b.season.year - a.season.year,
+                    )
+                    .map((s: TeamSeason) => (
+                      <SelectItem
+                        key={s.season.id}
+                        value={s.season.id.toString()}
+                      >
+                        {s.season.year}
+                      </SelectItem>
+                    ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <div className="grid gap-4">
-            <TeamInfo team={data} />
+            <TeamInfo team={data} season={data.seasons.find((s: TeamSeason) => s.season.id === Number(seasonId))} />
 
             <div className="grid gap-4 md:grid-cols-3">
               <div className="md:col-span-2">
-                <TeamRoster teamId={data.id} />
+                <TeamRoster
+                  seasonId={seasonId}
+                  teamId={data.id}
+                  seasonYear={
+                    data?.seasons?.find(
+                      (season: TeamSeason) => season.season.id.toString() === seasonId,
+                    )?.season.year
+                  }
+                />
               </div>
               <div>
-                <TeamSchedule />
+                <TeamSchedule
+                  seasonId={seasonId}
+                  teamId={data.id}
+                  seasonYear={
+                    data?.seasons?.find(
+                      (season: TeamSeason) => season.season.id.toString() === seasonId,
+                    )?.season.year
+                  }
+                />
               </div>
             </div>
             <TeamPerformance />

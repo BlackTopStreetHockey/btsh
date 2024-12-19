@@ -1,6 +1,6 @@
 import { usePlaceholder, useRequest } from "@/hooks";
 
-export const useRoster = ({
+export const useSchedule = ({
   seasonId = "1",
   teamId = "2",
 }: {
@@ -9,16 +9,16 @@ export const useRoster = ({
 }) => {
   const { data, placeholder, loading, error, ...rest } = usePlaceholder(
     useRequest({
-      route: "user-season-registrations",
+      route: "game_days",
       params: {
-        seasons: seasonId,
+        season: seasonId,
         team: teamId,
       },
     })
   );
   return {
     data,
-    roster: data?.results,
+    schedule: data?.results,
     placeholder,
     loading,
     error,

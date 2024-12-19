@@ -4,9 +4,9 @@ import Link from "next/link";
 import { Instagram } from "lucide-react";
 import { getContrastingColor, generateStripeGradient } from "@/lib/utils";
 
-export function TeamInfo({ team }: { team: Team }) {
+export function TeamInfo({ team, season }: { team: Team; season: TeamSeason }) {
   const stripeGradient = generateStripeGradient(
-    team.jersey_colors || ["#000", "#FFF"]
+    team.jersey_colors || ["#000", "#FFF"],
   );
   const fadeGradient = `linear-gradient(to right, rgba(255, 255, 255, 1) 20%, rgba(255, 255, 255, 0) 95%)`;
 
@@ -25,11 +25,10 @@ export function TeamInfo({ team }: { team: Team }) {
             <div>
               <h1 className="text-3xl font-bold text-gray-800">{team.name}</h1>
               <p className="text-xl text-gray-600">
-                Season Record: {team.record || "0-0-0"}
+                {season?.season.year} Season Record: {team.record || "0-0-0"}
               </p>
-              <p className="text-gray-600">
-                Conference: {team.conference || "N/A"} | Division:{" "}
-                {team.division || "N/A"}
+              <p className="text-gray-600"> 
+                {season?.division.name || "N/A"}
               </p>
             </div>
             <div className="flex-1">
