@@ -20,7 +20,7 @@ const data = {
   user: {
     name: "Justin",
     email: "justin@btsh.org",
-    avatar: "/avatars/shadcn.jpg",
+    avatar: "/teams/what_the_puck.jpg",
   },
   pages: [
     {
