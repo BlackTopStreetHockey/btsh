@@ -78,6 +78,7 @@ class GamePlayerReadOnlySerializer(BaseReadOnlyModelSerializer):
 
 class GameGoalReadOnlySerializer(BaseReadOnlyModelSerializer):
     team = TeamReadOnlySerializer(exclude=('seasons',))
+    team_against = TeamReadOnlySerializer(exclude=('seasons',))
     scored_by = GamePlayerReadOnlySerializer(exclude=('team',))
     assisted_by1 = GamePlayerReadOnlySerializer(exclude=('team',))
     assisted_by2 = GamePlayerReadOnlySerializer(exclude=('team',))
@@ -85,5 +86,5 @@ class GameGoalReadOnlySerializer(BaseReadOnlyModelSerializer):
     class Meta(BaseReadOnlyModelSerializer.Meta):
         model = GameGoal
         fields = BaseReadOnlyModelSerializer.Meta.fields + (
-            'game', 'team', 'period', 'get_period_display', 'scored_by', 'assisted_by1', 'assisted_by2',
+            'game', 'team', 'team_against', 'period', 'get_period_display', 'scored_by', 'assisted_by1', 'assisted_by2',
         )
