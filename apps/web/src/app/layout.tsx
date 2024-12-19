@@ -33,12 +33,8 @@ export default function BTSHLayout({
       >
         <SidebarProvider>
           <AppSidebar />
-          <main>
-            {/* tailwind class to push content to the right on lg screens and push down on small screens and xs screens */}
-            <div className="min-h-screen mt-16 md:mt-0 ml-0 md:ml-32">
-              <SidebarTrigger />
-              {children}
-            </div>
+          <main className="container p-4">
+            {children}
           </main>
         </SidebarProvider>
       </body>
