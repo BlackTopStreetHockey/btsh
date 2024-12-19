@@ -59,6 +59,9 @@ class GameQuerySet(models.QuerySet):
             away_team_division_name=Subquery(away_team_season_registrations.values('division__name')),
         )
 
+    def for_team(self, team):
+        return self.filter(Q(home_team=team) | Q(away_team=team))
+
 
 class GameManager(models.Manager):
     ...
