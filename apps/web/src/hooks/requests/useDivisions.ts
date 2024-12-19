@@ -1,7 +1,7 @@
 import { usePlaceholder } from "./usePlaceholder";
 import { useRequest } from "./useRequest";
 
-export const useDivisions = ({}) => {
+export const useDivisions = () => {
   const { data, placeholder, loading, error, ...rest } = usePlaceholder(
     useRequest({
       route: "divisions",
