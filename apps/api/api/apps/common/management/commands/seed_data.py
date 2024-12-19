@@ -4,6 +4,7 @@ import random
 from django.conf import settings
 from django.core.files import File
 from django.core.management.base import BaseCommand
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.text import slugify
 from mimesis import Person
@@ -113,7 +114,7 @@ def seed_users(count):
             )
             users.append(user)
         print(f'Seeded {len(users)} users.')
-    return User.objects.all().order_by('email')
+    return User.objects.exclude(Q(first_name='') | Q(last_name='')).order_by('email')
 
 
 def seed_divisions(division_names, created_by):
