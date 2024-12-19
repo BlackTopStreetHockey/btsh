@@ -71,8 +71,12 @@ class Command(BaseCommand):
                         season=season, team=team
                     ).order_by('user__first_name', 'user__last_name')
 
+                    num_user_season_registrations = user_season_registrations.count()
                     # Simulate varying attendances
-                    num_players_for_game = random.randint(MIN_PLAYERS_PER_GAME, user_season_registrations.count())
+                    if num_user_season_registrations < MIN_PLAYERS_PER_GAME:
+                        num_players_for_game = num_user_season_registrations
+                    else:
+                        num_players_for_game = random.randint(MIN_PLAYERS_PER_GAME, num_user_season_registrations)
 
                     user_season_registrations = list(user_season_registrations)
                     random.shuffle(user_season_registrations)
