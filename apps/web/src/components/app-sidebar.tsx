@@ -1,11 +1,15 @@
 "use client";
 
 import * as React from "react";
-import {
+
+import { 
   BarChart,
+  BookOpenText,
   Calendar,
+  Clock, 
   GithubIcon,
   Settings2,
+  Speech,
   Table,
   Users,
   LifeBuoy,
@@ -51,6 +55,21 @@ const data = {
       title: "Stats",
       url: "/stats",
       icon: BarChart,
+    },
+    {
+      title: "Rules",
+      url: "/rules",
+      icon: BookOpenText,
+    },
+    {
+      title: "History",
+      url: "/history",
+      icon: Clock,
+    },
+    {
+      title: "Ref",
+      url: "/ref",
+      icon: Speech,
     },
     {
       title: "Settings",
