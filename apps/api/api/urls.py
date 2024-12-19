@@ -71,6 +71,7 @@ urlpatterns = [
         path('', include('seasons.urls')),
         path('', include('teams.urls')),
         path('', include('games.urls')),
+        path('', include('users.urls')),
     ])),
 ]
 

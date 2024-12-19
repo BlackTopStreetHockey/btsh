@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import BTSHSidebar from "@/components/navigation/btsh-sidebar";
-
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
+import { Toaster } from "@/components/ui/toaster";
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -24,15 +25,20 @@ export default function BTSHLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // get the width of window
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div>
-          <BTSHSidebar />
-          <div className="ml-32 min-h-screen">{children}</div>
-        </div>
+        <SidebarProvider>
+          <AppSidebar />
+          <main className="container p-4">
+            <SidebarTrigger />
+            {children}
+            <Toaster />
+          </main>
+        </SidebarProvider>
       </body>
     </html>
   );
