@@ -8,6 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import { usePathname } from "next/navigation";
 
 export function NavPages({
   items,
@@ -23,12 +24,13 @@ export function NavPages({
     }[]
   }[]
 }) {
+  const pathname = usePathname();
   return (
     <SidebarGroup>
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>
-            <SidebarMenuButton tooltip={item.title} asChild>
+            <SidebarMenuButton tooltip={item.title} asChild className={pathname.startsWith(item.url) ? "border-l-2 rounded-l-none border-blue-500" : "border-l-2 border-transparent"}>
               <Link href={item.url}>
                 {item.icon && <item.icon />}
                 <span>{item.title}</span>

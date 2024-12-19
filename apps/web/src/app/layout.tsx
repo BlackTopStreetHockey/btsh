@@ -33,7 +33,7 @@ export default function BTSHLayout({
       >
         <SidebarProvider>
           <AppSidebar />
-          <main className="container p-4">
+          <main className="container">
             <SidebarTrigger />
             {children}
             <Toaster />
