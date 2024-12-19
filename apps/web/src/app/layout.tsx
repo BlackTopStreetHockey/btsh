@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import BTSHNavbar from "@/components/navigation/btsh-navbar";
-import clsx from "clsx";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,13 +31,12 @@ export default function BTSHLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <div>
-          <BTSHNavbar />
-          {/* tailwind class to push content to the right on lg screens and push down on small screens and xs screens */}
-          <div className="min-h-screen mt-16 md:mt-0 ml-0 md:ml-32">
+        <SidebarProvider>
+          <AppSidebar />
+          <main className="container p-4">
             {children}
-          </div>
-        </div>
+          </main>
+        </SidebarProvider>
       </body>
     </html>
   );
