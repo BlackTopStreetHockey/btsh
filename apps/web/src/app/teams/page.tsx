@@ -1,9 +1,17 @@
 "use client";
-
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
 import { Heart, Diamond, Club, Spade } from "lucide-react";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 import { useTeams } from "@/hooks/requests/useTeams";
 import { useSeasons } from "@/hooks/requests/useSeasons";
