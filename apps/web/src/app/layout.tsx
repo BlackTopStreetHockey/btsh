@@ -25,7 +25,6 @@ export default function BTSHLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // get the width of window
   return (
     <html lang="en">
       <body

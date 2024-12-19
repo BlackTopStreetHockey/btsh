@@ -13,6 +13,12 @@ interface Team {
   jersey_colors?: string[];
   seasons: TeamSeason[];
   short_name: string;
+  seasons?: TeamSeason[];
+}
+
+interface TeamSeason {
+  season: Season;
+  division: Division;
 }
 
 interface Player {

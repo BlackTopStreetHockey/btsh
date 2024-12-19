@@ -1,7 +1,7 @@
 "use client";
 
 import { useGameDays } from "@/hooks/requests/useGameDays";
-import { useSeasonSelect } from "./useSeasonSelect";
+import { useSeasonStore } from "@/stores/season-store";
 import formatDateNoTimezone, { formatTime, timeToHours } from "@/lib/dates";
 import { useRef } from "react";
 import Link from "next/link";
@@ -25,8 +25,8 @@ export default function ScheduleCarousel() {
     }
   };
 
-  const { selectedSeason } = useSeasonSelect({ defaultActive: true });
-  const { data } = useGameDays({ season: selectedSeason?.id });
+  const { selectedSeasonId } = useSeasonStore();
+  const { data } = useGameDays({ season: selectedSeasonId });
 
   const getGamesByTime = (games: Game[]) => {
     return games
