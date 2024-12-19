@@ -11,6 +11,7 @@ interface Team {
   name: string;
   logo: string;
   jersey_colors?: string[];
+  seasons: TeamSeason[];
   short_name: string;
 }
 
@@ -37,6 +38,11 @@ interface Season {
 interface Division {
   id: number;
   name: string;
+}
+
+interface TeamSeason {
+  season: Season;
+  division: Division;
 }
 
 interface Game {

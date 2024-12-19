@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { useSeasons } from "@/hooks/requests/useSeasons";
+// import { useSeasons } from "@/hooks/requests/useSeasons";
 import { useTeam } from "@/hooks/requests/useTeam";
 
 import { TeamInfo } from "./components/team-info";
@@ -21,16 +21,20 @@ import { TeamRoster } from "./components/team-roster";
 import { TeamSchedule } from "./components/team-schedule";
 import { TeamPerformance } from "./components/team-performance";
 
+
+
 export default function TeamPage() {
   const { team } = useParams();
-  const { seasons } = useSeasons({});
+
   // const searchParams = useSearchParams();
   const { data, placeholder, loading, error } = useTeam({
     short_name: team as string,
   });
+  console.log("data:", data);
   const [seasonId, setSeasonId] = useState<string>("");
   // // Get the current season ID from URL params or use the current season
-  const currentSeason = seasons?.find((season: Season) => season.is_current);
+  const currentSeason = data?.seasons[0]?.season.id;
+  // find((season: Season) => season.is_current);
   console.log("currentSeason:", currentSeason);
   const handleSeasonChange = (newSeasonId: string) => {
     setSeasonId(newSeasonId);
@@ -57,23 +61,25 @@ export default function TeamPage() {
                   <SelectValue placeholder="Select Season" />
                 </SelectTrigger>
                 <SelectContent>
-                  {seasons?.sort((a, b) => b.year - a.year).map(
-                    (season: {
-                      id: number;
-                      year: string;
-                      is_current: boolean;
-                    }) => (
-                      <SelectItem key={season.id} value={season.id.toString()}>
-                        {season.year}
-                      </SelectItem>
+                  {data?.seasons
+                    ?.sort(
+                      (a: TeamSeason, b: TeamSeason) =>
+                        b.season.year - a.season.year,
                     )
-                  )}
+                    .map((s: TeamSeason) => (
+                      <SelectItem
+                        key={s.season.id}
+                        value={s.season.id.toString()}
+                      >
+                        {s.season.year}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>
           </div>
           <div className="grid gap-4">
-            <TeamInfo team={data} />
+            <TeamInfo team={data} season={data.seasons.find((s: TeamSeason) => s.season.id === Number(seasonId))} />
 
             <div className="grid gap-4 md:grid-cols-3">
               <div className="md:col-span-2">
@@ -81,9 +87,9 @@ export default function TeamPage() {
                   seasonId={seasonId}
                   teamId={data.id}
                   seasonYear={
-                    seasons?.find(
-                      (season: Season) => season.id.toString() === seasonId
-                    )?.year
+                    data?.seasons?.find(
+                      (season: TeamSeason) => season.season.id.toString() === seasonId,
+                    )?.season.year
                   }
                 />
               </div>
@@ -92,9 +98,9 @@ export default function TeamPage() {
                   seasonId={seasonId}
                   teamId={data.id}
                   seasonYear={
-                    seasons?.find(
-                      (season: Season) => season.id.toString() === seasonId
-                    )?.year
+                    data?.seasons?.find(
+                      (season: TeamSeason) => season.season.id.toString() === seasonId,
+                    )?.season.year
                   }
                 />
               </div>

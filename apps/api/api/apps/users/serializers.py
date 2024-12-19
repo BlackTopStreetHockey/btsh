@@ -21,7 +21,7 @@ class UserReadOnlySerializer(serializers.ModelSerializer):
 class UserSeasonRegistrationReadOnlySerializer(BaseReadOnlyModelSerializer):
     user = UserReadOnlySerializer()
     season = SeasonReadOnlySerializer()
-    team = TeamReadOnlySerializer()
+    team = TeamReadOnlySerializer(exclude=('seasons',))
 
     class Meta(BaseReadOnlyModelSerializer.Meta):
         model = UserSeasonRegistration
