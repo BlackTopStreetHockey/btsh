@@ -52,6 +52,9 @@ export function getContrastingColor(backgroundColor: string): string {
 }
 
 export function generateStripeGradient(colors: string[]) {
+  if (colors.length < 2) {
+    return `linear-gradient(to right, ${colors[0]}, ${colors[0]})`;
+  }
   return `repeating-linear-gradient(
       135deg,
       ${colors[0]},
