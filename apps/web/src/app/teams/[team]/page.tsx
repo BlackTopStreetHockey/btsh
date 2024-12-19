@@ -55,9 +55,9 @@ export default function TeamPage() {
               </span>
             </Link>
 
-            <div className="w-32">
+            <div className="w-36">
               <Select value={seasonId} onValueChange={handleSeasonChange}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-white">
                   <SelectValue placeholder="Select Season" />
                 </SelectTrigger>
                 <SelectContent>

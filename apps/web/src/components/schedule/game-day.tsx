@@ -2,6 +2,8 @@ import formatDateNoTimezone from "@/lib/dates";
 import Game from "./game";
 import { GAME_COURTS } from "@/constants/games";
 import Link from "next/link";
+import { Card } from "@/components/ui/card";
+
 export default function GameDay({ gameDay }: { gameDay: GameDay }) {
   const eastGames = gameDay.games.filter((g) => g.court === GAME_COURTS.east);
   const westGames = gameDay.games.filter((g) => g.court === GAME_COURTS.west);
@@ -10,12 +12,11 @@ export default function GameDay({ gameDay }: { gameDay: GameDay }) {
     { label: "East", games: eastGames },
   ];
   return (
-    <div className="p-4 border mb-4">
+    <Card className="p-4 border mb-4 bg-white">
       <div className="text-lg font-bold">
         {formatDateNoTimezone(gameDay.day, "eeee, MMMM do y")}
       </div>
-
-      <div className="">
+      <div className="text-gray-600">
         <div className="flex flex-row justify-center">
           <div className="flex flex-col items-start">
             <div className="flex flex-row gap-2">
@@ -46,6 +47,6 @@ export default function GameDay({ gameDay }: { gameDay: GameDay }) {
           ))}
         </div>
       </div>
-    </div>
+    </Card>
   );
 }

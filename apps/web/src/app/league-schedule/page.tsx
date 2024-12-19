@@ -16,7 +16,7 @@ export default function Schedule() {
   );
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-100">
       <div className="container p-2">
         <h1 className="text-3xl font-bold mb-6 text-center">
           {currentSeason?.data?.year} BTSH Schedule

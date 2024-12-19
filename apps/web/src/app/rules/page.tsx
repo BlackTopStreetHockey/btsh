@@ -68,7 +68,7 @@ const Rules = () => {
     );
 
   return (
-    <section className="lg:mx-10">
+    <section className="lg:mx-10 min-h-screen bg-gray-100">
       <div className="text-gray-900 py-8">
         <div className="container mx-auto flex flex-col items-start md:flex-row my-12 md:my-24">
           <div className="flex flex-col w-full sticky md:top-36 md:w-1/4 mt-2 md:mt-12 px-4">
@@ -88,7 +88,7 @@ const Rules = () => {
               />
             </div>
 
-            <nav className="mb-4 max-h-[60vh] overflow-y-auto">
+            <nav className="mb-4 max-h-[60vh] overflow-y-auto bg-white border">
               {filteredSections.map((section) => (
                 <button
                   key={section.id}
