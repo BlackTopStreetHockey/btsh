@@ -161,18 +161,16 @@ const Standings: FC = () => {
                                 </div>
                                 <div className="flex flex-col ml-2">
                                   <Link
-                                    href={`/team/${team.shortName.toLowerCase()}`}
+                                    href={`/teams/${team.shortName}`}
                                     passHref
                                   >
-                                    <span>
-                                      <Link href="#" className="cursor-pointer">
-                                        <span
-                                          className={`${!isLeagueSort && "hidden"}`}
-                                        >
-                                          {idx + 1}:{" "}
-                                        </span>
-                                        {team.name}
-                                      </Link>
+                                    <span className="cursor-pointer text-blue-600">
+                                      <span
+                                        className={`${!isLeagueSort && "hidden"}`}
+                                      >
+                                        {idx + 1}:{" "}
+                                      </span>
+                                      {team.name}
                                     </span>
                                   </Link>
                                   <p className="text-gray-400 text-xs font-mono text-left">
