@@ -200,7 +200,8 @@ class GameGoal(BaseModel):
     }
 
     game = models.ForeignKey(Game, on_delete=models.PROTECT, related_name='goals')
-    team = models.ForeignKey('teams.Team', on_delete=models.PROTECT, related_name='goals')
+    team = models.ForeignKey('teams.Team', on_delete=models.PROTECT, related_name='goals_for')
+    team_against = models.ForeignKey('teams.Team', on_delete=models.PROTECT, related_name='goals_against')
     period = models.CharField(max_length=4, choices=PERIODS)
     scored_by = models.ForeignKey(GamePlayer, on_delete=models.PROTECT, related_name='goals')
     assisted_by1 = models.ForeignKey(
@@ -244,14 +245,30 @@ class GameGoal(BaseModel):
         errors = {}
 
         team = getattr(self, 'team', None)
+        team_against = getattr(self, 'team_against', None)
         game = getattr(self, 'game', None)
         scored_by = getattr(self, 'scored_by', None)
         assisted_by1 = getattr(self, 'assisted_by1', None)
         assisted_by2 = getattr(self, 'assisted_by2', None)
 
-        if team and game and team not in game.teams:
-            team_names = ' or '.join([t.name for t in game.teams])
+        teams = []
+        team_names = ''
+        if game:
+            teams = game.teams
+            team_names = ' or '.join([t.name for t in teams])
+
+        # Ensure team is either the home or away team
+        if team and game and team not in teams:
             errors.setdefault('team', []).append(f'Team must be {team_names}.')
+
+        # Ensure team against is either the home or away team
+        if team_against and game and team_against not in teams:
+            errors.setdefault('team_against', []).append(f'Team must be {team_names}.')
+
+        # Ensure team and team_against are different
+        if (team and team_against) and (team == team_against):
+            errors.setdefault('team', []).append('Team must be different from team against.')
+            errors.setdefault('team_against', []).append('Team against must be different from team.')
 
         # Ensure game player belongs to the game and team
         if errors1 := self._validate_game_player(scored_by, game, team):
