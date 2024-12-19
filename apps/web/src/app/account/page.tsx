@@ -75,8 +75,7 @@ export default function AccountSettings() {
   }
 
   return (
-    <div className="container max-w-2xl py-10">
-      <Card>
+      <Card className="my-10">
         <CardHeader>
           <CardTitle>Account Settings</CardTitle>
           <CardDescription>
@@ -188,7 +187,6 @@ export default function AccountSettings() {
           </form>
         </CardContent>
       </Card>
-    </div>
   )
 }
 
