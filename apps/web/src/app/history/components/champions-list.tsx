@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Trophy } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -42,7 +43,7 @@ export function ChampionsList() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>League Champions</CardTitle>
+        <CardTitle className="flex gap-2 items-center"><Trophy />League Champions</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
