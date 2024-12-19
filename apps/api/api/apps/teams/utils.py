@@ -34,7 +34,7 @@ def get_games(team, season):
     ).with_scores()
 
 
-def calculate_team_season_registration_stats(limit_to_team=None, limit_to_season=None):
+def calculate_team_season_registration_stats(limit_to_team=None, limit_to_season=None, debug=False):
     """
     Calculates stats, this can also be called as a management command or from the team and seasons admins.
 
@@ -46,11 +46,18 @@ def calculate_team_season_registration_stats(limit_to_team=None, limit_to_season
     """
 
     for team in get_teams(limit_to_team):
+        if debug:
+            print(f'Processing {team.name}.')
+
         for season in get_seasons(limit_to_season):
+            if debug:
+                print(f'  Processing {season}.')
+
             try:
                 team_season_registration = TeamSeasonRegistration.objects.get(team=team, season=season)
             except TeamSeasonRegistration.DoesNotExist:
-                print(f'{team.name} is not registered for season {season}, skipping...')
+                if debug:
+                    print(f'  {team.name} is not registered for the {season}, skipping...')
                 continue
 
             games = get_games(team, season)

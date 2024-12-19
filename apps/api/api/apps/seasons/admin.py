@@ -1,7 +1,8 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 
 from common.admin import BaseModelAdmin
 from teams.admin import TeamSeasonRegistrationInline
+from teams.utils import calculate_team_season_registration_stats
 from .models import Season
 
 
@@ -12,6 +13,7 @@ class SeasonAdmin(BaseModelAdmin):
     search_fields = ('start', 'end')
     ordering = ('start', 'end')
     inlines = [TeamSeasonRegistrationInline]
+    actions = ['calculate_team_season_registration_stats']
 
     @admin.display(boolean=True)
     def is_past(self, obj):
@@ -24,3 +26,9 @@ class SeasonAdmin(BaseModelAdmin):
     @admin.display(boolean=True)
     def is_future(self, obj):
         return obj.is_future
+
+    @admin.action(description='Recalculate season stats')
+    def calculate_team_season_registration_stats(self, request, queryset):
+        for season in queryset:
+            calculate_team_season_registration_stats(limit_to_season=season, debug=True)
+        self.message_user(request, f'Successfully recalculated stats for {queryset.count()} seasons.', messages.SUCCESS)
