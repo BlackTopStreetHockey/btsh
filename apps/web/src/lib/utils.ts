@@ -50,3 +50,16 @@ export function getContrastingColor(backgroundColor: string): string {
   const luminance = getLuminance(rgb.r, rgb.g, rgb.b);
   return luminance > 0.179 ? "#000000" : "#FFFFFF";
 }
+
+export function generateStripeGradient(colors: string[]) {
+  if (colors.length < 2) {
+    return `linear-gradient(to right, ${colors[0]}, ${colors[0]})`;
+  }
+  return `repeating-linear-gradient(
+      135deg,
+      ${colors[0]},
+      ${colors[0]} 10px,
+      ${colors[1]} 10px,
+      ${colors[1]} 20px
+    )`;
+}

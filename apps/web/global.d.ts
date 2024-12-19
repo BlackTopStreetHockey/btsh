@@ -5,12 +5,24 @@ interface User {
   full_name: string;
   date_joined: string;
 }
+
 interface Team {
   id: number;
   name: string;
   logo: string;
   jersey_colors?: string[];
+  seasons: TeamSeason[];
   short_name: string;
+}
+
+interface Player {
+  id?: number;
+  name: string;
+  gender?: string;
+  number?: number;
+  position?: string;
+  gp?: number;
+  goals?: number;
 }
 
 interface Season {
@@ -28,8 +40,17 @@ interface Division {
   name: string;
 }
 
+interface TeamSeason {
+  season: Season;
+  division: Division;
+}
+
 interface Game {
   id: number;
+  court: string;
+  home_team: Team;
+  away_team: Team;
+  result: string;
 }
 
 interface GameDay {
