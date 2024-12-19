@@ -1,5 +1,6 @@
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.db.models import F
 
 from common.models import BaseModel
 from .managers import TeamSeasonRegistrationManager, TeamSeasonRegistrationQuerySet
@@ -26,6 +27,13 @@ class TeamSeasonRegistration(BaseModel):
     team = models.ForeignKey('teams.Team', on_delete=models.PROTECT, related_name='team_season_registrations')
     division = models.ForeignKey(
         'divisions.Division', on_delete=models.PROTECT, related_name='division_season_registrations'
+    )
+    home_games_played = models.PositiveSmallIntegerField(default=0)
+    away_games_played = models.PositiveSmallIntegerField(default=0)
+    games_played = models.GeneratedField(
+        expression=F('home_games_played') + F('away_games_played'),
+        output_field=models.PositiveSmallIntegerField(),
+        db_persist=True,
     )
 
     objects = TeamSeasonRegistrationManager.from_queryset(TeamSeasonRegistrationQuerySet)()

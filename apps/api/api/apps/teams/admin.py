@@ -20,7 +20,7 @@ class TeamAdmin(BaseModelAdmin):
 
 @admin.register(TeamSeasonRegistration)
 class TeamSeasonRegistration(BaseModelAdmin):
-    list_display = ('season', 'team', 'division')
+    list_display = ('season', 'team', 'division', 'home_games_played', 'away_games_played', 'games_played')
     list_filter = ('season', 'division', 'team',)
     search_fields = ('team__name',)
     ordering = ('-season__start', 'division', 'team',)

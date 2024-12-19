@@ -22,7 +22,7 @@ class TeamSeasonRegistrationReadOnlySerializer(BaseReadOnlyModelSerializer):
 
     class Meta:
         model = TeamSeasonRegistration
-        fields = ('team', 'season', 'division')
+        fields = ('team', 'season', 'division', 'home_games_played', 'away_games_played', 'games_played')
 
 
 class TeamReadOnlySerializer(BaseReadOnlyModelSerializer):
