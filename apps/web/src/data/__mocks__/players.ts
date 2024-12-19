@@ -1,4 +1,3 @@
-import { Player } from "../../../global";
 import { teams } from "../teams";
 
 const generateRandomName = (): string => {
@@ -33,9 +32,13 @@ const generatePlayersForTeam = (teamName: string, count: number): Player[] => {
     name: generateRandomName(),
     number: generateRandomNumber(),
     team: teamName,
+    position: Math.random() < 0.5 ? "F" : "D",
+    goals: generateRandomNumber(),
+    gender: Math.random() < 0.5 ? "M" : "F",
+    gp: generateRandomNumber(),
   }));
 };
 
 export const mockPlayers: Player[] = teams.flatMap((team) =>
-  generatePlayersForTeam(team.name, 7)
+  generatePlayersForTeam(team.name, 7),
 );

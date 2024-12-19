@@ -1,13 +1,12 @@
 import { useSeasons } from "@/hooks/requests/useSeasons";
-import { useSelect } from "../ui/hooks/useSelect"
-
+import { useSelect } from "../ui/hooks/useSelect";
 
 export const useSeasonSelect = ({
   initialSelectedValue,
-  defaultActive=true
+  defaultActive = true,
 }: {
-  initialSelectedValue?: string | number,
-  defaultActive?: boolean
+  initialSelectedValue?: string | number;
+  defaultActive?: boolean;
 }) => {
   const { seasons, loading } = useSeasons({});
 
@@ -15,30 +14,30 @@ export const useSeasonSelect = ({
   if (!!initialSelectedValue) {
     defaultSeason = initialSelectedValue;
   } else if (!!defaultActive) {
-    const activeSeason = seasons?.find(s => s.is_current);
+    const activeSeason = seasons?.find((s) => s.is_current);
     if (!!activeSeason) {
-      defaultSeason = activeSeason.id
+      defaultSeason = activeSeason.id;
     } else {
-      const futureSeason = seasons?.find(s => s.is_future);
+      const futureSeason = seasons?.find((s) => s.is_future);
       if (!!futureSeason) {
-        defaultSeason = futureSeason.id
+        defaultSeason = futureSeason.id;
       }
     }
   }
 
   const { select, selectedValue } = useSelect({
     initialSelectedValue: defaultSeason,
-    options: seasons?.map(s => ({label: s.year, value: s.id})) || [],
+    options: seasons?.map((s) => ({ label: s.year, value: s.id })) || [],
     isLoading: loading,
-    placeholder: 'Select Season...'
+    placeholder: "Select Season...",
   });
 
-  const selectedSeason = seasons?.find(s => s.id === selectedValue);
+  const selectedSeason = seasons?.find((s) => s.id === selectedValue);
 
   return {
     select,
     selectedSeason,
     selectedValue,
-    seasons
-  }
-}
+    seasons,
+  };
+};

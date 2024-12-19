@@ -2,8 +2,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 
-from common.models import BaseModel
 from api.utils.datetime import format_datetime
+from common.models import BaseModel
 
 
 class Season(BaseModel):

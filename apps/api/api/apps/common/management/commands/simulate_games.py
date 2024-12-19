@@ -7,11 +7,12 @@ from django.utils.dateparse import parse_datetime
 
 from common.management.commands.utils import get_default_created_by, get_or_create, print_separator
 from games.models import Game, GameGoal, GamePlayer, GameReferee
-from users.models import User
+from users.models import User, UserSeasonRegistration
 
 
 NOW = 'now'
 NUM_REFS = 2
+MIN_PLAYERS_PER_GAME = 8
 
 
 def parse_date(d):
@@ -39,13 +40,14 @@ class Command(BaseCommand):
         games = Game.objects.filter(
             game_day__day__gte=simulate_from,
             game_day__day__lte=simulate_to,
-        ).select_related('game_day', 'home_team', 'away_team')
+        ).select_related('game_day__season', 'home_team', 'away_team')
 
         print(f'Simulating {games.count()} games from {simulate_from.isoformat()} to {simulate_to.isoformat()}.')
 
         for game in games:
             print(f'Simulating game {game}.')
             teams = game.teams
+            season = game.game_day.season
 
             if not GameReferee.objects.filter(game=game).exists():
                 print(f'Seeding {NUM_REFS} game refs.')
@@ -64,23 +66,36 @@ class Command(BaseCommand):
 
             if not GamePlayer.objects.filter(game=game).exists():
                 for team in teams:
-                    num_players = random.randint(8, 23)
-                    # TODO use players from the team's roster instead of the full pool of users, choose x male and y
-                    #  female
-                    player_users = random.sample(users_list, num_players)
-                    print(f'Seeding {num_players} game players for {team.name}.')
-                    for i, user in enumerate(player_users):
+                    # Grab the users registered for the team + season
+                    user_season_registrations = UserSeasonRegistration.objects.filter(
+                        season=season, team=team
+                    ).order_by('user__first_name', 'user__last_name')
+
+                    # Simulate varying attendances
+                    num_players_for_game = random.randint(MIN_PLAYERS_PER_GAME, user_season_registrations.count())
+
+                    user_season_registrations = list(user_season_registrations)
+                    random.shuffle(user_season_registrations)
+                    user_season_registrations_for_game = random.sample(
+                        user_season_registrations,
+                        num_players_for_game,
+                    )
+
+                    print(f'Seeding {num_players_for_game} game players for {team.name}.')
+                    for i, user_season_registration in enumerate(user_season_registrations_for_game):
                         kwargs = {
                             'game': game,
-                            'user': user,
+                            'user': user_season_registration.user,
                             'team': team,
                         }
+
+                        # TODO add more entropy with subs, users not registered for the team, x male + y female
                         get_or_create(
                             GamePlayer,
                             get_kwargs={**kwargs},
                             create_kwargs={
                                 **kwargs,
-                                'is_substitute': False,  # TODO add more entropy with subs
+                                'is_substitute': False,
                                 'is_goalie': i == 0,
                                 'created_by': created_by,
                             }
@@ -114,5 +129,8 @@ class Command(BaseCommand):
                                     'assisted_by2': assisted_by2,
                                 }
                             )
+
+            game.status = Game.COMPLETED
+            game.save()
 
             print_separator()
