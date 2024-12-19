@@ -60,6 +60,7 @@ class GamePlayerViewSet(BaseModelReadOnlyViewSet):
 class GameGoalViewSet(BaseModelReadOnlyViewSet):
     queryset = GameGoal.objects.all().select_related(
         'team',
+        'team_against',
         'scored_by__user',
         'scored_by__team',
         'assisted_by1__user',
@@ -69,6 +70,6 @@ class GameGoalViewSet(BaseModelReadOnlyViewSet):
     )
     serializer_class = GameGoalReadOnlySerializer
     ordering = ('-game__game_day__day', 'game__start', 'scored_by__user__email', 'team')
-    ordering_fields = ('game', 'team', 'period',)
+    ordering_fields = ('game', 'team', 'team_against', 'period',)
     search_fields = ('team__name',)
     filterset_class = GameGoalFilterSet
