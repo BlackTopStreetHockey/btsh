@@ -51,4 +51,4 @@ class GameGoalFilterSet(filters.FilterSet):
 
     class Meta:
         model = GameGoal
-        fields = ('game', 'team', 'period',)
+        fields = ('game', 'team', 'team_against', 'period',)
