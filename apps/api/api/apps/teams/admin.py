@@ -46,4 +46,5 @@ class TeamSeasonRegistration(BaseModelAdmin):
         'overtime_wins', 'overtime_losses',
         'shootout_wins', 'shootout_losses',
         'wins', 'losses', 'ties',
+        'points',
     )
