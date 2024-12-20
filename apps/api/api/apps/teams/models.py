@@ -25,6 +25,14 @@ class TeamSeasonRegistration(BaseModel):
     """Stores a team's registration for a particular season, including additional metadata such as their division"""
     FIELDS = (
         'team', 'season', 'division',
+        # Totals
+        'points', 'wins', 'losses', 'ties',
+        'overtime_losses', 'shootout_losses',
+        'games_played',
+        'home_wins', 'home_losses',
+        'away_wins', 'away_losses',
+        'regulation_wins', 'regulation_losses',
+        'overtime_wins', 'shootout_wins',
         # Games played
         'home_games_played', 'away_games_played',
         # Home wins, losses, ties
@@ -37,14 +45,6 @@ class TeamSeasonRegistration(BaseModel):
         'away_overtime_wins', 'away_overtime_losses',
         'away_shootout_wins', 'away_shootout_losses',
         'away_ties',
-        # Totals
-        'games_played',
-        'home_wins', 'home_losses',
-        'away_wins', 'away_losses',
-        'regulation_wins', 'regulation_losses',
-        'overtime_wins', 'overtime_losses',
-        'shootout_wins', 'shootout_losses',
-        'wins', 'losses', 'ties',
     )
     HOME_WINS_EXPRESSION = F('home_regulation_wins') + F('home_overtime_wins') + F('home_shootout_wins')
     AWAY_WINS_EXPRESSION = F('away_regulation_wins') + F('away_overtime_wins') + F('away_shootout_wins')
@@ -60,8 +60,11 @@ class TeamSeasonRegistration(BaseModel):
     OVERTIME_LOSSES_EXPRESSION = F('home_overtime_losses') + F('away_overtime_losses')
     SHOOTOUT_LOSSES_EXPRESSION = F('home_shootout_losses') + F('away_shootout_losses')
 
+    TIES_EXPRESSION = F('home_ties') + F('away_ties')
+
     WIN_POINT_VALUE = 2
-    OTL_POINT_VALUE = 1
+    OTL_SOL_POINT_VALUE = 1
+    TIE_POINT_VALUE = 1
 
     season = models.ForeignKey('seasons.Season', on_delete=models.PROTECT, related_name='team_registrations')
     team = models.ForeignKey('teams.Team', on_delete=models.PROTECT, related_name='team_season_registrations')
@@ -157,7 +160,18 @@ class TeamSeasonRegistration(BaseModel):
         db_persist=True,
     )
     ties = models.GeneratedField(
-        expression=F('home_ties') + F('away_ties'),
+        expression=TIES_EXPRESSION,
+        output_field=models.PositiveSmallIntegerField(),
+        db_persist=True,
+    )
+
+    points = models.GeneratedField(
+        expression=(
+            (WINS_EXPRESSION * WIN_POINT_VALUE) +
+            (OVERTIME_LOSSES_EXPRESSION * OTL_SOL_POINT_VALUE) +
+            (SHOOTOUT_LOSSES_EXPRESSION * OTL_SOL_POINT_VALUE) +
+            (TIES_EXPRESSION * TIE_POINT_VALUE)
+        ),
         output_field=models.PositiveSmallIntegerField(),
         db_persist=True,
     )
