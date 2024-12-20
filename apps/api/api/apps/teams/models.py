@@ -23,15 +23,131 @@ class Team(BaseModel):
 
 class TeamSeasonRegistration(BaseModel):
     """Stores a team's registration for a particular season, including additional metadata such as their division"""
+    FIELDS = (
+        'team', 'season', 'division',
+        # Games played
+        'home_games_played', 'away_games_played',
+        # Home wins, losses, ties
+        'home_regulation_wins', 'home_regulation_losses',
+        'home_overtime_wins', 'home_overtime_losses',
+        'home_shootout_wins', 'home_shootout_losses',
+        'home_ties',
+        # Away wins, losses, ties
+        'away_regulation_wins', 'away_regulation_losses',
+        'away_overtime_wins', 'away_overtime_losses',
+        'away_shootout_wins', 'away_shootout_losses',
+        'away_ties',
+        # Totals
+        'games_played',
+        'home_wins', 'home_losses',
+        'away_wins', 'away_losses',
+        'regulation_wins', 'regulation_losses',
+        'overtime_wins', 'overtime_losses',
+        'shootout_wins', 'shootout_losses',
+        'wins', 'losses', 'ties',
+    )
+
     season = models.ForeignKey('seasons.Season', on_delete=models.PROTECT, related_name='team_registrations')
     team = models.ForeignKey('teams.Team', on_delete=models.PROTECT, related_name='team_season_registrations')
     division = models.ForeignKey(
         'divisions.Division', on_delete=models.PROTECT, related_name='division_season_registrations'
     )
+    # Games played
     home_games_played = models.PositiveSmallIntegerField(default=0)
     away_games_played = models.PositiveSmallIntegerField(default=0)
+
+    # Home wins, losses, ties
+    home_regulation_wins = models.PositiveSmallIntegerField(default=0)
+    home_regulation_losses = models.PositiveSmallIntegerField(default=0)
+    home_overtime_wins = models.PositiveSmallIntegerField(default=0)
+    home_overtime_losses = models.PositiveSmallIntegerField(default=0)
+    home_shootout_wins = models.PositiveSmallIntegerField(default=0)
+    home_shootout_losses = models.PositiveSmallIntegerField(default=0)
+    home_ties = models.PositiveSmallIntegerField(default=0)
+
+    # Away wins, losses, ties
+    away_regulation_wins = models.PositiveSmallIntegerField(default=0)
+    away_regulation_losses = models.PositiveSmallIntegerField(default=0)
+    away_overtime_wins = models.PositiveSmallIntegerField(default=0)
+    away_overtime_losses = models.PositiveSmallIntegerField(default=0)
+    away_shootout_wins = models.PositiveSmallIntegerField(default=0)
+    away_shootout_losses = models.PositiveSmallIntegerField(default=0)
+    away_ties = models.PositiveSmallIntegerField(default=0)
+
+    # Totals
     games_played = models.GeneratedField(
         expression=F('home_games_played') + F('away_games_played'),
+        output_field=models.PositiveSmallIntegerField(),
+        db_persist=True,
+    )
+    home_wins = models.GeneratedField(
+        expression=F('home_regulation_wins') + F('home_overtime_wins') + F('home_shootout_wins'),
+        output_field=models.PositiveSmallIntegerField(),
+        db_persist=True,
+    )
+    home_losses = models.GeneratedField(
+        expression=F('home_regulation_losses') + F('home_overtime_losses') + F('home_shootout_losses'),
+        output_field=models.PositiveSmallIntegerField(),
+        db_persist=True,
+    )
+    away_wins = models.GeneratedField(
+        expression=F('away_regulation_wins') + F('away_overtime_wins') + F('away_shootout_wins'),
+        output_field=models.PositiveSmallIntegerField(),
+        db_persist=True,
+    )
+    away_losses = models.GeneratedField(
+        expression=F('away_regulation_losses') + F('away_overtime_losses') + F('away_shootout_losses'),
+        output_field=models.PositiveSmallIntegerField(),
+        db_persist=True,
+    )
+    regulation_wins = models.GeneratedField(
+        expression=F('home_regulation_wins') + F('away_regulation_wins'),
+        output_field=models.PositiveSmallIntegerField(),
+        db_persist=True,
+    )
+    regulation_losses = models.GeneratedField(
+        expression=F('home_regulation_losses') + F('away_regulation_losses'),
+        output_field=models.PositiveSmallIntegerField(),
+        db_persist=True,
+    )
+    overtime_wins = models.GeneratedField(
+        expression=F('home_overtime_wins') + F('away_overtime_wins'),
+        output_field=models.PositiveSmallIntegerField(),
+        db_persist=True,
+    )
+    overtime_losses = models.GeneratedField(
+        expression=F('home_overtime_losses') + F('away_overtime_losses'),
+        output_field=models.PositiveSmallIntegerField(),
+        db_persist=True,
+    )
+    shootout_wins = models.GeneratedField(
+        expression=F('home_shootout_wins') + F('away_shootout_wins'),
+        output_field=models.PositiveSmallIntegerField(),
+        db_persist=True,
+    )
+    shootout_losses = models.GeneratedField(
+        expression=F('home_shootout_losses') + F('away_shootout_losses'),
+        output_field=models.PositiveSmallIntegerField(),
+        db_persist=True,
+    )
+    wins = models.GeneratedField(
+        expression=(
+            F('home_regulation_wins') + F('home_overtime_wins') + F('home_shootout_wins') +
+            F('away_regulation_wins') + F('away_overtime_wins') + F('away_shootout_wins')
+        ),
+        output_field=models.PositiveSmallIntegerField(),
+        db_persist=True,
+    )
+    losses = models.GeneratedField(
+        expression=(
+            F('home_regulation_losses') + F('home_overtime_losses') + F('home_shootout_losses') +
+            F('away_regulation_losses') + F('away_overtime_losses') + F('away_shootout_losses')
+        ),
+        output_field=models.PositiveSmallIntegerField(),
+        db_persist=True,
+    )
+    ties = models.GeneratedField(
+        expression=F('home_ties') + F('away_ties'),
         output_field=models.PositiveSmallIntegerField(),
         db_persist=True,
     )
