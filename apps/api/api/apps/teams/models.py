@@ -46,6 +46,22 @@ class TeamSeasonRegistration(BaseModel):
         'shootout_wins', 'shootout_losses',
         'wins', 'losses', 'ties',
     )
+    HOME_WINS_EXPRESSION = F('home_regulation_wins') + F('home_overtime_wins') + F('home_shootout_wins')
+    AWAY_WINS_EXPRESSION = F('away_regulation_wins') + F('away_overtime_wins') + F('away_shootout_wins')
+    WINS_EXPRESSION = HOME_WINS_EXPRESSION + AWAY_WINS_EXPRESSION
+    REGULATION_WINS_EXPRESSION = F('home_regulation_wins') + F('away_regulation_wins')
+    OVERTIME_WINS_EXPRESSION = F('home_overtime_wins') + F('away_overtime_wins')
+    SHOOTOUT_WINS_EXPRESSION = F('home_shootout_wins') + F('away_shootout_wins')
+
+    HOME_LOSSES_EXPRESSION = F('home_regulation_losses') + F('home_overtime_losses') + F('home_shootout_losses')
+    AWAY_LOSSES_EXPRESSION = F('away_regulation_losses') + F('away_overtime_losses') + F('away_shootout_losses')
+    LOSSES_EXPRESSION = HOME_LOSSES_EXPRESSION + AWAY_LOSSES_EXPRESSION
+    REGULATION_LOSSES_EXPRESSION = F('home_regulation_losses') + F('away_regulation_losses')
+    OVERTIME_LOSSES_EXPRESSION = F('home_overtime_losses') + F('away_overtime_losses')
+    SHOOTOUT_LOSSES_EXPRESSION = F('home_shootout_losses') + F('away_shootout_losses')
+
+    WIN_POINT_VALUE = 2
+    OTL_POINT_VALUE = 1
 
     season = models.ForeignKey('seasons.Season', on_delete=models.PROTECT, related_name='team_registrations')
     team = models.ForeignKey('teams.Team', on_delete=models.PROTECT, related_name='team_season_registrations')
@@ -81,68 +97,62 @@ class TeamSeasonRegistration(BaseModel):
         db_persist=True,
     )
     home_wins = models.GeneratedField(
-        expression=F('home_regulation_wins') + F('home_overtime_wins') + F('home_shootout_wins'),
+        expression=HOME_WINS_EXPRESSION,
         output_field=models.PositiveSmallIntegerField(),
         db_persist=True,
     )
     home_losses = models.GeneratedField(
-        expression=F('home_regulation_losses') + F('home_overtime_losses') + F('home_shootout_losses'),
+        expression=HOME_LOSSES_EXPRESSION,
         output_field=models.PositiveSmallIntegerField(),
         db_persist=True,
     )
     away_wins = models.GeneratedField(
-        expression=F('away_regulation_wins') + F('away_overtime_wins') + F('away_shootout_wins'),
+        expression=AWAY_WINS_EXPRESSION,
         output_field=models.PositiveSmallIntegerField(),
         db_persist=True,
     )
     away_losses = models.GeneratedField(
-        expression=F('away_regulation_losses') + F('away_overtime_losses') + F('away_shootout_losses'),
+        expression=AWAY_LOSSES_EXPRESSION,
         output_field=models.PositiveSmallIntegerField(),
         db_persist=True,
     )
     regulation_wins = models.GeneratedField(
-        expression=F('home_regulation_wins') + F('away_regulation_wins'),
+        expression=REGULATION_WINS_EXPRESSION,
         output_field=models.PositiveSmallIntegerField(),
         db_persist=True,
     )
     regulation_losses = models.GeneratedField(
-        expression=F('home_regulation_losses') + F('away_regulation_losses'),
+        expression=REGULATION_LOSSES_EXPRESSION,
         output_field=models.PositiveSmallIntegerField(),
         db_persist=True,
     )
     overtime_wins = models.GeneratedField(
-        expression=F('home_overtime_wins') + F('away_overtime_wins'),
+        expression=OVERTIME_WINS_EXPRESSION,
         output_field=models.PositiveSmallIntegerField(),
         db_persist=True,
     )
     overtime_losses = models.GeneratedField(
-        expression=F('home_overtime_losses') + F('away_overtime_losses'),
+        expression=OVERTIME_LOSSES_EXPRESSION,
         output_field=models.PositiveSmallIntegerField(),
         db_persist=True,
     )
     shootout_wins = models.GeneratedField(
-        expression=F('home_shootout_wins') + F('away_shootout_wins'),
+        expression=SHOOTOUT_WINS_EXPRESSION,
         output_field=models.PositiveSmallIntegerField(),
         db_persist=True,
     )
     shootout_losses = models.GeneratedField(
-        expression=F('home_shootout_losses') + F('away_shootout_losses'),
+        expression=SHOOTOUT_LOSSES_EXPRESSION,
         output_field=models.PositiveSmallIntegerField(),
         db_persist=True,
     )
     wins = models.GeneratedField(
-        expression=(
-            F('home_regulation_wins') + F('home_overtime_wins') + F('home_shootout_wins') +
-            F('away_regulation_wins') + F('away_overtime_wins') + F('away_shootout_wins')
-        ),
+        expression=WINS_EXPRESSION,
         output_field=models.PositiveSmallIntegerField(),
         db_persist=True,
     )
     losses = models.GeneratedField(
-        expression=(
-            F('home_regulation_losses') + F('home_overtime_losses') + F('home_shootout_losses') +
-            F('away_regulation_losses') + F('away_overtime_losses') + F('away_shootout_losses')
-        ),
+        expression=LOSSES_EXPRESSION,
         output_field=models.PositiveSmallIntegerField(),
         db_persist=True,
     )
