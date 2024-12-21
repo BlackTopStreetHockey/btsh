@@ -2,7 +2,7 @@ from django_filters import rest_framework as filters
 
 from divisions.models import Division
 from seasons.models import Season
-from .models import Team
+from .models import Team, TeamSeasonRegistration
 
 
 class TeamFilterSet(filters.FilterSet):
@@ -18,3 +18,9 @@ class TeamFilterSet(filters.FilterSet):
     class Meta:
         model = Team
         fields = ('season', 'division',)
+
+
+class TeamSeasonRegistrationFilterSet(filters.FilterSet):
+    class Meta:
+        model = TeamSeasonRegistration
+        fields = ('team', 'season', 'division',)
