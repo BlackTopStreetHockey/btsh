@@ -497,7 +497,7 @@ const Rules = () => {
                     <li>fighting</li>
                   </ul>
                   <p className="mb-2">
-                    any infraction covered by the rules of USA Hockey, not stated above, and at the discretion of the
+                    any infraction covered by the <Link href="https://cdn1.sportngin.com/attachments/document/603a-2502129/2021-25_USAH_Playing_Rules.pdf" target="_blank">rules of USA Hockey</Link>, not stated above, and at the discretion of the
                     refs basically doing anything that would embarrass your loved ones. If you feel your temper
                     getting the best of you, take yourself out of the game before someone else does it for you.
                   </p>
