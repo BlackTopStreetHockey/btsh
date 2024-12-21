@@ -23,12 +23,12 @@ class Team(BaseModel):
 
 class TeamSeasonRegistration(BaseModel):
     """Stores a team's registration for a particular season, including additional metadata such as their division"""
-    FIELDS = (
-        'team', 'season', 'division',
+    BASE_FIELDS = (
         # Totals
         'points', 'wins', 'losses', 'ties',
         'overtime_losses', 'shootout_losses',
         'games_played',
+        'goals_for', 'goals_against', 'goal_differential',
         'home_wins', 'home_losses',
         'away_wins', 'away_losses',
         'regulation_wins', 'regulation_losses',
@@ -45,6 +45,13 @@ class TeamSeasonRegistration(BaseModel):
         'away_overtime_wins', 'away_overtime_losses',
         'away_shootout_wins', 'away_shootout_losses',
         'away_ties',
+        # Goals
+        'home_goals_for', 'home_goals_against',
+        'away_goals_for', 'away_goals_against',
+    )
+    FIELDS = (
+        'team', 'season', 'division',
+        *BASE_FIELDS,
     )
     HOME_WINS_EXPRESSION = F('home_regulation_wins') + F('home_overtime_wins') + F('home_shootout_wins')
     AWAY_WINS_EXPRESSION = F('away_regulation_wins') + F('away_overtime_wins') + F('away_shootout_wins')
@@ -61,6 +68,13 @@ class TeamSeasonRegistration(BaseModel):
     SHOOTOUT_LOSSES_EXPRESSION = F('home_shootout_losses') + F('away_shootout_losses')
 
     TIES_EXPRESSION = F('home_ties') + F('away_ties')
+
+    HOME_GOALS_FOR_EXPRESSION = F('home_goals_for')
+    AWAY_GOALS_FOR_EXPRESSION = F('away_goals_for')
+    GOALS_FOR_EXPRESSION = HOME_GOALS_FOR_EXPRESSION + AWAY_GOALS_FOR_EXPRESSION
+    HOME_GOALS_AGAINST_EXPRESSION = F('home_goals_against')
+    AWAY_GOALS_AGAINST_EXPRESSION = F('away_goals_against')
+    GOALS_AGAINST_EXPRESSION = HOME_GOALS_AGAINST_EXPRESSION + AWAY_GOALS_AGAINST_EXPRESSION
 
     WIN_POINT_VALUE = 2
     OTL_SOL_POINT_VALUE = 1
@@ -92,6 +106,12 @@ class TeamSeasonRegistration(BaseModel):
     away_shootout_wins = models.PositiveSmallIntegerField(default=0)
     away_shootout_losses = models.PositiveSmallIntegerField(default=0)
     away_ties = models.PositiveSmallIntegerField(default=0)
+
+    # Goals
+    home_goals_for = models.PositiveSmallIntegerField(default=0)
+    home_goals_against = models.PositiveSmallIntegerField(default=0)
+    away_goals_for = models.PositiveSmallIntegerField(default=0)
+    away_goals_against = models.PositiveSmallIntegerField(default=0)
 
     # Totals
     games_played = models.GeneratedField(
@@ -172,6 +192,22 @@ class TeamSeasonRegistration(BaseModel):
             (SHOOTOUT_LOSSES_EXPRESSION * OTL_SOL_POINT_VALUE) +
             (TIES_EXPRESSION * TIE_POINT_VALUE)
         ),
+        output_field=models.PositiveSmallIntegerField(),
+        db_persist=True,
+    )
+
+    goals_for = models.GeneratedField(
+        expression=GOALS_FOR_EXPRESSION,
+        output_field=models.PositiveSmallIntegerField(),
+        db_persist=True,
+    )
+    goals_against = models.GeneratedField(
+        expression=GOALS_AGAINST_EXPRESSION,
+        output_field=models.PositiveSmallIntegerField(),
+        db_persist=True,
+    )
+    goal_differential = models.GeneratedField(
+        expression=GOALS_FOR_EXPRESSION - GOALS_AGAINST_EXPRESSION,
         output_field=models.PositiveSmallIntegerField(),
         db_persist=True,
     )
