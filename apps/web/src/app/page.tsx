@@ -1,5 +1,5 @@
 import ScheduleCarousel from "@/components/schedule/schedule-carousel";
-
+import Socials from "@/components/navigation/socials";
 export default function Home() {
   return (
     <div>
@@ -7,6 +7,8 @@ export default function Home() {
         Black Top Street Hockey
       </div>
       <ScheduleCarousel />
+
+      <Socials />
     </div>
   );
 }
