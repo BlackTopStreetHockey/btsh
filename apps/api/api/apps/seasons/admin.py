@@ -1,6 +1,7 @@
 from django.contrib import admin, messages
 
 from common.admin import BaseModelAdmin
+from games.models import Game
 from teams.admin import TeamSeasonRegistrationInline
 from teams.utils import calculate_team_season_registration_stats
 from .models import Season
@@ -30,5 +31,5 @@ class SeasonAdmin(BaseModelAdmin):
     @admin.action(description='Recalculate season stats')
     def calculate_team_season_registration_stats(self, request, queryset):
         for season in queryset:
-            calculate_team_season_registration_stats(limit_to_season=season, debug=True)
+            calculate_team_season_registration_stats(game_type=Game.REGULAR, limit_to_season=season, debug=True)
         self.message_user(request, f'Successfully recalculated stats for {queryset.count()} seasons.', messages.SUCCESS)
