@@ -8,6 +8,7 @@ import {
   Calendar,
   Clock,
   GithubIcon,
+  Menu,
   Settings2,
   Speech,
   Table,
@@ -16,8 +17,8 @@ import {
   Send,
 } from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,8 +28,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { CreditCard, LogOut, PlusCircle, Settings, User } from 'lucide-react'
+} from "@/components/ui/dropdown-menu";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import Link from "next/link";
+
+import { LogOut, Settings, User } from "lucide-react";
 
 import BTSHLogo from "@/components/navigation/btsh-logo";
 
@@ -104,26 +114,83 @@ const data = {
 };
 
 export function AppNavbar({ ...props }) {
+  const [open, setOpen] = React.useState(false);
   return (
     <div className="sticky top-0 z-40 w-full backdrop-blur flex-none transition-colors duration-500 lg:z-50 lg:border-b lg:border-slate-900/10 dark:border-slate-50/[0.06] bg-white supports-backdrop-blur:bg-white/95 dark:bg-slate-900/75">
       <div className="flex w-full items-center space-between">
         <BTSHLogo />
         <SeasonSelector />
-
+        {/* 
         <div className="flex grow items-center gap-1 px-1">
           {data.pages.map((page) => (
-            <Button key={page.title} variant="ghost" className={`${page.title === "Standings" ? "bg-blue-500 text-white" : ""}`}>
-              <page.icon className="w-4 h-4" />
-              {page.title}
+            <Button
+              key={page.title}
+              variant="ghost"
+              className={`${page.title === "Standings" ? "bg-blue-500 text-white" : ""}`}
+            >
+              <Link href={page.url}>
+                <page.icon className="w-4 h-4" />
+                {page.title}
+              </Link>
             </Button>
           ))}
+        </div> */}
+
+        {/* Desktop Navigation */}
+        <div className="ml-auto hidden md:flex md:items-center md:space-x-4">
+          <nav className="flex items-center space-x-4">
+            {data.pages.map((page) => (
+              <Button
+                key={page.title}
+                variant="ghost"
+                className="text-sm font-medium"
+                asChild
+              >
+                <Link href={page.url}>
+                  <page.icon className="w-4 h-4" />
+                  {page.title}
+                </Link>
+              </Button>
+            ))}
+          </nav>
+        </div>
+
+        {/* Mobile Navigation */}
+        <div className="ml-auto md:hidden">
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu className="h-6 w-6" />
+                <span className="sr-only">Toggle navigation menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left">
+              <nav className="flex flex-col space-y-4 mt-6">
+                {data.pages.map((page) => (
+                  <Link
+                    key={page.title}
+                    href={page.url}
+                    className="text-sm font-medium hover:underline"
+                    onClick={() => setOpen(false)}
+                  >
+                    <Button variant="ghost" className="flex gap-2">
+                      <page.icon className="w-4 h-4" />
+                      {page.title}
+                    </Button>
+                  </Link>
+                ))}
+              </nav>
+            </SheetContent>
+          </Sheet>
         </div>
 
         <div className="flex items-center gap-1 px-1">
-
-        <DropdownMenu>
+          <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+              <Button
+                variant="ghost"
+                className="relative h-10 w-10 rounded-full"
+              >
                 <Avatar className="h-10 w-10">
                   <AvatarImage src="/placeholder.svg" alt="User avatar" />
                   <AvatarFallback>JD</AvatarFallback>
@@ -134,7 +201,9 @@ export function AppNavbar({ ...props }) {
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium leading-none">John Doe</p>
-                  <p className="text-xs leading-none text-muted-foreground">john@example.com</p>
+                  <p className="text-xs leading-none text-muted-foreground">
+                    john@example.com
+                  </p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
@@ -158,7 +227,7 @@ export function AppNavbar({ ...props }) {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          </div>
+        </div>
       </div>
     </div>
   );
