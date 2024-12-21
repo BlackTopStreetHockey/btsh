@@ -33,7 +33,7 @@ export default function BTSHLayout({
       >
         <div className="flex flex-col min-h-screen">
           <AppNavbar />
-          <main className="bg-gray-100 pt-16">
+          <main className="bg-gray-100">
             {children}
             <Toaster />
           </main>
