@@ -4,7 +4,7 @@ import { SidebarGroup } from "@/components/ui/sidebar";
 
 export default function BTSHLogo() {
   return (
-    <Link href="/" className="flex items-center gap-2">
+    <Link href="/" className="flex items-center gap-2 pl-1">
       <Image src="/btsh-head.svg" alt="BTSH" width={36} height={36} />
       <div className="group-data-[collapsible=icon]:hidden">
         <SidebarGroup>

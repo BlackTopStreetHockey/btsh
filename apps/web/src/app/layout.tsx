@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
+
+import { AppNavbar } from "@/components/app-navbar";
 import { Toaster } from "@/components/ui/toaster";
+
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -30,14 +31,13 @@ export default function BTSHLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SidebarProvider>
-          <AppSidebar />
-          <main className="container bg-gray-100">
-            <SidebarTrigger />
+        <div className="flex flex-col min-h-screen">
+          <AppNavbar />
+          <main className="bg-gray-100 pt-16">
             {children}
             <Toaster />
           </main>
-        </SidebarProvider>
+        </div>
       </body>
     </html>
   );
