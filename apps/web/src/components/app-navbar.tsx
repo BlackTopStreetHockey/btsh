@@ -120,21 +120,6 @@ export function AppNavbar({ ...props }) {
       <div className="flex w-full items-center space-between">
         <BTSHLogo />
         <SeasonSelector />
-        {/* 
-        <div className="flex grow items-center gap-1 px-1">
-          {data.pages.map((page) => (
-            <Button
-              key={page.title}
-              variant="ghost"
-              className={`${page.title === "Standings" ? "bg-blue-500 text-white" : ""}`}
-            >
-              <Link href={page.url}>
-                <page.icon className="w-4 h-4" />
-                {page.title}
-              </Link>
-            </Button>
-          ))}
-        </div> */}
 
         {/* Desktop Navigation */}
         <div className="ml-auto hidden md:flex md:items-center md:space-x-4">
@@ -197,7 +182,7 @@ export function AppNavbar({ ...props }) {
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="start" forceMount>
+            <DropdownMenuContent className="w-56" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium leading-none">John Doe</p>
