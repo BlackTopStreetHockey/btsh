@@ -36,7 +36,7 @@ class GameGoalInline(BaseModelTabularInline):
 class GameDayAdmin(BaseModelAdmin):
     list_display = ('day', 'season', 'opening_team', 'closing_team')
     list_filter = ('day', 'season', 'opening_team', 'closing_team')
-    search_fields = ('opening_team__name', 'closing_team__name')
+    search_fields = ('opening_team__name', 'closing_team__name', 'season__start__year', 'season__end__year')
     ordering = ('-season__start', 'day',)
     autocomplete_fields = ('season', 'opening_team', 'closing_team')
     inlines = [GameInline]
