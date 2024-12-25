@@ -70,7 +70,7 @@ class GameAdmin(BaseModelAdmin):
     search_fields = ('game_day__day', 'start', 'home_team__name', 'away_team__name', 'court')
     ordering = ('-game_day__day', 'start')
     autocomplete_fields = ('game_day', 'home_team', 'away_team')
-    readonly_fields = ('end',)
+    readonly_fields = ('end', 'home_team_display', 'away_team_display', 'get_result_display')
     inlines = [GameGoalInline, GameRefereeInline, GamePlayerInline]
 
     @admin.display(description='Home Team')
