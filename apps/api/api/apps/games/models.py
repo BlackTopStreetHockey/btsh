@@ -9,6 +9,7 @@ from common.models import BaseModel
 from divisions.models import Division
 from games.managers import GameManager, GameQuerySet
 from teams.models import Team, TeamSeasonRegistration
+from teams.utils import calculate_team_season_registration_stats_from_game
 
 
 def default_game_duration():
@@ -127,6 +128,23 @@ class Game(BaseModel):
     @property
     def away_team_display(self):
         return self._get_team_display(self.away_team, self.away_team_num_goals)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # We always call the following function in case games are moved from completed to scheduled, etc. Doesn't make
+        # sense to try and figure out all status changes that should have stats recomputed plus the function runs pretty
+        # fast. Could also use signals but they result in harder to follow code IMO, most scalable solution is celery
+        # which provides async task processing via queues, workers, etc but that's overkill for now.
+        calculate_team_season_registration_stats_from_game(self)
+
+    def delete(self, *args, **kwargs):
+        game = self
+        super().delete(*args, **kwargs)
+        # We always call the following function in case games are moved from completed to scheduled, etc. Doesn't make
+        # sense to try and figure out all status changes that should have stats recomputed plus the function runs pretty
+        # fast. Could also use signals but they result in harder to follow code IMO, most scalable solution is celery
+        # which provides async task processing via queues, workers, etc but that's overkill for now.
+        calculate_team_season_registration_stats_from_game(game)
 
     def __str__(self):
         return f'{self.game_day} {self.start.strftime("%I:%M%p")} {self.home_team.name} vs. {self.away_team.name}'
@@ -291,6 +309,22 @@ class GameGoal(BaseModel):
 
         if errors:
             raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        game = self.game
+        # See comment in the save function of the game model, that also applies here to an extent however we only care
+        # about goals tied to completed games. Imagine a game is being live scored, it doesn't make sense to compute
+        # stats when the game isn't even completed yet.
+        calculate_team_season_registration_stats_from_game(game=game, statuses=[Game.COMPLETED])
+
+    def delete(self, *args, **kwargs):
+        game = self.game
+        super().delete(*args, **kwargs)
+        # See comment in the delete function of the game model, that also applies here to an extent however we only care
+        # about goals tied to completed games. Imagine a game is being live scored, it doesn't make sense to compute
+        # stats when the game isn't even completed yet.
+        calculate_team_season_registration_stats_from_game(game=game, statuses=[Game.COMPLETED])
 
     def __str__(self):
         return f'{self.scored_by.user.get_full_name()} - {self.team} - {self.game}'
