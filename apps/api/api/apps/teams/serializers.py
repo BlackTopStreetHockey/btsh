@@ -1,3 +1,5 @@
+from rest_framework import serializers
+
 from common.serializers import BaseReadOnlyModelSerializer
 from divisions.serializers import DivisionReadOnlySerializer
 from seasons.serializers import SeasonReadOnlySerializer
@@ -19,10 +21,15 @@ class TeamSeasonRegistrationReadOnlySerializer(BaseReadOnlyModelSerializer):
     team = NestedTeamReadOnlySerializer()
     season = SeasonReadOnlySerializer()
     division = DivisionReadOnlySerializer()
+    place = serializers.SerializerMethodField()
+
+    def get_place(self, obj):
+        # This attribute is added via an annotation
+        return getattr(obj, 'place', None)
 
     class Meta:
         model = TeamSeasonRegistration
-        fields = ('team', 'season', 'division')
+        fields = (*TeamSeasonRegistration.FIELDS, 'place')
 
 
 class TeamReadOnlySerializer(BaseReadOnlyModelSerializer):

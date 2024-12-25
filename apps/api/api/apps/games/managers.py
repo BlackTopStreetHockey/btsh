@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Case, Count, F, OuterRef, Q, Subquery, Value, When
+from django.db.models import Case, Count, F, OuterRef, Q, Subquery, Sum, Value, When
 
 from teams.models import TeamSeasonRegistration
 
@@ -59,6 +59,76 @@ class GameQuerySet(models.QuerySet):
             away_team_division_name=Subquery(away_team_season_registrations.values('division__name')),
         )
 
+    def for_team(self, team):
+        return self.filter(Q(home_team=team) | Q(away_team=team))
+
+    def for_stats(self, team, season, game_type):
+        """Get the games to be used to compute stats for the given team in the given season."""
+        home_team_filter = Q(home_team=team)
+        away_team_filter = Q(away_team=team)
+        goals_for_filter = Q(goals__team=team)
+        goals_against_filter = Q(goals__team_against=team)
+
+        return self.for_team(team).filter(
+            status=self.model.COMPLETED,
+            type=game_type,
+            game_day__season=season,
+        ).select_related(
+            'home_team',
+            'away_team',
+            'game_day__season',
+        ).prefetch_related(
+            'goals__team',
+            'goals__team_against',
+        ).with_scores().annotate(
+            _home_goals_for=Count('goals', filter=home_team_filter & goals_for_filter),
+            _home_goals_against=Count('goals', filter=home_team_filter & goals_against_filter),
+            _away_goals_for=Count('goals', filter=away_team_filter & goals_for_filter),
+            _away_goals_against=Count('goals', filter=away_team_filter & goals_against_filter),
+        )
+
 
 class GameManager(models.Manager):
-    ...
+    def with_stats(self, team, season, game_type) -> dict:
+        from games.models import GameResultsEnum
+
+        regulation_filter = Q(result=GameResultsEnum.FINAL)
+        overtime_filter = Q(result=GameResultsEnum.FINAL_OT)
+        shootout_filter = Q(result=GameResultsEnum.FINAL_SO)
+        home_team_filter = Q(home_team=team)
+        away_team_filter = Q(away_team=team)
+        winning_team_filter = Q(winning_team_id=team.id)
+        losing_team_filter = Q(losing_team_id=team.id)
+        tie_filter = Q(winning_team_id=None) & Q(losing_team_id=None)
+
+        return self.for_stats(
+            team, season, game_type
+        ).aggregate(
+            # Games played
+            home_games_played=Count('id', filter=home_team_filter),
+            away_games_played=Count('id', filter=away_team_filter),
+
+            # Home wins, losses, ties
+            home_regulation_wins=Count('id', filter=home_team_filter & regulation_filter & winning_team_filter),
+            home_regulation_losses=Count('id', filter=home_team_filter & regulation_filter & losing_team_filter),
+            home_overtime_wins=Count('id', filter=home_team_filter & overtime_filter & winning_team_filter),
+            home_overtime_losses=Count('id', filter=home_team_filter & overtime_filter & losing_team_filter),
+            home_shootout_wins=Count('id', filter=home_team_filter & shootout_filter & winning_team_filter),
+            home_shootout_losses=Count('id', filter=home_team_filter & shootout_filter & losing_team_filter),
+            home_ties=Count('id', filter=home_team_filter & tie_filter),
+
+            # Away wins, losses, ties
+            away_regulation_wins=Count('id', filter=away_team_filter & regulation_filter & winning_team_filter),
+            away_regulation_losses=Count('id', filter=away_team_filter & regulation_filter & losing_team_filter),
+            away_overtime_wins=Count('id', filter=away_team_filter & overtime_filter & winning_team_filter),
+            away_overtime_losses=Count('id', filter=away_team_filter & overtime_filter & losing_team_filter),
+            away_shootout_wins=Count('id', filter=away_team_filter & shootout_filter & winning_team_filter),
+            away_shootout_losses=Count('id', filter=away_team_filter & shootout_filter & losing_team_filter),
+            away_ties=Count('id', filter=away_team_filter & tie_filter),
+
+            # Goals
+            home_goals_for=Sum(F('_home_goals_for'), default=0),
+            home_goals_against=Sum(F('_home_goals_against'), default=0),
+            away_goals_for=Sum(F('_away_goals_for'), default=0),
+            away_goals_against=Sum(F('_away_goals_against'), default=0),
+        )

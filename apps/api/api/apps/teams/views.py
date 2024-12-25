@@ -1,5 +1,5 @@
 from common.views import BaseModelReadOnlyViewSet
-from .filtersets import TeamFilterSet
+from .filtersets import TeamFilterSet, TeamSeasonRegistrationFilterSet
 from .models import Team, TeamSeasonRegistration
 from .serializers import TeamReadOnlySerializer, TeamSeasonRegistrationReadOnlySerializer
 
@@ -18,9 +18,16 @@ class TeamViewSet(BaseModelReadOnlyViewSet):
 
 
 class TeamSeasonRegistrationViewSet(BaseModelReadOnlyViewSet):
-    queryset = TeamSeasonRegistration.objects.all().select_related('team', 'season', 'division')
+    queryset = TeamSeasonRegistration.objects.with_place_by_season().select_related('team', 'season', 'division')
     serializer_class = TeamSeasonRegistrationReadOnlySerializer
-    ordering = ('-season__start', 'division', 'team',)
-    ordering_fields = ('season', 'division', 'team',)
+    ordering = ('-season__start', 'place',)
+    ordering_fields = (
+        'team', 'season', 'division',
+        'points', 'wins', 'losses', 'ties',
+        'overtime_losses', 'shootout_losses',
+        'games_played',
+        'goals_for', 'goals_against', 'goal_differential',
+        'place',
+    )
     search_fields = ('division__name', 'team__name',)
-    filterset_fields = ('season', 'team', 'division',)
+    filterset_class = TeamSeasonRegistrationFilterSet

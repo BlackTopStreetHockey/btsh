@@ -20,8 +20,11 @@ class TeamAdmin(BaseModelAdmin):
 
 @admin.register(TeamSeasonRegistration)
 class TeamSeasonRegistration(BaseModelAdmin):
-    list_display = ('season', 'team', 'division')
+    # It doesn't make sense to include place here because the admin shows records across seasons, we could conditionally
+    # include place when the user is filtering by season
+    list_display = TeamSeasonRegistration.FIELDS
     list_filter = ('season', 'division', 'team',)
     search_fields = ('team__name',)
     ordering = ('-season__start', 'division', 'team',)
     autocomplete_fields = ('season', 'team', 'division',)
+    readonly_fields = TeamSeasonRegistration.BASE_FIELDS

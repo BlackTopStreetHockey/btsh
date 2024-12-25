@@ -9,6 +9,7 @@ from common.models import BaseModel
 from divisions.models import Division
 from games.managers import GameManager, GameQuerySet
 from teams.models import Team, TeamSeasonRegistration
+from teams.utils import calculate_team_season_registration_stats_from_game
 
 
 def default_game_duration():
@@ -128,6 +129,23 @@ class Game(BaseModel):
     def away_team_display(self):
         return self._get_team_display(self.away_team, self.away_team_num_goals)
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # We always call the following function in case games are moved from completed to scheduled, etc. Doesn't make
+        # sense to try and figure out all status changes that should have stats recomputed plus the function runs pretty
+        # fast. Could also use signals but they result in harder to follow code IMO, most scalable solution is celery
+        # which provides async task processing via queues, workers, etc but that's overkill for now.
+        calculate_team_season_registration_stats_from_game(self)
+
+    def delete(self, *args, **kwargs):
+        game = self
+        super().delete(*args, **kwargs)
+        # We always call the following function in case games are moved from completed to scheduled, etc. Doesn't make
+        # sense to try and figure out all status changes that should have stats recomputed plus the function runs pretty
+        # fast. Could also use signals but they result in harder to follow code IMO, most scalable solution is celery
+        # which provides async task processing via queues, workers, etc but that's overkill for now.
+        calculate_team_season_registration_stats_from_game(game)
+
     def __str__(self):
         return f'{self.game_day} {self.start.strftime("%I:%M%p")} {self.home_team.name} vs. {self.away_team.name}'
 
@@ -200,7 +218,8 @@ class GameGoal(BaseModel):
     }
 
     game = models.ForeignKey(Game, on_delete=models.PROTECT, related_name='goals')
-    team = models.ForeignKey('teams.Team', on_delete=models.PROTECT, related_name='goals')
+    team = models.ForeignKey('teams.Team', on_delete=models.PROTECT, related_name='goals_for')
+    team_against = models.ForeignKey('teams.Team', on_delete=models.PROTECT, related_name='goals_against')
     period = models.CharField(max_length=4, choices=PERIODS)
     scored_by = models.ForeignKey(GamePlayer, on_delete=models.PROTECT, related_name='goals')
     assisted_by1 = models.ForeignKey(
@@ -244,14 +263,30 @@ class GameGoal(BaseModel):
         errors = {}
 
         team = getattr(self, 'team', None)
+        team_against = getattr(self, 'team_against', None)
         game = getattr(self, 'game', None)
         scored_by = getattr(self, 'scored_by', None)
         assisted_by1 = getattr(self, 'assisted_by1', None)
         assisted_by2 = getattr(self, 'assisted_by2', None)
 
-        if team and game and team not in game.teams:
-            team_names = ' or '.join([t.name for t in game.teams])
+        teams = []
+        team_names = ''
+        if game:
+            teams = game.teams
+            team_names = ' or '.join([t.name for t in teams])
+
+        # Ensure team is either the home or away team
+        if team and game and team not in teams:
             errors.setdefault('team', []).append(f'Team must be {team_names}.')
+
+        # Ensure team against is either the home or away team
+        if team_against and game and team_against not in teams:
+            errors.setdefault('team_against', []).append(f'Team must be {team_names}.')
+
+        # Ensure team and team_against are different
+        if (team and team_against) and (team == team_against):
+            errors.setdefault('team', []).append('Team must be different from team against.')
+            errors.setdefault('team_against', []).append('Team against must be different from team.')
 
         # Ensure game player belongs to the game and team
         if errors1 := self._validate_game_player(scored_by, game, team):
@@ -274,6 +309,22 @@ class GameGoal(BaseModel):
 
         if errors:
             raise ValidationError(errors)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        game = self.game
+        # See comment in the save function of the game model, that also applies here to an extent however we only care
+        # about goals tied to completed games. Imagine a game is being live scored, it doesn't make sense to compute
+        # stats when the game isn't even completed yet.
+        calculate_team_season_registration_stats_from_game(game=game, statuses=[Game.COMPLETED])
+
+    def delete(self, *args, **kwargs):
+        game = self.game
+        super().delete(*args, **kwargs)
+        # See comment in the delete function of the game model, that also applies here to an extent however we only care
+        # about goals tied to completed games. Imagine a game is being live scored, it doesn't make sense to compute
+        # stats when the game isn't even completed yet.
+        calculate_team_season_registration_stats_from_game(game=game, statuses=[Game.COMPLETED])
 
     def __str__(self):
         return f'{self.scored_by.user.get_full_name()} - {self.team} - {self.game}'

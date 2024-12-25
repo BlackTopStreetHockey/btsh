@@ -36,7 +36,7 @@ class GameGoalInline(BaseModelTabularInline):
 class GameDayAdmin(BaseModelAdmin):
     list_display = ('day', 'season', 'opening_team', 'closing_team')
     list_filter = ('day', 'season', 'opening_team', 'closing_team')
-    search_fields = ('opening_team__name', 'closing_team__name')
+    search_fields = ('opening_team__name', 'closing_team__name', 'season__start__year', 'season__end__year')
     ordering = ('-season__start', 'day',)
     autocomplete_fields = ('season', 'opening_team', 'closing_team')
     inlines = [GameInline]
@@ -70,7 +70,7 @@ class GameAdmin(BaseModelAdmin):
     search_fields = ('game_day__day', 'start', 'home_team__name', 'away_team__name', 'court')
     ordering = ('-game_day__day', 'start')
     autocomplete_fields = ('game_day', 'home_team', 'away_team')
-    readonly_fields = ('end',)
+    readonly_fields = ('end', 'home_team_display', 'away_team_display', 'get_result_display')
     inlines = [GameGoalInline, GameRefereeInline, GamePlayerInline]
 
     @admin.display(description='Home Team')
@@ -109,8 +109,10 @@ class GamePlayerAdmin(BaseModelAdmin):
 
 @admin.register(GameGoal)
 class GameGoalAdmin(BaseModelAdmin):
-    list_display = ('game', 'team', 'period', 'scored_by_name', 'assisted_by1_name', 'assisted_by2_name')
-    list_filter = ('game__game_day__season', 'period', 'team')
+    list_display = (
+        'game', 'team', 'team_against', 'period', 'scored_by_name', 'assisted_by1_name', 'assisted_by2_name',
+    )
+    list_filter = ('game__game_day__season', 'period', 'team', 'team_against')
     search_fields = (
         'scored_by__user__first_name',
         'scored_by__user__last_name',
@@ -122,7 +124,7 @@ class GameGoalAdmin(BaseModelAdmin):
         'game__id',
     )
     ordering = ('-game__game_day__day', 'game__start', 'team', 'period')
-    autocomplete_fields = ('game', 'team', 'scored_by', 'assisted_by1', 'assisted_by2')
+    autocomplete_fields = ('game', 'team', 'team_against', 'scored_by', 'assisted_by1', 'assisted_by2')
 
     @admin.display(description='Scored By')
     def scored_by_name(self, obj):
@@ -138,6 +140,6 @@ class GameGoalAdmin(BaseModelAdmin):
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related(
-            'game__game_day', 'game__home_team', 'game__away_team', 'team', 'scored_by__user', 'assisted_by1__user',
-            'assisted_by2__user',
+            'game__game_day', 'game__home_team', 'game__away_team', 'team', 'team_against', 'scored_by__user',
+            'assisted_by1__user', 'assisted_by2__user',
         )

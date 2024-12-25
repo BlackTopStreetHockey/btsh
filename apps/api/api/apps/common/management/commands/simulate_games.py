@@ -40,13 +40,18 @@ class Command(BaseCommand):
         games = Game.objects.filter(
             game_day__day__gte=simulate_from,
             game_day__day__lte=simulate_to,
+            status=Game.SCHEDULED,
         ).select_related('game_day__season', 'home_team', 'away_team')
 
-        print(f'Simulating {games.count()} games from {simulate_from.isoformat()} to {simulate_to.isoformat()}.')
+        print(
+            f'Simulating {games.count()} scheduled games from {simulate_from.isoformat()} to {simulate_to.isoformat()}.'
+        )
 
         for game in games:
             print(f'Simulating game {game}.')
             teams = game.teams
+            home_team = game.home_team
+            away_team = game.away_team
             season = game.game_day.season
 
             if not GameReferee.objects.filter(game=game).exists():
@@ -71,8 +76,12 @@ class Command(BaseCommand):
                         season=season, team=team
                     ).order_by('user__first_name', 'user__last_name')
 
+                    num_user_season_registrations = user_season_registrations.count()
                     # Simulate varying attendances
-                    num_players_for_game = random.randint(MIN_PLAYERS_PER_GAME, user_season_registrations.count())
+                    if num_user_season_registrations < MIN_PLAYERS_PER_GAME:
+                        num_players_for_game = num_user_season_registrations
+                    else:
+                        num_players_for_game = random.randint(MIN_PLAYERS_PER_GAME, num_user_season_registrations)
 
                     user_season_registrations = list(user_season_registrations)
                     random.shuffle(user_season_registrations)
@@ -123,6 +132,7 @@ class Command(BaseCommand):
                                 create_kwargs={
                                     'game': game,
                                     'team': team,
+                                    'team_against': home_team if team == away_team else away_team,
                                     'period': period,
                                     'scored_by': scored_by,
                                     'assisted_by1': assisted_by1,

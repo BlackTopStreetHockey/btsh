@@ -1,4 +1,3 @@
-from django.db.models import Q
 from django_filters import rest_framework as filters
 
 from teams.models import Team
@@ -20,7 +19,7 @@ class GameFilterSet(filters.FilterSet):
     team = filters.ModelChoiceFilter(label='Team', queryset=Team.objects.all(), method='filter_team')
 
     def filter_team(self, queryset, name, value):
-        return queryset.filter(Q(home_team=value) | Q(away_team=value))
+        return queryset.for_team(value) if value else queryset
 
     class Meta:
         model = Game
@@ -51,4 +50,4 @@ class GameGoalFilterSet(filters.FilterSet):
 
     class Meta:
         model = GameGoal
-        fields = ('game', 'team', 'period',)
+        fields = ('game', 'team', 'team_against', 'period',)
