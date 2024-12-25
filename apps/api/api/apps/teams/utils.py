@@ -1,22 +1,24 @@
+import datetime
+
 from seasons.models import Season
 from teams.models import Team, TeamSeasonRegistration
 
 
-def get_teams(team: Team | None):
+def get_teams(teams: list[Team] | None):
     kwargs = {}
-    if team:
-        kwargs.update({'id': team.id})
+    if teams:
+        kwargs.update({'id__in': [t.id for t in teams]})
     return Team.objects.filter(**kwargs)
 
 
-def get_seasons(season: Season | None):
+def get_seasons(seasons: list[Season] | None):
     kwargs = {}
-    if season:
-        kwargs.update({'id': season.id})
+    if seasons:
+        kwargs.update({'id__in': [s.id for s in seasons]})
     return Season.objects.filter(**kwargs)
 
 
-def calculate_team_season_registration_stats(game_type, limit_to_team=None, limit_to_season=None, debug=False):
+def calculate_team_season_registration_stats(game_type, limit_to_teams=None, limit_to_seasons=None, debug=False):
     """
     Calculates stats, this can also be called as a management command or from the team and seasons admins.
 
@@ -24,18 +26,19 @@ def calculate_team_season_registration_stats(game_type, limit_to_team=None, limi
 
     Args:
         game_type: Game type to compute stats for (i.e. regular or playoff)
-        limit_to_team: Only calculate stats for the provided team. If season is also provided only calculate stats for the team and season.
-        limit_to_season: Only calculate stats for the provided season. If team is also provided only calculate stats for the season and team.
+        limit_to_teams: Only calculate stats for the provided teams. If seasons are also provided only calculate stats for the teams and seasons.
+        limit_to_seasons: Only calculate stats for the provided seasons. If teams are also provided only calculate stats for the seasons and teams.
         debug: Whether to print debug messages.
     """
 
     from games.models import Game
 
-    for team in get_teams(limit_to_team):
+    start = datetime.datetime.now()
+    for team in get_teams(limit_to_teams):
         if debug:
             print(f'Processing {team.name}.')
 
-        for season in get_seasons(limit_to_season):
+        for season in get_seasons(limit_to_seasons):
             if debug:
                 print(f'  Processing {season}.')
 
@@ -51,3 +54,21 @@ def calculate_team_season_registration_stats(game_type, limit_to_team=None, limi
             for k, v in stats.items():
                 setattr(team_season_registration, k, v)
             team_season_registration.save()
+            if debug:
+                print(f'    Updated stats.')
+
+    if debug:
+        print(f'Took: {datetime.datetime.now() - start}')
+
+
+def calculate_team_season_registration_stats_from_game(game, statuses=None):
+    """Helper function since we'll generally calculate stats when a game or game goal is created, updated, deleted"""
+    from games.models import Game
+
+    if statuses is None or game.status in statuses:
+        season = game.game_day.season
+        calculate_team_season_registration_stats(
+            game_type=Game.REGULAR,
+            limit_to_teams=game.teams,
+            limit_to_seasons=[season],
+        )

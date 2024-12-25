@@ -30,6 +30,5 @@ class SeasonAdmin(BaseModelAdmin):
 
     @admin.action(description='Recalculate season stats')
     def calculate_team_season_registration_stats(self, request, queryset):
-        for season in queryset:
-            calculate_team_season_registration_stats(game_type=Game.REGULAR, limit_to_season=season, debug=True)
+        calculate_team_season_registration_stats(game_type=Game.REGULAR, limit_to_seasons=queryset)
         self.message_user(request, f'Successfully recalculated stats for {queryset.count()} seasons.', messages.SUCCESS)
