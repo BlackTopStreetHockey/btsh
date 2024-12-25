@@ -37,6 +37,17 @@ Built with: Django, Django REST Framework, Postgres.
 * Remember to run `$ make makemigrations` after making changes to models and commit the generated migration files
 * Remember to update the relevant `*Admin` class if you modify the models
 
+### Calculating team + season stats
+
+Stats are automatically computed for you via overridden `save` and `delete` functions for the game and game goal models.
+
+If you would like to manually calculate stats you can:
+
+* Run the following management command `$ make manage C="calculate_team_season_registration_stats"`
+  * If running this outside of docker `$ python manage.py calculate_team_season_registration_stats`
+* Log into the django admin -> seasons -> select the desired season(s) -> in the dropdown menu choose `Recalculate`
+  * Note this may take 5+ seconds
+
 ### Django Admin
 
 Instead of building out a whole management frontend we're going to grant folks access to the django admin to manage
