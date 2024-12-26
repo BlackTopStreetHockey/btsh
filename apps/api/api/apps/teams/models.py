@@ -1,6 +1,7 @@
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from django.db.models import F
+from django.db.models import F, Value
+from django.db.models.functions import Cast, Concat
 
 from common.models import BaseModel
 from .managers import TeamSeasonRegistrationManager, TeamSeasonRegistrationQuerySet
@@ -25,7 +26,7 @@ class TeamSeasonRegistration(BaseModel):
     """Stores a team's registration for a particular season, including additional metadata such as their division"""
     BASE_FIELDS = (
         # Totals
-        'points', 'wins', 'losses', 'ties',
+        'points', 'wins', 'losses', 'ties', 'record',
         'overtime_losses', 'shootout_losses',
         'games_played',
         'goals_for', 'goals_against', 'goal_differential',
@@ -209,6 +210,17 @@ class TeamSeasonRegistration(BaseModel):
     goal_differential = models.GeneratedField(
         expression=GOALS_FOR_EXPRESSION - GOALS_AGAINST_EXPRESSION,
         output_field=models.PositiveSmallIntegerField(),
+        db_persist=True,
+    )
+    record = models.GeneratedField(
+        expression=Concat(
+            Cast(WINS_EXPRESSION, output_field=models.CharField()),
+            Value('-'),
+            Cast(LOSSES_EXPRESSION, output_field=models.CharField()),
+            Value('-'),
+            Cast(TIES_EXPRESSION, output_field=models.CharField()),
+        ),
+        output_field=models.CharField(),
         db_persist=True,
     )
 

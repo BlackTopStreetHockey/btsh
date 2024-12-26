@@ -41,6 +41,6 @@ class UserSeasonRegistrationAdmin(BaseModelAdmin):
         'user', 'season', 'team', 'is_captain', 'position', 'registered_at', 'signature', 'location',
     )
     list_filter = ('season', 'team', 'is_captain', 'position', 'location')
-    search_fields = ('user__username', 'user__email', 'user__first_name', 'user__last_name', 'season', 'team__name')
+    search_fields = ('user__username', 'user__email', 'user__first_name', 'user__last_name', 'team__name')
     ordering = ('season', 'team', 'user__first_name', 'user__last_name')
     autocomplete_fields = ('user', 'season', 'team',)

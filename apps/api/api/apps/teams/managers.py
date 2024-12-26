@@ -5,7 +5,7 @@ from django.db.models.functions import RowNumber
 
 class TeamSeasonRegistrationQuerySet(models.QuerySet):
     def with_place_by_season(self):
-        """Computes a team's season placing/ranking."""
+        """Computes a team's placing/ranking in their registered season."""
         return self.annotate(
             place=Window(
                 expression=RowNumber(),

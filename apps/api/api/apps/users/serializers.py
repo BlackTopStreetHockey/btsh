@@ -23,9 +23,39 @@ class UserSeasonRegistrationReadOnlySerializer(BaseReadOnlyModelSerializer):
     season = SeasonReadOnlySerializer()
     team = TeamReadOnlySerializer(exclude=('seasons',))
 
+    games_played = serializers.SerializerMethodField()
+    goals = serializers.SerializerMethodField()
+    primary_assists = serializers.SerializerMethodField()
+    secondary_assists = serializers.SerializerMethodField()
+    assists = serializers.SerializerMethodField()
+    points = serializers.SerializerMethodField()
+    place = serializers.SerializerMethodField()
+
+    def get_games_played(self, obj):
+        return getattr(obj, 'games_played', None)
+
+    def get_goals(self, obj):
+        return getattr(obj, 'goals', None)
+
+    def get_primary_assists(self, obj):
+        return getattr(obj, 'primary_assists', None)
+
+    def get_secondary_assists(self, obj):
+        return getattr(obj, 'secondary_assists', None)
+
+    def get_assists(self, obj):
+        return getattr(obj, 'assists', None)
+
+    def get_points(self, obj):
+        return getattr(obj, 'points', None)
+
+    def get_place(self, obj):
+        return getattr(obj, 'place', None)
+
     class Meta(BaseReadOnlyModelSerializer.Meta):
         model = UserSeasonRegistration
         fields = BaseReadOnlyModelSerializer.Meta.fields + (
             'user', 'season', 'team', 'is_captain', 'position', 'get_position_display', 'registered_at', 'location',
-            'get_location_display',
+            'get_location_display', 'games_played', 'goals', 'primary_assists', 'secondary_assists', 'assists',
+            'points', 'place',
         )

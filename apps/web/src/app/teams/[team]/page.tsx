@@ -63,10 +63,10 @@ export default function TeamPage() {
                 <SelectContent>
                   {data?.seasons
                     ?.sort(
-                      (a: TeamSeason, b: TeamSeason) =>
+                      (a: TeamSeasonRegistration, b: TeamSeasonRegistration) =>
                         b.season.year - a.season.year,
                     )
-                    .map((s: TeamSeason) => (
+                    .map((s: TeamSeasonRegistration) => (
                       <SelectItem
                         key={s.season.id}
                         value={s.season.id.toString()}
@@ -79,7 +79,7 @@ export default function TeamPage() {
             </div>
           </div>
           <div className="grid gap-4">
-            <TeamInfo team={data} season={data.seasons.find((s: TeamSeason) => s.season.id === Number(seasonId))} />
+            <TeamInfo team={data} season={data.seasons.find((s: TeamSeasonRegistration) => s.season.id === Number(seasonId))} />
 
             <div className="grid gap-4 md:grid-cols-3">
               <div className="md:col-span-2">
@@ -88,7 +88,7 @@ export default function TeamPage() {
                   teamId={data.id}
                   seasonYear={
                     data?.seasons?.find(
-                      (season: TeamSeason) => season.season.id.toString() === seasonId,
+                      (season: TeamSeasonRegistration) => season.season.id.toString() === seasonId,
                     )?.season.year
                   }
                 />
@@ -99,7 +99,7 @@ export default function TeamPage() {
                   teamId={data.id}
                   seasonYear={
                     data?.seasons?.find(
-                      (season: TeamSeason) => season.season.id.toString() === seasonId,
+                      (season: TeamSeasonRegistration) => season.season.id.toString() === seasonId,
                     )?.season.year
                   }
                 />

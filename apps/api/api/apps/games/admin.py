@@ -92,7 +92,7 @@ class GameAdmin(BaseModelAdmin):
 @admin.register(GameReferee)
 class GameRefereeAdmin(BaseModelAdmin):
     list_display = ('game', 'user', 'type')
-    list_filter = ('game__game_day__season', 'type',)
+    list_filter = ('game__game_day__season', 'game__status', 'game__type', 'type',)
     search_fields = ('user__first_name', 'user__last_name', 'game__id',)
     ordering = ('-game__game_day__day', 'game__start',)
     autocomplete_fields = ('game', 'user',)
@@ -101,7 +101,7 @@ class GameRefereeAdmin(BaseModelAdmin):
 @admin.register(GamePlayer)
 class GamePlayerAdmin(BaseModelAdmin):
     list_display = ('game', 'user', 'team', 'is_substitute', 'is_goalie')
-    list_filter = ('game__game_day__season', 'is_substitute', 'is_goalie', 'team')
+    list_filter = ('game__game_day__season', 'game__status', 'game__type', 'is_substitute', 'is_goalie', 'team')
     search_fields = ('user__first_name', 'user__last_name', 'team__name', 'game__game_day__day', 'game__id',)
     ordering = ('-game__game_day__day', 'game__start',)
     autocomplete_fields = ('game', 'user', 'team')
@@ -112,7 +112,7 @@ class GameGoalAdmin(BaseModelAdmin):
     list_display = (
         'game', 'team', 'team_against', 'period', 'scored_by_name', 'assisted_by1_name', 'assisted_by2_name',
     )
-    list_filter = ('game__game_day__season', 'period', 'team', 'team_against')
+    list_filter = ('game__game_day__season', 'game__status', 'game__type', 'period', 'team', 'team_against')
     search_fields = (
         'scored_by__user__first_name',
         'scored_by__user__last_name',
