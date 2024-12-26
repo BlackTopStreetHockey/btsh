@@ -69,7 +69,7 @@ interface TeamSeasonRegistration {
   home_overtime_losses: number;
   home_shootout_wins: number;
   home_shootout_losses: number;
-  home_ties;
+  home_ties: number;
   away_regulation_wins: number;
   away_regulation_losses: number;
   away_overtime_wins: number;
