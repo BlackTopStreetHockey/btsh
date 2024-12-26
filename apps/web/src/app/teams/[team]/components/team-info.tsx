@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Instagram } from "lucide-react";
 import { getContrastingColor, generateStripeGradient } from "@/lib/utils";
 
-export function TeamInfo({ team, season }: { team: Team; season: TeamSeason }) {
+export function TeamInfo({ team, season }: { team: Team; season: TeamSeasonRegistration }) {
   const stripeGradient = generateStripeGradient(
     team.jersey_colors || ["#000", "#FFF"],
   );
