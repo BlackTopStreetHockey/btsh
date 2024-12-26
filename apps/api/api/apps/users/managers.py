@@ -20,28 +20,28 @@ class UserSeasonRegistrationQuerySet(models.QuerySet):
         season_filter = Q(user__game_players__game__game_day__season=F('season'))
         team_filter = Q(user__game_players__team=F('team'))
         completed_game_filter = Q(user__game_players__game__status=Game.COMPLETED)
-        regular_game_filter = Q(user__game_players__game__type=game_type)
+        game_type_filter = Q(user__game_players__game__type=game_type)
 
         return self.annotate(
             games_played=Count(
                 'user__game_players',
                 distinct=True,
-                filter=season_filter & team_filter & completed_game_filter & regular_game_filter,
+                filter=season_filter & team_filter & completed_game_filter & game_type_filter,
             ),
             goals=Count(
                 'user__game_players__goals',
                 distinct=True,
-                filter=season_filter & team_filter & completed_game_filter & regular_game_filter,
+                filter=season_filter & team_filter & completed_game_filter & game_type_filter,
             ),
             primary_assists=Count(
                 'user__game_players__primary_assists',
                 distinct=True,
-                filter=season_filter & team_filter & completed_game_filter & regular_game_filter,
+                filter=season_filter & team_filter & completed_game_filter & game_type_filter,
             ),
             secondary_assists=Count(
                 'user__game_players__secondary_assists',
                 distinct=True,
-                filter=season_filter & team_filter & completed_game_filter & regular_game_filter,
+                filter=season_filter & team_filter & completed_game_filter & game_type_filter,
             ),
             assists=F('primary_assists') + F('secondary_assists'),
             points=F('goals') + F('assists'),
