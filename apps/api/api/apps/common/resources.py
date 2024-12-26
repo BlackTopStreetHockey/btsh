@@ -21,3 +21,4 @@ class BaseModelResource(resources.ModelResource):
         model = None
         # Omitting BASE_MODEL_FIELDS for now since end users don't need to know about them
         fields = ('id',)
+        skip_unchanged = True

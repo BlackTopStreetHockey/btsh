@@ -1,10 +1,17 @@
 from django.contrib import admin, messages
 
 from common.admin import BaseModelAdmin
+from common.resources import BaseModelResource
 from games.models import Game
 from teams.admin import TeamSeasonRegistrationInline
 from teams.utils import calculate_team_season_registration_stats
 from .models import Season
+
+
+class SeasonResource(BaseModelResource):
+    class Meta(BaseModelResource.Meta):
+        model = Season
+        fields = BaseModelResource.Meta.fields + ('start', 'end')
 
 
 @admin.register(Season)
@@ -15,6 +22,9 @@ class SeasonAdmin(BaseModelAdmin):
     ordering = ('start', 'end')
     inlines = [TeamSeasonRegistrationInline]
     actions = ['calculate_team_season_registration_stats']
+
+    import_resource_classes = [SeasonResource]
+    export_resource_classes = [SeasonResource]
 
     @admin.display(boolean=True)
     def is_past(self, obj):
