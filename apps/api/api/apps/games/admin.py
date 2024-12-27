@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from common.admin import BaseModelAdmin, BaseModelTabularInline
 from .models import Game, GameDay, GameGoal, GamePlayer, GameReferee, GameResultsEnum
-from .resources import GameDayResource
+from .resources import GameDayResource, GameResource
 
 
 class GameInline(BaseModelTabularInline):
@@ -76,6 +76,9 @@ class GameAdmin(BaseModelAdmin):
     autocomplete_fields = ('game_day', 'home_team', 'away_team')
     readonly_fields = ('end', 'home_team_display', 'away_team_display', 'get_result_display')
     inlines = [GameGoalInline, GameRefereeInline, GamePlayerInline]
+
+    import_resource_classes = [GameResource]
+    export_resource_classes = [GameResource]
 
     @admin.display(description='Home Team')
     def home_team_display(self, obj):

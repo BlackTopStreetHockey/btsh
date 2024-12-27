@@ -12,6 +12,7 @@ from import_export import fields, resources, widgets
 from requests.exceptions import RequestException
 
 from divisions.models import Division
+from games.models import GameDay
 from seasons.models import Season
 from teams.models import Team
 from users.models import User
@@ -117,6 +118,19 @@ class UserUsernameField(fields.Field):
         kwargs.setdefault('column_name', 'username')
         kwargs.update({
             'widget': widgets.ForeignKeyWidget(User, field='username'),
+        })
+        super().__init__(*args, **kwargs)
+
+
+class GameDayDayField(fields.Field):
+    """
+    This field handles importing/exporting using the game day day instead of the game day id. Game day days are unique.
+    """
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('column_name', 'game_day')
+        kwargs.update({
+            'widget': widgets.ForeignKeyWidget(GameDay, field='day'),
         })
         super().__init__(*args, **kwargs)
 
