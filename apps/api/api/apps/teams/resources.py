@@ -11,9 +11,9 @@ class TeamResource(BaseModelResource):
 
 
 class TeamSeasonRegistrationResource(BaseModelResource):
-    season_year = SeasonYearField()
-    team_short_name = TeamShortNameField()
-    division_name = DivisionNameField()
+    season_year = SeasonYearField(attribute='season')
+    team_short_name = TeamShortNameField(attribute='team')
+    division_name = DivisionNameField(attribute='division')
 
     def import_data(self, *args, **kwargs):
         dry_run = kwargs.get('dry_run')

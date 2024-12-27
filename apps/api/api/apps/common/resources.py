@@ -69,13 +69,10 @@ class SeasonYearField(fields.Field):
     """
     This field handles importing/exporting using the season start year instead of the season id. BTSH seasons are
     within a single calendar year so this won't return multiple seasons for the same year.
-
-    This field assumes the name of the FK on the model is `season`.
     """
 
     def __init__(self, *args, **kwargs):
         kwargs.update({
-            'attribute': 'season',
             'column_name': 'season_year',
             'widget': widgets.ForeignKeyWidget(Season, field='start__year'),
         })
@@ -86,13 +83,10 @@ class TeamShortNameField(fields.Field):
     """
     This field handles importing/exporting using the team short name instead of the team id. Team short names are
     unique.
-
-    This field assumes the name of the FK on the model is `team`.
     """
 
     def __init__(self, *args, **kwargs):
         kwargs.update({
-            'attribute': 'team',
             'column_name': 'team_short_name',
             'widget': widgets.ForeignKeyWidget(Team, field='short_name'),
         })
@@ -103,13 +97,10 @@ class DivisionNameField(fields.Field):
     """
     This field handles importing/exporting using the division name instead of the division id. Division names are
     unique.
-
-    This field assumes the name of the FK on the model is `division`.
     """
 
     def __init__(self, *args, **kwargs):
         kwargs.update({
-            'attribute': 'division',
             'column_name': 'division_name',
             'widget': widgets.ForeignKeyWidget(Division, field='name'),
         })
@@ -120,13 +111,10 @@ class UserUsernameField(fields.Field):
     """
     This field handles importing/exporting using the user username instead of the user id. Usernames are unique and will
     generally be email addresses.
-
-    This field assumes the name of the FK on the model is `user`.
     """
 
     def __init__(self, *args, **kwargs):
         kwargs.update({
-            'attribute': 'user',
             'column_name': 'username',
             'widget': widgets.ForeignKeyWidget(User, field='username'),
         })

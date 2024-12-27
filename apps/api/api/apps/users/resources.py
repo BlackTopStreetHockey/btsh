@@ -23,9 +23,9 @@ class UserResource(BaseModelResource):
 
 
 class UserSeasonRegistrationResource(BaseModelResource):
-    username = UserUsernameField()
-    season_year = SeasonYearField()
-    team_short_name = TeamShortNameField()
+    username = UserUsernameField(attribute='user')
+    season_year = SeasonYearField(attribute='season')
+    team_short_name = TeamShortNameField(attribute='team')
 
     class Meta(BaseModelResource.Meta):
         model = UserSeasonRegistration
