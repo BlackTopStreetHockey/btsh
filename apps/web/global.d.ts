@@ -81,12 +81,12 @@ interface TeamSeasonRegistration {
   home_goals_against: number;
   away_goals_for: number;
   away_goals_against: number;
-  place?: number;
+  place: number;
   point_percentage: number;
 }
 
 interface Team extends NestedTeam {
-  seasons?: TeamSeasonRegistration[];
+  seasons: TeamSeasonRegistration[];
 }
 
 interface UserSeasonRegistration {
@@ -125,11 +125,11 @@ interface Game {
   end: string;
   home_team: NestedTeam;
   home_team_division_name: string;
-  home_team_num_goals?: number;
+  home_team_num_goals: number;
   home_team_display: string;
   away_team: NestedTeam;
   away_team_division_name: string;
-  away_team_num_goals?: number;
+  away_team_num_goals: number;
   away_team_display: string;
   location: string;
   court: string;
@@ -140,8 +140,8 @@ interface Game {
   losing_team_id?: number;
   status: string;
   get_status_display: string;
-  result?: string;
-  get_result_display?: string;
+  result: string;
+  get_result_display: string;
 }
 
 interface GameDay extends NestedGameDay {
