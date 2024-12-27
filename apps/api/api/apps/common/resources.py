@@ -8,8 +8,12 @@ from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.validators import URLValidator
 from django.db import models
-from import_export import resources, widgets
+from import_export import fields, resources, widgets
 from requests.exceptions import RequestException
+
+from seasons.models import Season
+from teams.models import Team
+from users.models import User
 
 
 class EmailWidget(widgets.CharWidget):
@@ -58,6 +62,57 @@ class ImageWidget(widgets.CharWidget):
                 raise ValueError(e)
 
         return val
+
+
+class SeasonYearField(fields.Field):
+    """
+    This field handles importing/exporting using the season start year instead of the season id. BTSH seasons are
+    within a single calendar year so this won't return multiple seasons for the same year.
+
+    This field assumes the name of the FK on the model is `season`.
+    """
+
+    def __init__(self, *args, **kwargs):
+        kwargs.update({
+            'attribute': 'season',
+            'column_name': 'season_year',
+            'widget': widgets.ForeignKeyWidget(Season, field='start__year'),
+        })
+        super().__init__(*args, **kwargs)
+
+
+class TeamShortNameField(fields.Field):
+    """
+    This field handles importing/exporting using the team short name instead of the team id. Team short names are
+    unique.
+
+    This field assumes the name of the FK on the model is `team`.
+    """
+
+    def __init__(self, *args, **kwargs):
+        kwargs.update({
+            'attribute': 'team',
+            'column_name': 'team_short_name',
+            'widget': widgets.ForeignKeyWidget(Team, field='short_name'),
+        })
+        super().__init__(*args, **kwargs)
+
+
+class UserUsernameField(fields.Field):
+    """
+    This field handles importing/exporting using the user username instead of the user id. Usernames are unique and will
+    generally be email addresses.
+
+    This field assumes the name of the FK on the model is `user`.
+    """
+
+    def __init__(self, *args, **kwargs):
+        kwargs.update({
+            'attribute': 'user',
+            'column_name': 'username',
+            'widget': widgets.ForeignKeyWidget(User, field='username'),
+        })
+        super().__init__(*args, **kwargs)
 
 
 class BaseModelResource(resources.ModelResource):

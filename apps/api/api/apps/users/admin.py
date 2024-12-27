@@ -4,12 +4,15 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from import_export.admin import ExportActionMixin, ImportExportMixin
 from import_export.fields import Field
-from import_export.widgets import ForeignKeyWidget
 
 from common.admin import BaseModelAdmin, BaseModelTabularInline
-from common.resources import BaseModelResource, EmailWidget
-from seasons.models import Season
-from teams.models import Team
+from common.resources import (
+    BaseModelResource,
+    EmailWidget,
+    SeasonYearField,
+    TeamShortNameField,
+    UserUsernameField,
+)
 from .models import User, UserSeasonRegistration
 
 
@@ -32,16 +35,16 @@ class UserResource(BaseModelResource):
 
 
 class UserSeasonRegistrationResource(BaseModelResource):
-    user = Field(attribute='user', column_name='user', widget=ForeignKeyWidget(User, field='username'))
-    season = Field(attribute='season', column_name='season_id', widget=ForeignKeyWidget(Season, field='id'))
-    team = Field(attribute='team', column_name='team_id', widget=ForeignKeyWidget(Team, field='id'))
+    username = UserUsernameField()
+    season_year = SeasonYearField()
+    team_short_name = TeamShortNameField()
 
     class Meta(BaseModelResource.Meta):
         model = UserSeasonRegistration
         fields = BaseModelResource.Meta.fields + (
-            'user', 'season', 'team', 'is_captain', 'position', 'registered_at', 'signature', 'location',
-            'interested_in_reffing', 'interested_in_opening_closing', 'interested_in_other', 'interested_in_next_year',
-            'mid_season_party_ideas',
+            'username', 'season_year', 'team_short_name', 'is_captain', 'position', 'registered_at', 'signature',
+            'location', 'interested_in_reffing', 'interested_in_opening_closing', 'interested_in_other',
+            'interested_in_next_year', 'mid_season_party_ideas',
         )
 
 
