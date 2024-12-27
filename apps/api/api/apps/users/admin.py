@@ -2,9 +2,30 @@ from copy import deepcopy
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from import_export.admin import ExportActionMixin, ImportExportMixin
+from import_export.fields import Field
 
 from common.admin import BaseModelAdmin, BaseModelTabularInline
+from common.resources import BaseModelResource, EmailWidget
 from .models import User, UserSeasonRegistration
+
+
+class UserResource(BaseModelResource):
+    username = Field(attribute='username', column_name='username', widget=EmailWidget())
+
+    def after_init_instance(self, instance, new, row, **kwargs):
+        instance.set_unusable_password()
+        return super().after_init_instance(instance, new, row, **kwargs)
+
+    def before_save_instance(self, instance, row, **kwargs):
+        username = row.get('username')
+        instance.email = username
+        return super().before_save_instance(instance, row, **kwargs)
+
+    class Meta(BaseModelResource.Meta):
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'gender',)
+        import_id_fields = ('username',)
 
 
 class UserSeasonRegistrationInline(BaseModelTabularInline):
@@ -16,7 +37,7 @@ class UserSeasonRegistrationInline(BaseModelTabularInline):
 
 
 @admin.register(User)
-class UserAdmin(BaseUserAdmin):
+class UserAdmin(ImportExportMixin, ExportActionMixin, BaseUserAdmin):
     list_display = (
         'id', 'username', 'email', 'first_name', 'last_name', 'gender', 'date_joined', 'last_login', 'is_staff',
         'is_superuser',
@@ -26,6 +47,8 @@ class UserAdmin(BaseUserAdmin):
     date_hierarchy = 'date_joined'
     ordering = ('first_name', 'last_name')
     inlines = [UserSeasonRegistrationInline]
+
+    resource_classes = [UserResource]
 
     def get_fieldsets(self, request, obj=None):
         fieldsets = deepcopy(super().get_fieldsets(request, obj))

@@ -1,4 +1,5 @@
-from import_export import resources
+from django import forms
+from import_export import resources, widgets
 
 
 class BaseModelResource(resources.ModelResource):
@@ -22,3 +23,11 @@ class BaseModelResource(resources.ModelResource):
         # Omitting BASE_MODEL_FIELDS for now since end users don't need to know about them
         fields = ('id',)
         skip_unchanged = True
+
+
+class EmailWidget(widgets.CharWidget):
+    def clean(self, value, row=None, **kwargs):
+        val = super().clean(value, row, **kwargs)
+        if val:
+            return forms.EmailField().clean(val).lower()
+        return val
