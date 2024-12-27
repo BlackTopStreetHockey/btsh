@@ -72,8 +72,8 @@ class SeasonYearField(fields.Field):
     """
 
     def __init__(self, *args, **kwargs):
+        kwargs.setdefault('column_name', 'season_year')
         kwargs.update({
-            'column_name': 'season_year',
             'widget': widgets.ForeignKeyWidget(Season, field='start__year'),
         })
         super().__init__(*args, **kwargs)
@@ -86,8 +86,8 @@ class TeamShortNameField(fields.Field):
     """
 
     def __init__(self, *args, **kwargs):
+        kwargs.setdefault('column_name', 'team_short_name')
         kwargs.update({
-            'column_name': 'team_short_name',
             'widget': widgets.ForeignKeyWidget(Team, field='short_name'),
         })
         super().__init__(*args, **kwargs)
@@ -100,8 +100,8 @@ class DivisionNameField(fields.Field):
     """
 
     def __init__(self, *args, **kwargs):
+        kwargs.setdefault('column_name', 'division_name')
         kwargs.update({
-            'column_name': 'division_name',
             'widget': widgets.ForeignKeyWidget(Division, field='name'),
         })
         super().__init__(*args, **kwargs)
@@ -114,8 +114,8 @@ class UserUsernameField(fields.Field):
     """
 
     def __init__(self, *args, **kwargs):
+        kwargs.setdefault('column_name', 'username')
         kwargs.update({
-            'column_name': 'username',
             'widget': widgets.ForeignKeyWidget(User, field='username'),
         })
         super().__init__(*args, **kwargs)
