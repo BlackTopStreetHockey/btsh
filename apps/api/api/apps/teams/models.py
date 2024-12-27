@@ -1,7 +1,8 @@
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from django.db.models import F, Value
-from django.db.models.functions import Cast, Concat
+from django.db.models import Case, F, Value, When
+from django.db.models.functions import Cast, Concat, Round
+from django.db.models.lookups import LessThan
 
 from common.models import BaseModel
 from .managers import TeamSeasonRegistrationManager, TeamSeasonRegistrationQuerySet
@@ -24,9 +25,13 @@ class Team(BaseModel):
 
 class TeamSeasonRegistration(BaseModel):
     """Stores a team's registration for a particular season, including additional metadata such as their division"""
+    WIN_POINT_VALUE = 2
+    OTL_SOL_POINT_VALUE = 1
+    TIE_POINT_VALUE = 1
+
     BASE_FIELDS = (
         # Totals
-        'points', 'wins', 'losses', 'ties', 'record',
+        'points', 'wins', 'losses', 'ties', 'record', 'point_percentage',
         'overtime_losses', 'shootout_losses',
         'games_played',
         'goals_for', 'goals_against', 'goal_differential',
@@ -54,6 +59,8 @@ class TeamSeasonRegistration(BaseModel):
         'team', 'season', 'division',
         *BASE_FIELDS,
     )
+
+    GAMES_PLAYED_EXPRESSION = F('home_games_played') + F('away_games_played')
     HOME_WINS_EXPRESSION = F('home_regulation_wins') + F('home_overtime_wins') + F('home_shootout_wins')
     AWAY_WINS_EXPRESSION = F('away_regulation_wins') + F('away_overtime_wins') + F('away_shootout_wins')
     WINS_EXPRESSION = HOME_WINS_EXPRESSION + AWAY_WINS_EXPRESSION
@@ -70,16 +77,20 @@ class TeamSeasonRegistration(BaseModel):
 
     TIES_EXPRESSION = F('home_ties') + F('away_ties')
 
+    POINTS_EXPRESSION = (
+        (WINS_EXPRESSION * WIN_POINT_VALUE) +
+        (OVERTIME_LOSSES_EXPRESSION * OTL_SOL_POINT_VALUE) +
+        (SHOOTOUT_LOSSES_EXPRESSION * OTL_SOL_POINT_VALUE) +
+        (TIES_EXPRESSION * TIE_POINT_VALUE)
+    )
+    MAX_POINTS_EXPRESSION = GAMES_PLAYED_EXPRESSION * WIN_POINT_VALUE
+
     HOME_GOALS_FOR_EXPRESSION = F('home_goals_for')
     AWAY_GOALS_FOR_EXPRESSION = F('away_goals_for')
     GOALS_FOR_EXPRESSION = HOME_GOALS_FOR_EXPRESSION + AWAY_GOALS_FOR_EXPRESSION
     HOME_GOALS_AGAINST_EXPRESSION = F('home_goals_against')
     AWAY_GOALS_AGAINST_EXPRESSION = F('away_goals_against')
     GOALS_AGAINST_EXPRESSION = HOME_GOALS_AGAINST_EXPRESSION + AWAY_GOALS_AGAINST_EXPRESSION
-
-    WIN_POINT_VALUE = 2
-    OTL_SOL_POINT_VALUE = 1
-    TIE_POINT_VALUE = 1
 
     season = models.ForeignKey('seasons.Season', on_delete=models.PROTECT, related_name='team_registrations')
     team = models.ForeignKey('teams.Team', on_delete=models.PROTECT, related_name='team_season_registrations')
@@ -116,7 +127,7 @@ class TeamSeasonRegistration(BaseModel):
 
     # Totals
     games_played = models.GeneratedField(
-        expression=F('home_games_played') + F('away_games_played'),
+        expression=GAMES_PLAYED_EXPRESSION,
         output_field=models.PositiveSmallIntegerField(),
         db_persist=True,
     )
@@ -187,12 +198,7 @@ class TeamSeasonRegistration(BaseModel):
     )
 
     points = models.GeneratedField(
-        expression=(
-            (WINS_EXPRESSION * WIN_POINT_VALUE) +
-            (OVERTIME_LOSSES_EXPRESSION * OTL_SOL_POINT_VALUE) +
-            (SHOOTOUT_LOSSES_EXPRESSION * OTL_SOL_POINT_VALUE) +
-            (TIES_EXPRESSION * TIE_POINT_VALUE)
-        ),
+        expression=POINTS_EXPRESSION,
         output_field=models.PositiveSmallIntegerField(),
         db_persist=True,
     )
@@ -221,6 +227,20 @@ class TeamSeasonRegistration(BaseModel):
             Cast(TIES_EXPRESSION, output_field=models.CharField()),
         ),
         output_field=models.CharField(),
+        db_persist=True,
+    )
+
+    point_percentage = models.GeneratedField(
+        expression=Case(
+            # If no games were played we don't want to divide by 0
+            When(LessThan(MAX_POINTS_EXPRESSION, 1), then=None),
+            default=Round(
+                # Force floating point division since by default integer division is used which omits decimals,
+                Cast(POINTS_EXPRESSION, output_field=models.FloatField()) / MAX_POINTS_EXPRESSION,
+                precision=3,
+            ),
+        ),
+        output_field=models.FloatField(),
         db_persist=True,
     )
 

@@ -82,6 +82,7 @@ interface TeamSeasonRegistration {
   away_goals_for: number;
   away_goals_against: number;
   place?: number;
+  point_percentage: number;
 }
 
 interface Team extends NestedTeam {
