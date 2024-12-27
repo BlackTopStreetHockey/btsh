@@ -1,3 +1,4 @@
+import datetime
 import random
 
 from django.conf import settings
@@ -47,8 +48,9 @@ class Command(BaseCommand):
             f'Simulating {games.count()} scheduled games from {simulate_from.isoformat()} to {simulate_to.isoformat()}.'
         )
 
+        start = datetime.datetime.now()
         for game in games:
-            print(f'Simulating game {game}.')
+            print(f'Simulating game id {game.id} - {game}.')
             teams = game.teams
             home_team = game.home_team
             away_team = game.away_team
@@ -144,3 +146,5 @@ class Command(BaseCommand):
             game.save()
 
             print_separator()
+
+        print(f'Took: {datetime.datetime.now() - start}')
