@@ -1,7 +1,7 @@
 from import_export import fields
 
-from common.resources import BaseModelResource, GameDayDayField, SeasonYearField, TeamShortNameField
-from .models import Game, GameDay
+from common.resources import BaseModelResource, GameDayDayField, SeasonYearField, TeamShortNameField, UserUsernameField
+from .models import Game, GameDay, GameReferee
 
 
 class GameDayResource(BaseModelResource):
@@ -31,3 +31,11 @@ class GameResource(BaseModelResource):
             'game_day', 'start', 'duration', 'home_team_short_name', 'away_team_short_name', 'location', 'court',
             'type', 'status', 'home_team_display', 'away_team_display', 'result',
         )
+
+
+class GameRefereeResource(BaseModelResource):
+    username = UserUsernameField(attribute='user')
+
+    class Meta(BaseModelResource.Meta):
+        model = GameReferee
+        fields = BaseModelResource.Meta.fields + ('game', 'username', 'type')
