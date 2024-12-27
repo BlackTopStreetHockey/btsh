@@ -1,17 +1,11 @@
 from django.contrib import admin, messages
 
 from common.admin import BaseModelAdmin
-from common.resources import BaseModelResource
 from games.models import Game
 from teams.admin import TeamSeasonRegistrationInline
 from teams.utils import calculate_team_season_registration_stats
 from .models import Season
-
-
-class SeasonResource(BaseModelResource):
-    class Meta(BaseModelResource.Meta):
-        model = Season
-        fields = BaseModelResource.Meta.fields + ('start', 'end')
+from .resources import SeasonResource
 
 
 @admin.register(Season)
