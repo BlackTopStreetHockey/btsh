@@ -1,8 +1,17 @@
 from django import forms
+from django.db import models
 from import_export import resources, widgets
 
 
 class BaseModelResource(resources.ModelResource):
+
+    @classmethod
+    def widget_kwargs_for_field(cls, field_name, django_field):
+        kwargs = super().widget_kwargs_for_field(field_name, django_field)
+        # Ensure booleans are handled as True/False instead of the 0/1 default
+        if isinstance(django_field, models.BooleanField):
+            kwargs.update({'coerce_to_string': False})
+        return kwargs
 
     def __init__(self, user=None, **kwargs):
         # Exporting seems to init the resource class w/o passing the resource kwargs hence user needing to be none here
