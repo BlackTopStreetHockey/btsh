@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from common.admin import BaseModelAdmin, BaseModelTabularInline
 from .models import Game, GameDay, GameGoal, GamePlayer, GameReferee, GameResultsEnum
-from .resources import GameDayResource, GameRefereeResource, GameResource
+from .resources import GameDayResource, GamePlayerResource, GameRefereeResource, GameResource
 
 
 class GameInline(BaseModelTabularInline):
@@ -115,6 +115,9 @@ class GamePlayerAdmin(BaseModelAdmin):
     search_fields = ('user__first_name', 'user__last_name', 'team__name', 'game__game_day__day', 'game__id',)
     ordering = ('-game__game_day__day', 'game__start',)
     autocomplete_fields = ('game', 'user', 'team')
+
+    import_resource_classes = [GamePlayerResource]
+    export_resource_classes = [GamePlayerResource]
 
 
 @admin.register(GameGoal)
