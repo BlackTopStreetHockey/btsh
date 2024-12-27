@@ -2,6 +2,7 @@ from django.contrib import admin
 
 from common.admin import BaseModelAdmin, BaseModelTabularInline
 from .models import Game, GameDay, GameGoal, GamePlayer, GameReferee, GameResultsEnum
+from .resources import GameDayResource
 
 
 class GameInline(BaseModelTabularInline):
@@ -40,6 +41,9 @@ class GameDayAdmin(BaseModelAdmin):
     ordering = ('-season__start', 'day',)
     autocomplete_fields = ('season', 'opening_team', 'closing_team')
     inlines = [GameInline]
+
+    import_resource_classes = [GameDayResource]
+    export_resource_classes = [GameDayResource]
 
 
 class GameResultListFilter(admin.SimpleListFilter):
