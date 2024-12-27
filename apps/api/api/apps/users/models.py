@@ -63,7 +63,10 @@ class UserSeasonRegistration(BaseModel):
     registered_at = models.DateTimeField(default=timezone.now)
     signature = models.CharField(max_length=512)
     location = models.CharField(max_length=16, choices=LOCATIONS)
-    interested_in = models.TextField(null=True, blank=True)
+    interested_in_reffing = models.BooleanField(default=False)
+    interested_in_opening_closing = models.BooleanField(default=False)
+    interested_in_other = models.TextField(null=True, blank=True)
+    interested_in_next_year = models.BooleanField(default=False)
     mid_season_party_ideas = models.TextField(null=True, blank=True)
 
     objects = UserSeasonRegistrationManager.from_queryset(UserSeasonRegistrationQuerySet)()
