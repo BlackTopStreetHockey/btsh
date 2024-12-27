@@ -11,6 +11,7 @@ from django.db import models
 from import_export import fields, resources, widgets
 from requests.exceptions import RequestException
 
+from divisions.models import Division
 from seasons.models import Season
 from teams.models import Team
 from users.models import User
@@ -94,6 +95,23 @@ class TeamShortNameField(fields.Field):
             'attribute': 'team',
             'column_name': 'team_short_name',
             'widget': widgets.ForeignKeyWidget(Team, field='short_name'),
+        })
+        super().__init__(*args, **kwargs)
+
+
+class DivisionNameField(fields.Field):
+    """
+    This field handles importing/exporting using the division name instead of the division id. Division names are
+    unique.
+
+    This field assumes the name of the FK on the model is `division`.
+    """
+
+    def __init__(self, *args, **kwargs):
+        kwargs.update({
+            'attribute': 'division',
+            'column_name': 'division_name',
+            'widget': widgets.ForeignKeyWidget(Division, field='name'),
         })
         super().__init__(*args, **kwargs)
 
