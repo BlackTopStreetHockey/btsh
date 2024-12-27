@@ -4,9 +4,12 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from import_export.admin import ExportActionMixin, ImportExportMixin
 from import_export.fields import Field
+from import_export.widgets import ForeignKeyWidget
 
 from common.admin import BaseModelAdmin, BaseModelTabularInline
 from common.resources import BaseModelResource, EmailWidget
+from seasons.models import Season
+from teams.models import Team
 from .models import User, UserSeasonRegistration
 
 
@@ -26,6 +29,20 @@ class UserResource(BaseModelResource):
         model = User
         fields = ('username', 'first_name', 'last_name', 'gender',)
         import_id_fields = ('username',)
+
+
+class UserSeasonRegistrationResource(BaseModelResource):
+    user = Field(attribute='user', column_name='user', widget=ForeignKeyWidget(User, field='username'))
+    season = Field(attribute='season', column_name='season_id', widget=ForeignKeyWidget(Season, field='id'))
+    team = Field(attribute='team', column_name='team_id', widget=ForeignKeyWidget(Team, field='id'))
+
+    class Meta(BaseModelResource.Meta):
+        model = UserSeasonRegistration
+        fields = BaseModelResource.Meta.fields + (
+            'user', 'season', 'team', 'is_captain', 'position', 'registered_at', 'signature', 'location',
+            'interested_in_reffing', 'interested_in_opening_closing', 'interested_in_other', 'interested_in_next_year',
+            'mid_season_party_ideas',
+        )
 
 
 class UserSeasonRegistrationInline(BaseModelTabularInline):
@@ -63,7 +80,13 @@ class UserSeasonRegistrationAdmin(BaseModelAdmin):
     list_display = (
         'user', 'season', 'team', 'is_captain', 'position', 'registered_at', 'signature', 'location',
     )
-    list_filter = ('season', 'team', 'is_captain', 'position', 'location')
+    list_filter = (
+        'season', 'team', 'is_captain', 'position', 'location', 'interested_in_reffing',
+        'interested_in_opening_closing', 'interested_in_next_year',
+    )
     search_fields = ('user__username', 'user__email', 'user__first_name', 'user__last_name', 'team__name')
     ordering = ('season', 'team', 'user__first_name', 'user__last_name')
     autocomplete_fields = ('user', 'season', 'team',)
+
+    import_resource_classes = [UserSeasonRegistrationResource]
+    export_resource_classes = [UserSeasonRegistrationResource]
