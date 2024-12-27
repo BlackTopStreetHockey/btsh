@@ -1,9 +1,72 @@
+import uuid
+from pathlib import Path
+from urllib.parse import urlparse
+
+import requests
 from django import forms
+from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.validators import URLValidator
 from django.db import models
 from import_export import resources, widgets
+from requests.exceptions import RequestException
+
+
+class EmailWidget(widgets.CharWidget):
+    def clean(self, value, row=None, **kwargs):
+        val = super().clean(value, row, **kwargs)
+        if val:
+            return forms.EmailField().clean(val).lower()
+        return val
+
+
+class ImageWidget(widgets.CharWidget):
+    def clean(self, value, row=None, **kwargs):
+        val = super().clean(value, row, **kwargs)
+        if val:
+            # Validate it's a well-formed url we can download from
+            try:
+                URLValidator(schemes=['http', 'https'])(val)
+            except ValidationError as e:
+                raise ValueError(e)
+
+            # Determine the extension (not bulletproof but good enough for now)
+            url_path = urlparse(val).path
+            path = Path(url_path)
+            suffix = path.suffix
+            if not suffix:
+                raise ValueError('Unable to determine image extension.')
+
+            # Download the image from the url
+            try:
+                response = requests.get(val, timeout=5)
+                response.raise_for_status()
+            except RequestException:
+                raise ValueError('Unable to download image.')
+
+            # Create a file obj with the downloaded image contents
+            image = SimpleUploadedFile(
+                name=f'{str(uuid.uuid4())}{suffix}',
+                content=response.content,
+                content_type=f'image/{suffix[1:]}'
+            )
+
+            # Validate the file is an image, convert to python and django under the hood will handle saving the image
+            try:
+                return forms.ImageField().clean(image)
+            except ValidationError as e:
+                raise ValueError(e)
+
+        return val
 
 
 class BaseModelResource(resources.ModelResource):
+    @classmethod
+    def widget_from_django_field(cls, f, default=widgets.Widget):
+        widget = super().widget_from_django_field(f, default)
+        if isinstance(f, models.ImageField):
+            return ImageWidget
+        return widget
 
     @classmethod
     def widget_kwargs_for_field(cls, field_name, django_field):
@@ -32,11 +95,3 @@ class BaseModelResource(resources.ModelResource):
         # Omitting BASE_MODEL_FIELDS for now since end users don't need to know about them
         fields = ('id',)
         skip_unchanged = True
-
-
-class EmailWidget(widgets.CharWidget):
-    def clean(self, value, row=None, **kwargs):
-        val = super().clean(value, row, **kwargs)
-        if val:
-            return forms.EmailField().clean(val).lower()
-        return val
