@@ -1,11 +1,11 @@
 
 const GamePlayerName = ({ gamePlayer, team }: { gamePlayer: GamePlayer, team: Team}) => {
   return (
-    <div className='flex flex-row gap-2'>
-      <img className='rounded' src={team.logo} alt='' width={24} />
-      <div>{gamePlayer.user.full_name}</div>
+    <div className="flex flex-row gap-2">
+      <img className="rounded" src={team.logo} alt="" width={24} />
+      <div className="text-sm">{gamePlayer.user.full_name}</div>
     </div>
-  )
+  );
 }
 
 export default function GameGoal({

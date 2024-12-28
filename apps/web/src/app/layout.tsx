@@ -32,7 +32,7 @@ export default function BTSHLayout({
       >
         <SidebarProvider>
           <AppSidebar />
-          <main className="container bg-gray-100">
+          <main className="container bg-gray-100 overflow-x-scroll">
             <SidebarTrigger />
             {children}
             <Toaster />
