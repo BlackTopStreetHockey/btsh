@@ -1,18 +1,12 @@
-from copy import deepcopy
-
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.forms import (
+    AdminUserCreationForm as BaseAdminUserCreationForm,
+    UserChangeForm as BaseUserChangeForm
+)
 from import_export.admin import ExportActionMixin, ImportExportMixin
-from import_export.fields import Field
 
 from common.admin import BaseModelAdmin, BaseModelTabularInline
-from common.resources import (
-    BaseModelResource,
-    EmailWidget,
-    SeasonYearField,
-    TeamShortNameField,
-    UserUsernameField,
-)
 from .models import User, UserSeasonRegistration
 from .resources import UserResource, UserSeasonRegistrationResource
 
@@ -25,8 +19,55 @@ class UserSeasonRegistrationInline(BaseModelTabularInline):
     fields = ('season', 'team', 'is_captain', 'position', 'registered_at', 'signature', 'location')
 
 
+BASIC_INFO_FIELDSET_FIELDS = ('username', 'first_name', 'last_name', 'email', 'gender')
+BASIC_INFO_ADD_USER_FIELDSET = ('Basic Info', {
+    'fields': (*BASIC_INFO_FIELDSET_FIELDS, 'usable_password', 'password1', 'password2',)
+})
+BASIC_INFO_CHANGE_USER_FIELDSET = ('Basic Info', {
+    'fields': (*BASIC_INFO_FIELDSET_FIELDS, 'password',)
+})
+PERMISSIONS_FIELDSET = ('Permissions', {
+    'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')
+})
+DATES_FIELDSET = ('Dates', {'fields': ('last_login', 'date_joined')})
+
+
+class AdminUserCreationForm(BaseAdminUserCreationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].help_text = 'Please enter an email address, if not available use a unique username.'
+        self.fields['email'].help_text = (
+            'If username is an email address use the same value here, otherwise leave blank.'
+        )
+        self.fields['first_name'].required = True
+        self.fields['last_name'].required = True
+
+        # Copied from UserChangeForm since user creation is one step and user permissions are being displayed
+        user_permissions = self.fields.get('user_permissions')
+        if user_permissions:
+            user_permissions.queryset = user_permissions.queryset.select_related('content_type')
+
+
+
+class UserChangeForm(BaseUserChangeForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].help_text = 'Please enter an email address, if not available use a unique username.'
+        self.fields['email'].help_text = (
+            'If username is an email address use the same value here, otherwise leave blank.'
+        )
+        self.fields['first_name'].required = True
+        self.fields['last_name'].required = True
+
+
 @admin.register(User)
 class UserAdmin(ImportExportMixin, ExportActionMixin, BaseUserAdmin):
+    add_form_template = 'users/admin/add_form.html'
+    fieldsets = [BASIC_INFO_CHANGE_USER_FIELDSET, PERMISSIONS_FIELDSET, DATES_FIELDSET]
+    add_fieldsets = [BASIC_INFO_ADD_USER_FIELDSET, PERMISSIONS_FIELDSET, DATES_FIELDSET]
+    form = UserChangeForm
+    add_form = AdminUserCreationForm
+
     list_display = (
         'id', 'username', 'email', 'first_name', 'last_name', 'gender', 'date_joined', 'last_login', 'is_staff',
         'is_superuser',
@@ -38,13 +79,6 @@ class UserAdmin(ImportExportMixin, ExportActionMixin, BaseUserAdmin):
     inlines = [UserSeasonRegistrationInline]
 
     resource_classes = [UserResource]
-
-    def get_fieldsets(self, request, obj=None):
-        fieldsets = deepcopy(super().get_fieldsets(request, obj))
-        if obj:
-            personal_info_fields = fieldsets[1][1]['fields']
-            fieldsets[1][1]['fields'] = (*personal_info_fields, 'gender',)
-        return fieldsets
 
 
 @admin.register(UserSeasonRegistration)
