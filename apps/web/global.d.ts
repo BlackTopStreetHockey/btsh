@@ -19,6 +19,7 @@ interface User {
 interface Division {
   id: number;
   name: string;
+  short_name: string;
 }
 
 interface Season {
@@ -40,6 +41,7 @@ interface NestedTeam {
 }
 
 interface TeamSeasonRegistration {
+  id: number;
   team: NestedTeam;
   season: Season;
   division: Division;
