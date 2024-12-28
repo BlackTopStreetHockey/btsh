@@ -2,7 +2,14 @@ from django.contrib import admin
 
 from common.admin import BaseModelAdmin, BaseModelTabularInline
 from .models import Game, GameDay, GameGoal, GamePlayer, GameReferee, GameResultsEnum
-from .resources import GameDayResource, GamePlayerResource, GameRefereeResource, GameResource
+from .resources import (
+    GameDayResource,
+    GameGoalImportResource,
+    GameGoalExportResource,
+    GamePlayerResource,
+    GameRefereeResource,
+    GameResource
+)
 
 
 class GameInline(BaseModelTabularInline):
@@ -138,6 +145,9 @@ class GameGoalAdmin(BaseModelAdmin):
     )
     ordering = ('-game__game_day__day', 'game__start', 'team', 'period')
     autocomplete_fields = ('game', 'team', 'team_against', 'scored_by', 'assisted_by1', 'assisted_by2')
+
+    import_resource_classes = [GameGoalImportResource]
+    export_resource_classes = [GameGoalExportResource]
 
     @admin.display(description='Scored By')
     def scored_by_name(self, obj):

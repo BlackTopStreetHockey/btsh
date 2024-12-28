@@ -12,7 +12,7 @@ from import_export import fields, resources, widgets
 from requests.exceptions import RequestException
 
 from divisions.models import Division
-from games.models import GameDay
+from games.models import GameDay, GamePlayer
 from seasons.models import Season
 from teams.models import Team
 from users.models import User
@@ -131,6 +131,39 @@ class GameDayDayField(fields.Field):
         kwargs.setdefault('column_name', 'game_day')
         kwargs.update({
             'widget': widgets.ForeignKeyWidget(GameDay, field='day'),
+        })
+        super().__init__(*args, **kwargs)
+
+
+class GamePlayerWidget(widgets.ForeignKeyWidget):
+    def __init__(self, game_column_name, team_column_name, *args, **kwargs):
+        self.game_column_name = game_column_name
+        self.team_column_name = team_column_name
+        super().__init__(GamePlayer, *args, **kwargs)
+
+    def clean(self, value, row=None, **kwargs):
+        if not value:
+            return None
+
+        game_id = row.get(self.game_column_name)
+        team_short_name = row.get(self.team_column_name)
+        try:
+            return GamePlayer.objects.get(user__username=value, game_id=game_id, team__short_name=team_short_name)
+        except GamePlayer.DoesNotExist:
+            raise ValueError('Game player does not exist with this username.')
+
+
+class GamePlayerField(fields.Field):
+    """
+    This field handles importing using a combination of username, game, team instead of the game player id. It's way
+    easier for folks importing data to just provide the username instead of having to compute the game player id.
+    """
+
+    def __init__(self, game_column_name, team_column_name, *args, **kwargs):
+        self.game_column_name = game_column_name
+        self.team_column_name = team_column_name
+        kwargs.update({
+            'widget': GamePlayerWidget(game_column_name, team_column_name, field='id'),
         })
         super().__init__(*args, **kwargs)
 
