@@ -11,6 +11,8 @@ class TeamSeasonRegistrationInline(BaseModelTabularInline):
     autocomplete_fields = ('season', 'team', 'division',)
     ordering = ('-season__start', 'division', 'team',)
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('season', 'team', 'division')
 
 @admin.register(Team)
 class TeamAdmin(BaseModelAdmin):
