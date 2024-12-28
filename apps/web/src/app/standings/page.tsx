@@ -29,16 +29,19 @@ export default function StandingsPage() {
       accessor: (d) => numberToOrdinal(d.division.short_name),
     },
     {
+      id: "wins",
       Header: "Wins",
       accessor: "wins",
     },
     {
+      id: "losses",
       Header: "Losses",
       accessor: "losses",
     },
     {
-      Header: "Ties",
-      accessor: "ties",
+      id: "overtime_losses",
+      Header: "OTL",
+      accessor: "overtime_losses",
     },
     {
       id: "points",
@@ -47,10 +50,12 @@ export default function StandingsPage() {
       sort: (a, b) => a.place - b.place,
     },
     {
+      id: "goals_for",
       Header: "GF",
       accessor: "goals_for",
     },
     {
+      id: "goals_against",
       Header: "GA",
       accessor: "goals_against",
     },
