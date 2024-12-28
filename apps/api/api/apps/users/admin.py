@@ -18,6 +18,9 @@ class UserSeasonRegistrationInline(BaseModelTabularInline):
     ordering = ('season', 'team')
     fields = ('season', 'team', 'is_captain', 'position', 'registered_at', 'signature', 'location')
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('user', 'season', 'team')
+
 
 BASIC_INFO_FIELDSET_FIELDS = ('username', 'first_name', 'last_name', 'email', 'gender')
 BASIC_INFO_ADD_USER_FIELDSET = ('Basic Info', {
