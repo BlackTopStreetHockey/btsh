@@ -15,7 +15,7 @@ class UserSeasonRegistrationInline(BaseModelTabularInline):
     model = UserSeasonRegistration
     fk_name = 'user'
     autocomplete_fields = ('season', 'team',)
-    ordering = ('season', 'team')
+    ordering = ('season__start', 'team__name', 'user__first_name', 'user__last_name')
     fields = ('season', 'team', 'is_captain', 'position', 'registered_at', 'signature', 'location')
 
     def get_queryset(self, request):
@@ -49,7 +49,6 @@ class AdminUserCreationForm(BaseAdminUserCreationForm):
         user_permissions = self.fields.get('user_permissions')
         if user_permissions:
             user_permissions.queryset = user_permissions.queryset.select_related('content_type')
-
 
 
 class UserChangeForm(BaseUserChangeForm):
@@ -94,7 +93,7 @@ class UserSeasonRegistrationAdmin(BaseModelAdmin):
         'interested_in_opening_closing', 'interested_in_next_year',
     )
     search_fields = ('user__username', 'user__email', 'user__first_name', 'user__last_name', 'team__name')
-    ordering = ('season', 'team', 'user__first_name', 'user__last_name')
+    ordering = ('season__start', 'team__name', 'user__first_name', 'user__last_name')
     autocomplete_fields = ('user', 'season', 'team',)
 
     import_resource_classes = [UserSeasonRegistrationResource]
