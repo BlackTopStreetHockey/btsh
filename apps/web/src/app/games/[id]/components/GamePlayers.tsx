@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "../../../../components/ui/table";
-import { useGameGoals } from "@/hooks/requests/useGameGoals";
+// import { useGameGoals } from "@/hooks/requests/useGameGoals";
 
 export const GamePlayers = ({ game }: { game: Game }) => {
   const { players, placeholder: playersPlaceholder } = useGamePlayers({

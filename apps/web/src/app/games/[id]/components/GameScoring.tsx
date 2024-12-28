@@ -1,15 +1,5 @@
 "use client";
 
-import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useGameGoals } from "@/hooks/requests/useGameGoals";
 import { numberToOrdinal } from "@/lib/utils";
 import GameGoal from "./GameGoal";
