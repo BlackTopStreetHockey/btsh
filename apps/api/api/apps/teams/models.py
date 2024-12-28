@@ -10,7 +10,11 @@ from .managers import TeamSeasonRegistrationManager, TeamSeasonRegistrationQuery
 
 class Team(BaseModel):
     name = models.CharField(max_length=64, unique=True)
-    short_name = models.CharField(max_length=10, unique=True)
+    short_name = models.CharField(
+        max_length=10,
+        unique=True,
+        help_text='Shorter version of name in all uppercase, ex: GREM.'
+    )
     logo = models.ImageField(upload_to='teams/logos/')
     jersey_colors = ArrayField(
         base_field=models.CharField(max_length=32),
