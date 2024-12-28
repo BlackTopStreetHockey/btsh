@@ -16,7 +16,7 @@ class GameInline(BaseModelTabularInline):
     model = Game
     autocomplete_fields = ('home_team', 'away_team',)
     readonly_fields = ('end',)
-    ordering = ('start',)
+    ordering = ('start', '-type', 'status',)
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related()
@@ -27,17 +27,26 @@ class GameRefereeInline(BaseModelTabularInline):
     autocomplete_fields = ('user',)
     ordering = ('type', 'user__email',)
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related()
+
 
 class GamePlayerInline(BaseModelTabularInline):
     model = GamePlayer
     autocomplete_fields = ('user', 'team',)
-    ordering = ('team', 'user__email')
+    ordering = ('team__name', 'user__email')
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related()
 
 
 class GameGoalInline(BaseModelTabularInline):
     model = GameGoal
     autocomplete_fields = ('team', 'scored_by', 'assisted_by1', 'assisted_by2',)
-    ordering = ('period', 'team')
+    ordering = ('period', 'team__name')
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related()
 
 
 @admin.register(GameDay)
@@ -107,7 +116,7 @@ class GameAdmin(BaseModelAdmin):
 class GameRefereeAdmin(BaseModelAdmin):
     list_display = ('game', 'user', 'type')
     list_filter = ('game__game_day__season', 'game__status', 'game__type', 'type',)
-    search_fields = ('user__first_name', 'user__last_name', 'game__id',)
+    search_fields = ('user__username', 'user__email', 'user__first_name', 'user__last_name', 'game__id',)
     ordering = ('-game__game_day__day', 'game__start',)
     autocomplete_fields = ('game', 'user',)
 
@@ -119,7 +128,10 @@ class GameRefereeAdmin(BaseModelAdmin):
 class GamePlayerAdmin(BaseModelAdmin):
     list_display = ('game', 'user', 'team', 'is_substitute', 'is_goalie')
     list_filter = ('game__game_day__season', 'game__status', 'game__type', 'is_substitute', 'is_goalie', 'team')
-    search_fields = ('user__first_name', 'user__last_name', 'team__name', 'game__game_day__day', 'game__id',)
+    search_fields = (
+        'user__username', 'user__email', 'user__first_name', 'user__last_name', 'team__name', 'game__game_day__day',
+        'game__id',
+    )
     ordering = ('-game__game_day__day', 'game__start',)
     autocomplete_fields = ('game', 'user', 'team')
 
@@ -134,10 +146,16 @@ class GameGoalAdmin(BaseModelAdmin):
     )
     list_filter = ('game__game_day__season', 'game__status', 'game__type', 'period', 'team', 'team_against')
     search_fields = (
+        'scored_by__user__username',
+        'scored_by__user__email',
         'scored_by__user__first_name',
         'scored_by__user__last_name',
+        'assisted_by1__user__username',
+        'assisted_by1__user__email',
         'assisted_by1__user__first_name',
         'assisted_by1__user__last_name',
+        'assisted_by2__user__username',
+        'assisted_by2__user__email',
         'assisted_by2__user__first_name',
         'assisted_by2__user__last_name',
         'team__name',
