@@ -7,10 +7,12 @@ from .resources import TeamResource, TeamSeasonRegistrationResource
 
 class TeamSeasonRegistrationInline(BaseModelTabularInline):
     model = TeamSeasonRegistration
-    fields = ('season', 'division',)
+    fields = ('team', 'season', 'division',)
     autocomplete_fields = ('season', 'team', 'division',)
-    ordering = ('-season__start', 'division', 'team',)
+    ordering = ('-season__start', 'division__name', 'team__name',)
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('season', 'team', 'division')
 
 @admin.register(Team)
 class TeamAdmin(BaseModelAdmin):
@@ -30,7 +32,7 @@ class TeamSeasonRegistration(BaseModelAdmin):
     list_display = TeamSeasonRegistration.FIELDS
     list_filter = ('season', 'division', 'team',)
     search_fields = ('team__name',)
-    ordering = ('-season__start', 'division', 'team',)
+    ordering = ('-season__start', 'division__name', 'team__name',)
     autocomplete_fields = ('season', 'team', 'division',)
     readonly_fields = TeamSeasonRegistration.BASE_FIELDS
 
