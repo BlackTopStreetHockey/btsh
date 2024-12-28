@@ -2,9 +2,19 @@ from copy import deepcopy
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from import_export.admin import ExportActionMixin, ImportExportMixin
+from import_export.fields import Field
 
 from common.admin import BaseModelAdmin, BaseModelTabularInline
+from common.resources import (
+    BaseModelResource,
+    EmailWidget,
+    SeasonYearField,
+    TeamShortNameField,
+    UserUsernameField,
+)
 from .models import User, UserSeasonRegistration
+from .resources import UserResource, UserSeasonRegistrationResource
 
 
 class UserSeasonRegistrationInline(BaseModelTabularInline):
@@ -16,7 +26,7 @@ class UserSeasonRegistrationInline(BaseModelTabularInline):
 
 
 @admin.register(User)
-class UserAdmin(BaseUserAdmin):
+class UserAdmin(ImportExportMixin, ExportActionMixin, BaseUserAdmin):
     list_display = (
         'id', 'username', 'email', 'first_name', 'last_name', 'gender', 'date_joined', 'last_login', 'is_staff',
         'is_superuser',
@@ -26,6 +36,8 @@ class UserAdmin(BaseUserAdmin):
     date_hierarchy = 'date_joined'
     ordering = ('first_name', 'last_name')
     inlines = [UserSeasonRegistrationInline]
+
+    resource_classes = [UserResource]
 
     def get_fieldsets(self, request, obj=None):
         fieldsets = deepcopy(super().get_fieldsets(request, obj))
@@ -40,7 +52,13 @@ class UserSeasonRegistrationAdmin(BaseModelAdmin):
     list_display = (
         'user', 'season', 'team', 'is_captain', 'position', 'registered_at', 'signature', 'location',
     )
-    list_filter = ('season', 'team', 'is_captain', 'position', 'location')
+    list_filter = (
+        'season', 'team', 'is_captain', 'position', 'location', 'interested_in_reffing',
+        'interested_in_opening_closing', 'interested_in_next_year',
+    )
     search_fields = ('user__username', 'user__email', 'user__first_name', 'user__last_name', 'team__name')
     ordering = ('season', 'team', 'user__first_name', 'user__last_name')
     autocomplete_fields = ('user', 'season', 'team',)
+
+    import_resource_classes = [UserSeasonRegistrationResource]
+    export_resource_classes = [UserSeasonRegistrationResource]

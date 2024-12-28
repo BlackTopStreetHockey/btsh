@@ -1,10 +1,14 @@
 from django.contrib import admin
+from import_export.admin import ExportActionMixin, ImportExportModelAdmin
 
 
-class BaseModelAdmin(admin.ModelAdmin):
+class BaseModelAdmin(ImportExportModelAdmin, ExportActionMixin):
     date_hierarchy = 'created_at'
     list_display_links = ('id',)
     list_select_related = True
+
+    import_resource_classes = None
+    export_resource_classes = None
 
     def get_list_display(self, request):
         list_display = super().get_list_display(request)
@@ -33,6 +37,25 @@ class BaseModelAdmin(admin.ModelAdmin):
             obj.created_by = user
 
         super().save_model(request, obj, form, change)
+
+    # Django import export overrides
+    def get_import_resource_kwargs(self, request, **kwargs):
+        import_resource_kwargs = super().get_import_resource_kwargs(request, **kwargs)
+        import_resource_kwargs.update({'user': request.user})
+        return import_resource_kwargs
+
+    def get_import_resource_classes(self, request):
+        import_resource_classes = getattr(self, 'import_resource_classes', None)
+        return import_resource_classes or super().get_import_resource_classes(request)
+
+    def get_export_resource_kwargs(self, request, **kwargs):
+        export_resource_kwargs = super().get_export_resource_kwargs(request, **kwargs)
+        export_resource_kwargs.update({'user': request.user})
+        return export_resource_kwargs
+
+    def get_export_resource_classes(self, request):
+        export_resource_classes = getattr(self, 'export_resource_classes', None)
+        return export_resource_classes or super().get_export_resource_classes(request)
 
 
 class BaseModelTabularInline(admin.TabularInline):

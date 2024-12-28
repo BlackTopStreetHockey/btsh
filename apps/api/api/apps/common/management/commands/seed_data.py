@@ -217,7 +217,10 @@ def seed_user_season_registrations(seasons, teams, users, created_by):
                             'position': random.choice(list(UserSeasonRegistration.POSITIONS.keys())),
                             'signature': u.get_full_name(),
                             'location': random.choice(list(UserSeasonRegistration.LOCATIONS.keys())),
-                            'interested_in': None,
+                            'interested_in_reffing': random.choice([True, False]),
+                            'interested_in_opening_closing': random.choice([True, False]),
+                            'interested_in_other': None,
+                            'interested_in_next_year': random.choice([True, False]),
                             'mid_season_party_ideas': None,
                             'created_by': created_by,
                         }

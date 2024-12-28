@@ -5,6 +5,7 @@ from games.models import Game
 from teams.admin import TeamSeasonRegistrationInline
 from teams.utils import calculate_team_season_registration_stats
 from .models import Season
+from .resources import SeasonResource
 
 
 @admin.register(Season)
@@ -15,6 +16,9 @@ class SeasonAdmin(BaseModelAdmin):
     ordering = ('start', 'end')
     inlines = [TeamSeasonRegistrationInline]
     actions = ['calculate_team_season_registration_stats']
+
+    import_resource_classes = [SeasonResource]
+    export_resource_classes = [SeasonResource]
 
     @admin.display(boolean=True)
     def is_past(self, obj):

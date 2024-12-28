@@ -12,7 +12,7 @@ TEAM_FIELDS = ('name', 'logo', 'jersey_colors', 'short_name',)
 class NestedTeamReadOnlySerializer(BaseReadOnlyModelSerializer):
     """Circular dependency issue hence us re-defining this"""
 
-    class Meta:
+    class Meta(BaseReadOnlyModelSerializer.Meta):
         model = Team
         fields = BaseReadOnlyModelSerializer.Meta.fields + TEAM_FIELDS
 
@@ -27,9 +27,9 @@ class TeamSeasonRegistrationReadOnlySerializer(BaseReadOnlyModelSerializer):
         # This attribute is added via an annotation
         return getattr(obj, 'place', None)
 
-    class Meta:
+    class Meta(BaseReadOnlyModelSerializer.Meta):
         model = TeamSeasonRegistration
-        fields = (*TeamSeasonRegistration.FIELDS, 'place')
+        fields = BaseReadOnlyModelSerializer.Meta.fields + (*TeamSeasonRegistration.FIELDS, 'place')
 
 
 class TeamReadOnlySerializer(BaseReadOnlyModelSerializer):

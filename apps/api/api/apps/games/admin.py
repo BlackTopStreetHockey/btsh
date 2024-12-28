@@ -2,6 +2,14 @@ from django.contrib import admin
 
 from common.admin import BaseModelAdmin, BaseModelTabularInline
 from .models import Game, GameDay, GameGoal, GamePlayer, GameReferee, GameResultsEnum
+from .resources import (
+    GameDayResource,
+    GameGoalImportResource,
+    GameGoalExportResource,
+    GamePlayerResource,
+    GameRefereeResource,
+    GameResource
+)
 
 
 class GameInline(BaseModelTabularInline):
@@ -41,6 +49,9 @@ class GameDayAdmin(BaseModelAdmin):
     autocomplete_fields = ('season', 'opening_team', 'closing_team')
     inlines = [GameInline]
 
+    import_resource_classes = [GameDayResource]
+    export_resource_classes = [GameDayResource]
+
 
 class GameResultListFilter(admin.SimpleListFilter):
     title = 'Result'
@@ -73,6 +84,9 @@ class GameAdmin(BaseModelAdmin):
     readonly_fields = ('end', 'home_team_display', 'away_team_display', 'get_result_display')
     inlines = [GameGoalInline, GameRefereeInline, GamePlayerInline]
 
+    import_resource_classes = [GameResource]
+    export_resource_classes = [GameResource]
+
     @admin.display(description='Home Team')
     def home_team_display(self, obj):
         return obj.home_team_display
@@ -97,6 +111,9 @@ class GameRefereeAdmin(BaseModelAdmin):
     ordering = ('-game__game_day__day', 'game__start',)
     autocomplete_fields = ('game', 'user',)
 
+    import_resource_classes = [GameRefereeResource]
+    export_resource_classes = [GameRefereeResource]
+
 
 @admin.register(GamePlayer)
 class GamePlayerAdmin(BaseModelAdmin):
@@ -105,6 +122,9 @@ class GamePlayerAdmin(BaseModelAdmin):
     search_fields = ('user__first_name', 'user__last_name', 'team__name', 'game__game_day__day', 'game__id',)
     ordering = ('-game__game_day__day', 'game__start',)
     autocomplete_fields = ('game', 'user', 'team')
+
+    import_resource_classes = [GamePlayerResource]
+    export_resource_classes = [GamePlayerResource]
 
 
 @admin.register(GameGoal)
@@ -125,6 +145,9 @@ class GameGoalAdmin(BaseModelAdmin):
     )
     ordering = ('-game__game_day__day', 'game__start', 'team', 'period')
     autocomplete_fields = ('game', 'team', 'team_against', 'scored_by', 'assisted_by1', 'assisted_by2')
+
+    import_resource_classes = [GameGoalImportResource]
+    export_resource_classes = [GameGoalExportResource]
 
     @admin.display(description='Scored By')
     def scored_by_name(self, obj):
