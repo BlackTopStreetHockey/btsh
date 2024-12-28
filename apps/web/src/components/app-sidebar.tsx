@@ -2,7 +2,7 @@
 
 import * as React from "react";
 
-import { 
+import {
   BarChart,
   BookOpenText,
   Calendar,
@@ -14,6 +14,8 @@ import {
   Users,
   LifeBuoy,
   Send,
+  ShieldEllipsis,
+  NotebookIcon,
 } from "lucide-react";
 
 import BTSHLogo from "@/components/navigation/btsh-logo";
@@ -28,6 +30,9 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+
+const GITHUB_ORG = "https://github.com/blacktopstreethockey";
+const GITHUB_REPO = `${GITHUB_ORG}/btsh`;
 
 const data = {
   user: {
@@ -79,14 +84,24 @@ const data = {
   ],
   navSecondary: [
     {
-      title: "Contribute",
-      url: "https://github.com/blacktopstreethockey/btsh",
-      icon: GithubIcon,
+      title: "Admin",
+      url: `${process.env.API_URL}/admin`,
+      icon: ShieldEllipsis,
+    },
+    {
+      title: "Docs",
+      url: `${GITHUB_REPO}/wiki`,
+      icon: NotebookIcon,
     },
     {
       title: "Support",
       url: "#",
       icon: LifeBuoy,
+    },
+    {
+      title: "Contribute",
+      url: GITHUB_REPO,
+      icon: GithubIcon,
     },
     {
       title: "Feedback",
