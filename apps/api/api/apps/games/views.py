@@ -8,6 +8,7 @@ from .serializers import (
     GameGoalReadOnlySerializer,
     GamePlayerReadOnlySerializer,
     GameReadOnlySerializer,
+    IndividualGameReadOnlySerializer,
     GameRefereeReadOnlySerializer
 )
 

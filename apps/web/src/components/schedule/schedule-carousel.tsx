@@ -50,7 +50,7 @@ export default function ScheduleCarousel() {
   };
 
   return (
-    <div className="m-1">
+    <div className="m-1 w-500px">
       <div className="flex flex-row gap-1">
         <div className="">
           <Button
@@ -63,7 +63,7 @@ export default function ScheduleCarousel() {
         </div>
         <ScrollArea
           viewportRef={viewportRef}
-          className="w-full h-36"
+          className="h-36"
           scrollHideDelay={100}
         >
           <div className="flex flex-row gap-1">
