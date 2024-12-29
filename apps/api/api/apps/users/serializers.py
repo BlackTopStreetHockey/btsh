@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from common.serializers import BaseModelSerializer
 from seasons.serializers import SeasonReadOnlySerializer
-from teams.serializers import TeamReadOnlySerializer
+from teams.serializers import NestedTeamReadOnlySerializer
 from .models import User, UserSeasonRegistration
 
 
@@ -21,7 +21,7 @@ class UserReadOnlySerializer(serializers.ModelSerializer):
 class UserSeasonRegistrationReadOnlySerializer(BaseModelSerializer):
     user = UserReadOnlySerializer()
     season = SeasonReadOnlySerializer()
-    team = TeamReadOnlySerializer(exclude=('seasons',))
+    team = NestedTeamReadOnlySerializer()
 
     games_played = serializers.SerializerMethodField()
     goals = serializers.SerializerMethodField()

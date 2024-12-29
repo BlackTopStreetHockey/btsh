@@ -3,7 +3,7 @@ from rest_framework import serializers
 from common.serializers import BaseModelSerializer
 from seasons.serializers import SeasonReadOnlySerializer
 from teams.models import Team
-from teams.serializers import TeamReadOnlySerializer
+from teams.serializers import NestedTeamReadOnlySerializer
 from users.serializers import UserReadOnlySerializer
 from .models import Game, GameDay, GameGoal, GamePlayer, GameReferee
 
@@ -13,8 +13,8 @@ GAME_DAY_FIELDS = ('day', 'season', 'opening_team', 'closing_team',)
 
 class NestedGameDayReadOnlySerializer(BaseModelSerializer):
     """Circular dependency issue hence us re-defining this"""
-    opening_team = TeamReadOnlySerializer(exclude=('seasons',))
-    closing_team = TeamReadOnlySerializer(exclude=('seasons',))
+    opening_team = NestedTeamReadOnlySerializer()
+    closing_team = NestedTeamReadOnlySerializer()
     season = SeasonReadOnlySerializer()
 
     class Meta(BaseModelSerializer.Meta):
@@ -25,11 +25,11 @@ class NestedGameDayReadOnlySerializer(BaseModelSerializer):
 class GameReadOnlySerializer(BaseModelSerializer):
     game_day = NestedGameDayReadOnlySerializer()
 
-    home_team = TeamReadOnlySerializer(exclude=('seasons',))
+    home_team = NestedTeamReadOnlySerializer()
     home_team_division_name = serializers.CharField()
     home_team_num_goals = serializers.IntegerField()
 
-    away_team = TeamReadOnlySerializer(exclude=('seasons',))
+    away_team = NestedTeamReadOnlySerializer()
     away_team_division_name = serializers.CharField()
     away_team_num_goals = serializers.IntegerField()
 
@@ -49,8 +49,8 @@ class GameReadOnlySerializer(BaseModelSerializer):
 
 
 class GameDayReadOnlySerializer(BaseModelSerializer):
-    opening_team = TeamReadOnlySerializer(exclude=('seasons',))
-    closing_team = TeamReadOnlySerializer(exclude=('seasons',))
+    opening_team = NestedTeamReadOnlySerializer()
+    closing_team = NestedTeamReadOnlySerializer()
     season = SeasonReadOnlySerializer()
     games = GameReadOnlySerializer(many=True, exclude=('game_day',))
 
@@ -69,7 +69,7 @@ class GameRefereeReadOnlySerializer(BaseModelSerializer):
 
 class GamePlayerReadOnlySerializer(BaseModelSerializer):
     user = UserReadOnlySerializer()
-    team = TeamReadOnlySerializer(exclude=('seasons',))
+    team = NestedTeamReadOnlySerializer()
 
     class Meta(BaseModelSerializer.Meta):
         model = GamePlayer
@@ -77,8 +77,8 @@ class GamePlayerReadOnlySerializer(BaseModelSerializer):
 
 
 class GameGoalReadOnlySerializer(BaseModelSerializer):
-    team = TeamReadOnlySerializer(exclude=('seasons',))
-    team_against = TeamReadOnlySerializer(exclude=('seasons',))
+    team = NestedTeamReadOnlySerializer()
+    team_against = NestedTeamReadOnlySerializer()
     scored_by = GamePlayerReadOnlySerializer(exclude=('team',))
     assisted_by1 = GamePlayerReadOnlySerializer(exclude=('team',))
     assisted_by2 = GamePlayerReadOnlySerializer(exclude=('team',))
