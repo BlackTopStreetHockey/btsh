@@ -14,10 +14,42 @@ from users.models import User, UserSeasonRegistration
 NOW = 'now'
 NUM_REFS = 2
 MIN_PLAYERS_PER_GAME = 8
+MIN_PLAYERS_PER_GAME_SUBS_NEEDED = MIN_PLAYERS_PER_GAME // 2
 
 
 def parse_date(d):
     return timezone.now().date() if d == NOW else django_parse_date(d)
+
+
+def create_game_players(users, team, game, are_subs, created_by):
+    count = len(users)
+
+    if count <= 0:
+        return
+
+    if are_subs:
+        print(f'Seeding {count} game player subs for {team.name}.')
+    else:
+        print(f'Seeding {count} game players for {team.name}.')
+
+    for i, user in enumerate(users):
+        kwargs = {
+            'game': game,
+            'user_id': user,
+            'team': team,
+        }
+
+        # TODO add more entropy with users not registered for the team, x male + y female, goalie subs
+        get_or_create(
+            GamePlayer,
+            get_kwargs={**kwargs},
+            create_kwargs={
+                **kwargs,
+                'is_substitute': are_subs,
+                'is_goalie': i == 0 if not are_subs else False,
+                'created_by': created_by,
+            }
+        )
 
 
 class Command(BaseCommand):
@@ -36,8 +68,6 @@ class Command(BaseCommand):
         simulate_from = parse_date(options.get('from'))
         simulate_to = parse_date(options.get('to'))
 
-        users = User.objects.all()
-        users_list = list(users)
         games = Game.objects.filter(
             game_day__day__gte=simulate_from,
             game_day__day__lte=simulate_to,
@@ -58,7 +88,14 @@ class Command(BaseCommand):
 
             if not GameReferee.objects.filter(game=game).exists():
                 print(f'Seeding {NUM_REFS} game refs.')
-                ref_users = random.sample(users_list, NUM_REFS)
+                user_ids = UserSeasonRegistration.objects.filter(
+                    season=season,
+                    team__in=teams,
+                ).values_list('user__id', flat=True)
+                # Exclude users that are registered for the home or away team since they may be playing in the game
+                available_refs = list(User.objects.exclude(id__in=user_ids))
+                random.shuffle(available_refs)
+                ref_users = random.sample(available_refs, NUM_REFS)
                 for i, user in enumerate(ref_users):
                     kwargs = {
                         'game': game,
@@ -73,44 +110,36 @@ class Command(BaseCommand):
 
             if not GamePlayer.objects.filter(game=game).exists():
                 for team in teams:
-                    # Grab the users registered for the team + season
-                    user_season_registrations = UserSeasonRegistration.objects.filter(
+                    # Grab the eligible users for the game (i.e. users registered for the team + season)
+                    game_users = UserSeasonRegistration.objects.filter(
                         season=season, team=team
-                    ).order_by('user__first_name', 'user__last_name')
+                    ).order_by('user__first_name', 'user__last_name').values_list('user__id', flat=True)
+                    # Grab the eligible subs
+                    sub_users = UserSeasonRegistration.objects.filter(
+                        season=season
+                    ).exclude(
+                        user__in=game_users
+                    ).order_by('user__first_name', 'user__last_name').values_list('user__id', flat=True)
 
-                    num_user_season_registrations = user_season_registrations.count()
+                    num_game_users = random.randint(MIN_PLAYERS_PER_GAME_SUBS_NEEDED, game_users.count())
                     # Simulate varying attendances
-                    if num_user_season_registrations < MIN_PLAYERS_PER_GAME:
-                        num_players_for_game = num_user_season_registrations
+                    if num_game_users <= MIN_PLAYERS_PER_GAME:
+                        num_game_users_for_game = num_game_users
+                        num_sub_users_for_game = MIN_PLAYERS_PER_GAME - num_game_users
                     else:
-                        num_players_for_game = random.randint(MIN_PLAYERS_PER_GAME, num_user_season_registrations)
+                        num_game_users_for_game = random.randint(MIN_PLAYERS_PER_GAME, num_game_users)
+                        num_sub_users_for_game = 0
 
-                    user_season_registrations = list(user_season_registrations)
-                    random.shuffle(user_season_registrations)
-                    user_season_registrations_for_game = random.sample(
-                        user_season_registrations,
-                        num_players_for_game,
-                    )
+                    game_users_list = list(game_users)
+                    random.shuffle(game_users_list)
+                    sub_users_list = list(sub_users)
+                    random.shuffle(sub_users_list)
 
-                    print(f'Seeding {num_players_for_game} game players for {team.name}.')
-                    for i, user_season_registration in enumerate(user_season_registrations_for_game):
-                        kwargs = {
-                            'game': game,
-                            'user': user_season_registration.user,
-                            'team': team,
-                        }
+                    sampled_game_users = random.sample(game_users_list, num_game_users_for_game)
+                    sampled_sub_users = random.sample(sub_users_list, num_sub_users_for_game)
 
-                        # TODO add more entropy with subs, users not registered for the team, x male + y female
-                        get_or_create(
-                            GamePlayer,
-                            get_kwargs={**kwargs},
-                            create_kwargs={
-                                **kwargs,
-                                'is_substitute': False,
-                                'is_goalie': i == 0,
-                                'created_by': created_by,
-                            }
-                        )
+                    create_game_players(sampled_game_users, team, game, False, created_by)
+                    create_game_players(sampled_sub_users, team, game, True, created_by)
 
             if not GameGoal.objects.filter(game=game).exists():
                 # TODO OT, SO
