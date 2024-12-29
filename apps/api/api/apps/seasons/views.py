@@ -1,10 +1,10 @@
-from common.views import BaseModelReadOnlyViewSet
+from common.views import BaseModelViewSet
 from .filtersets import SeasonFilterSet
 from .models import Season
 from .serializers import SeasonReadOnlySerializer
 
 
-class SeasonViewSet(BaseModelReadOnlyViewSet):
+class SeasonViewSet(BaseModelViewSet):
     queryset = Season.objects.all()
     serializer_class = SeasonReadOnlySerializer
     ordering = ('start',)

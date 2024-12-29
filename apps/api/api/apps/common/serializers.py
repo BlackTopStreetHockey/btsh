@@ -20,7 +20,7 @@ class DynamicFieldsModelSerializerMixin:
                 self.fields.pop(field_name, None)
 
 
-class BaseReadOnlyModelSerializer(DynamicFieldsModelSerializerMixin, serializers.ModelSerializer):
+class BaseModelSerializer(DynamicFieldsModelSerializerMixin, serializers.ModelSerializer):
     class Meta:
         fields = (*BASE_MODEL_FIELDS, 'id')
         read_only_fields = (*BASE_MODEL_FIELDS,)

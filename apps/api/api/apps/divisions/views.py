@@ -1,9 +1,9 @@
-from common.views import BaseModelReadOnlyViewSet
+from common.views import BaseModelViewSet
 from .models import Division
 from .serializers import DivisionReadOnlySerializer
 
 
-class DivisionViewSet(BaseModelReadOnlyViewSet):
+class DivisionViewSet(BaseModelViewSet):
     queryset = Division.objects.all()
     serializer_class = DivisionReadOnlySerializer
     ordering = ('name',)

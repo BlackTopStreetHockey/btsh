@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from common.serializers import BaseReadOnlyModelSerializer
+from common.serializers import BaseModelSerializer
 from divisions.serializers import DivisionReadOnlySerializer
 from seasons.serializers import SeasonReadOnlySerializer
 from .models import Team, TeamSeasonRegistration
@@ -9,15 +9,15 @@ from .models import Team, TeamSeasonRegistration
 TEAM_FIELDS = ('name', 'logo', 'jersey_colors', 'short_name',)
 
 
-class NestedTeamReadOnlySerializer(BaseReadOnlyModelSerializer):
+class NestedTeamReadOnlySerializer(BaseModelSerializer):
     """Circular dependency issue hence us re-defining this"""
 
-    class Meta(BaseReadOnlyModelSerializer.Meta):
+    class Meta(BaseModelSerializer.Meta):
         model = Team
-        fields = BaseReadOnlyModelSerializer.Meta.fields + TEAM_FIELDS
+        fields = BaseModelSerializer.Meta.fields + TEAM_FIELDS
 
 
-class TeamSeasonRegistrationReadOnlySerializer(BaseReadOnlyModelSerializer):
+class TeamSeasonRegistrationReadOnlySerializer(BaseModelSerializer):
     team = NestedTeamReadOnlySerializer()
     season = SeasonReadOnlySerializer()
     division = DivisionReadOnlySerializer()
@@ -27,14 +27,14 @@ class TeamSeasonRegistrationReadOnlySerializer(BaseReadOnlyModelSerializer):
         # This attribute is added via an annotation
         return getattr(obj, 'place', None)
 
-    class Meta(BaseReadOnlyModelSerializer.Meta):
+    class Meta(BaseModelSerializer.Meta):
         model = TeamSeasonRegistration
-        fields = BaseReadOnlyModelSerializer.Meta.fields + (*TeamSeasonRegistration.FIELDS, 'place')
+        fields = BaseModelSerializer.Meta.fields + (*TeamSeasonRegistration.FIELDS, 'place')
 
 
-class TeamReadOnlySerializer(BaseReadOnlyModelSerializer):
+class TeamReadOnlySerializer(BaseModelSerializer):
     seasons = TeamSeasonRegistrationReadOnlySerializer(many=True, source='team_season_registrations', exclude=('team',))
 
-    class Meta(BaseReadOnlyModelSerializer.Meta):
+    class Meta(BaseModelSerializer.Meta):
         model = Team
-        fields = BaseReadOnlyModelSerializer.Meta.fields + (*TEAM_FIELDS, 'seasons',)
+        fields = BaseModelSerializer.Meta.fields + (*TEAM_FIELDS, 'seasons',)

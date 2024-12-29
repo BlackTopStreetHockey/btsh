@@ -1,8 +1,8 @@
-from common.serializers import BaseReadOnlyModelSerializer
+from common.serializers import BaseModelSerializer
 from .models import Season
 
 
-class SeasonReadOnlySerializer(BaseReadOnlyModelSerializer):
-    class Meta(BaseReadOnlyModelSerializer.Meta):
+class SeasonReadOnlySerializer(BaseModelSerializer):
+    class Meta(BaseModelSerializer.Meta):
         model = Season
-        fields = BaseReadOnlyModelSerializer.Meta.fields + ('start', 'end', 'is_past', 'is_current', 'is_future', 'year')
+        fields = BaseModelSerializer.Meta.fields + ('start', 'end', 'is_past', 'is_current', 'is_future', 'year')

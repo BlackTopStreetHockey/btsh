@@ -1,8 +1,8 @@
-from common.serializers import BaseReadOnlyModelSerializer
+from common.serializers import BaseModelSerializer
 from .models import Division
 
 
-class DivisionReadOnlySerializer(BaseReadOnlyModelSerializer):
-    class Meta(BaseReadOnlyModelSerializer.Meta):
+class DivisionReadOnlySerializer(BaseModelSerializer):
+    class Meta(BaseModelSerializer.Meta):
         model = Division
-        fields = BaseReadOnlyModelSerializer.Meta.fields + ('name',)
+        fields = BaseModelSerializer.Meta.fields + ('name',)
