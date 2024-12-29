@@ -1,11 +1,11 @@
-from common.views import BaseModelReadOnlyViewSet
+from common.views import BaseModelViewSet
 from games.models import Game
 from .filtersets import UserSeasonRegistrationFilterSet
 from .models import UserSeasonRegistration
 from .serializers import UserSeasonRegistrationReadOnlySerializer
 
 
-class UserSeasonRegistrationViewSet(BaseModelReadOnlyViewSet):
+class UserSeasonRegistrationViewSet(BaseModelViewSet):
     queryset = UserSeasonRegistration.objects.with_place_by_team_and_season(game_type=Game.REGULAR).select_related(
         'user',
         'season',

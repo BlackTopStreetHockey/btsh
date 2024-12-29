@@ -1,6 +1,6 @@
 from django.db.models import Prefetch
 
-from common.views import BaseModelReadOnlyViewSet
+from common.views import BaseModelViewSet
 from .filtersets import GameDayFilterSet, GameFilterSet, GameGoalFilterSet, GamePlayerFilterSet, GameRefereeFilterSet
 from .models import Game, GameDay, GameGoal, GamePlayer, GameReferee
 from .serializers import (
@@ -8,12 +8,11 @@ from .serializers import (
     GameGoalReadOnlySerializer,
     GamePlayerReadOnlySerializer,
     GameReadOnlySerializer,
-    IndividualGameReadOnlySerializer,
     GameRefereeReadOnlySerializer
 )
 
 
-class GameDayViewSet(BaseModelReadOnlyViewSet):
+class GameDayViewSet(BaseModelViewSet):
     queryset = GameDay.objects.all().select_related(
         'opening_team', 'closing_team', 'season'
     ).prefetch_related(
@@ -28,7 +27,7 @@ class GameDayViewSet(BaseModelReadOnlyViewSet):
     filterset_class = GameDayFilterSet
 
 
-class GameViewSet(BaseModelReadOnlyViewSet):
+class GameViewSet(BaseModelViewSet):
     queryset = Game.objects.with_scores().with_team_divisions().select_related(
         'game_day__season', 'game_day__opening_team', 'game_day__closing_team', 'home_team', 'away_team',
     )
@@ -40,7 +39,7 @@ class GameViewSet(BaseModelReadOnlyViewSet):
     filterset_class = GameFilterSet
 
 
-class GameRefereeViewSet(BaseModelReadOnlyViewSet):
+class GameRefereeViewSet(BaseModelViewSet):
     queryset = GameReferee.objects.all().select_related('user')
     serializer_class = GameRefereeReadOnlySerializer
     ordering = ('-game__game_day__day', 'game__start', 'user__email')
@@ -49,7 +48,7 @@ class GameRefereeViewSet(BaseModelReadOnlyViewSet):
     filterset_class = GameRefereeFilterSet
 
 
-class GamePlayerViewSet(BaseModelReadOnlyViewSet):
+class GamePlayerViewSet(BaseModelViewSet):
     queryset = GamePlayer.objects.all().select_related('user', 'team')
     serializer_class = GamePlayerReadOnlySerializer
     ordering = ('-game__game_day__day', 'game__start', 'user__email', 'team')
@@ -58,7 +57,7 @@ class GamePlayerViewSet(BaseModelReadOnlyViewSet):
     filterset_class = GamePlayerFilterSet
 
 
-class GameGoalViewSet(BaseModelReadOnlyViewSet):
+class GameGoalViewSet(BaseModelViewSet):
     queryset = GameGoal.objects.all().select_related(
         'team',
         'team_against',

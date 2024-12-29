@@ -1,10 +1,10 @@
-from common.views import BaseModelReadOnlyViewSet
+from common.views import BaseModelViewSet
 from .filtersets import TeamFilterSet, TeamSeasonRegistrationFilterSet
 from .models import Team, TeamSeasonRegistration
 from .serializers import TeamReadOnlySerializer, TeamSeasonRegistrationReadOnlySerializer
 
 
-class TeamViewSet(BaseModelReadOnlyViewSet):
+class TeamViewSet(BaseModelViewSet):
     queryset = Team.objects.all().prefetch_related(
         'team_season_registrations__season',
         'team_season_registrations__division',
@@ -17,7 +17,7 @@ class TeamViewSet(BaseModelReadOnlyViewSet):
     filterset_class = TeamFilterSet
 
 
-class TeamSeasonRegistrationViewSet(BaseModelReadOnlyViewSet):
+class TeamSeasonRegistrationViewSet(BaseModelViewSet):
     queryset = TeamSeasonRegistration.objects.with_place_by_season().select_related('team', 'season', 'division')
     serializer_class = TeamSeasonRegistrationReadOnlySerializer
     ordering = ('-season__start', 'place',)
