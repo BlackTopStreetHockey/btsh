@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from common.serializers import BaseReadOnlyModelSerializer
+from common.serializers import BaseModelSerializer
 from seasons.serializers import SeasonReadOnlySerializer
 from teams.serializers import TeamReadOnlySerializer
 from .models import User, UserSeasonRegistration
@@ -18,7 +18,7 @@ class UserReadOnlySerializer(serializers.ModelSerializer):
         fields = ('id', 'first_name', 'last_name', 'full_name', 'date_joined', 'gender', 'get_gender_display')
 
 
-class UserSeasonRegistrationReadOnlySerializer(BaseReadOnlyModelSerializer):
+class UserSeasonRegistrationReadOnlySerializer(BaseModelSerializer):
     user = UserReadOnlySerializer()
     season = SeasonReadOnlySerializer()
     team = TeamReadOnlySerializer(exclude=('seasons',))
@@ -52,9 +52,9 @@ class UserSeasonRegistrationReadOnlySerializer(BaseReadOnlyModelSerializer):
     def get_place(self, obj):
         return getattr(obj, 'place', None)
 
-    class Meta(BaseReadOnlyModelSerializer.Meta):
+    class Meta(BaseModelSerializer.Meta):
         model = UserSeasonRegistration
-        fields = BaseReadOnlyModelSerializer.Meta.fields + (
+        fields = BaseModelSerializer.Meta.fields + (
             'user', 'season', 'team', 'is_captain', 'position', 'get_position_display', 'registered_at', 'location',
             'get_location_display', 'games_played', 'goals', 'primary_assists', 'secondary_assists', 'assists',
             'points', 'place',
