@@ -52,6 +52,19 @@ def create_game_players(users, team, game, are_subs, created_by):
         )
 
 
+def get_potential_scorers_assisters(game_players, team):
+    players = game_players.filter(team=team).exclude(is_goalie=True)
+    return players, list(players)
+
+
+def compute_scored_by_assisted_by1_assisted_by2(players):
+    sampled_players = random.sample(players, k=3)
+    scored_by = sampled_players[0]
+    assisted_by1 = sampled_players[1] if random.randint(0, 1) == 0 else None
+    assisted_by2 = sampled_players[2] if assisted_by1 and random.randint(0, 1) == 0 else None
+    return scored_by, assisted_by1, assisted_by2
+
+
 class Command(BaseCommand):
     help = 'Simulate games for local development purposes.'
 
@@ -142,20 +155,17 @@ class Command(BaseCommand):
                     create_game_players(sampled_sub_users, team, game, True, created_by)
 
             if not GameGoal.objects.filter(game=game).exists():
-                # TODO OT, SO
                 periods = [GameGoal.FIRST, GameGoal.SECOND]
                 game_players = GamePlayer.objects.filter(game=game)
                 for period in periods:
                     for team in teams:
-                        players = game_players.filter(team=team).exclude(is_goalie=True)
-                        players_list = list(players)
+                        players, players_list = get_potential_scorers_assisters(game_players, team)
                         num_goals = random.randint(0, 5)
                         print(f'Seeding {num_goals} goals for {team.name} in period {period}.')
                         for i in range(num_goals):
-                            player_choices = random.sample(players_list, k=3)
-                            scored_by = player_choices[0]
-                            assisted_by1 = player_choices[1] if random.randint(0, 1) == 0 else None
-                            assisted_by2 = player_choices[2] if assisted_by1 and random.randint(0, 1) == 0 else None
+                            scored_by, assisted_by1, assisted_by2 = compute_scored_by_assisted_by1_assisted_by2(
+                                players_list
+                            )
 
                             get_or_create(
                                 GameGoal,
@@ -170,6 +180,34 @@ class Command(BaseCommand):
                                     'assisted_by2': assisted_by2,
                                 }
                             )
+
+                game_goals = GameGoal.objects.filter(game=game)
+                if game_goals.filter(team=home_team).count() == game_goals.filter(team=away_team).count():
+                    # None represents the game stays a tie
+                    period = random.choice([GameGoal.OT, GameGoal.SO, None])
+                    if period is None:
+                        continue
+
+                    team = random.choice(teams)
+                    team_against = home_team if team == away_team else away_team
+
+                    players, players_list = get_potential_scorers_assisters(game_players, team)
+                    scored_by, assisted_by1, assisted_by2 = compute_scored_by_assisted_by1_assisted_by2(players_list)
+
+                    print(f'\n{team.name} wins in {period.upper()}!\n')
+                    get_or_create(
+                        GameGoal,
+                        get_kwargs={'pk': None},
+                        create_kwargs={
+                            'game': game,
+                            'team': team,
+                            'team_against': team_against,
+                            'period': period,
+                            'scored_by': scored_by,
+                            'assisted_by1': None if period == GameGoal.SO else assisted_by1,
+                            'assisted_by2': None if period == GameGoal.SO else assisted_by2,
+                        }
+                    )
 
             game.status = Game.COMPLETED
             game.save()
