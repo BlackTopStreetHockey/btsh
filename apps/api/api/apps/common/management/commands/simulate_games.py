@@ -52,6 +52,25 @@ def create_game_players(users, team, game, are_subs, created_by):
         )
 
 
+def create_game_referees(count, exclude_user_ids, game, created_by):
+    print(f'Seeding {count} game refs.')
+    # Exclude users that are playing in the game, including subs
+    refs = list(User.objects.exclude(id__in=exclude_user_ids))
+    random.shuffle(refs)
+    sampled_refs = random.sample(refs, k=count)
+    for i, user in enumerate(sampled_refs):
+        kwargs = {
+            'game': game,
+            'user': user,
+            'type': list(GameReferee.TYPES.keys())[i],
+        }
+        get_or_create(
+            GameReferee,
+            get_kwargs={**kwargs},
+            create_kwargs={**kwargs, 'created_by': created_by},
+        )
+
+
 def get_potential_scorers_assisters(game_players, team):
     players = game_players.filter(team=team).exclude(is_goalie=True)
     return players, list(players)
@@ -99,28 +118,6 @@ class Command(BaseCommand):
             away_team = game.away_team
             season = game.game_day.season
 
-            if not GameReferee.objects.filter(game=game).exists():
-                print(f'Seeding {NUM_REFS} game refs.')
-                user_ids = UserSeasonRegistration.objects.filter(
-                    season=season,
-                    team__in=teams,
-                ).values_list('user__id', flat=True)
-                # Exclude users that are registered for the home or away team since they may be playing in the game
-                available_refs = list(User.objects.exclude(id__in=user_ids))
-                random.shuffle(available_refs)
-                ref_users = random.sample(available_refs, NUM_REFS)
-                for i, user in enumerate(ref_users):
-                    kwargs = {
-                        'game': game,
-                        'user': user,
-                        'type': list(GameReferee.TYPES.keys())[i],
-                    }
-                    get_or_create(
-                        GameReferee,
-                        get_kwargs={**kwargs},
-                        create_kwargs={**kwargs, 'created_by': created_by},
-                    )
-
             if not GamePlayer.objects.filter(game=game).exists():
                 for team in teams:
                     # Grab the eligible users for the game (i.e. users registered for the team + season)
@@ -153,6 +150,10 @@ class Command(BaseCommand):
 
                     create_game_players(sampled_game_users, team, game, False, created_by)
                     create_game_players(sampled_sub_users, team, game, True, created_by)
+
+            if not GameReferee.objects.filter(game=game).exists():
+                exclude_user_ids = GamePlayer.objects.filter(game=game).values_list('user__id', flat=True)
+                create_game_referees(NUM_REFS, exclude_user_ids, game, created_by)
 
             if not GameGoal.objects.filter(game=game).exists():
                 periods = [GameGoal.FIRST, GameGoal.SECOND]

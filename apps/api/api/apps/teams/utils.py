@@ -26,8 +26,10 @@ def calculate_team_season_registration_stats(game_type, limit_to_teams=None, lim
 
     Args:
         game_type: Game type to compute stats for (i.e. regular or playoff)
-        limit_to_teams: Only calculate stats for the provided teams. If seasons are also provided only calculate stats for the teams and seasons.
-        limit_to_seasons: Only calculate stats for the provided seasons. If teams are also provided only calculate stats for the seasons and teams.
+        limit_to_teams: Only calculate stats for the provided teams. If seasons are also provided only calculate stats
+            for the teams and seasons.
+        limit_to_seasons: Only calculate stats for the provided seasons. If teams are also provided only calculate stats
+            for the seasons and teams.
         debug: Whether to print debug messages.
     """
 
@@ -55,7 +57,7 @@ def calculate_team_season_registration_stats(game_type, limit_to_teams=None, lim
                 setattr(team_season_registration, k, v)
             team_season_registration.save()
             if debug:
-                print(f'    Updated stats.')
+                print('    Updated stats.')
 
     if debug:
         print(f'Took: {datetime.datetime.now() - start}')
