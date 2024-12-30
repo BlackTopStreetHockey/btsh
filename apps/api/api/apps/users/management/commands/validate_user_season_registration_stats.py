@@ -26,7 +26,7 @@ class Command(BaseCommand):
             }
 
             games_played = GamePlayer.objects.filter(**filter_kwargs, user=user).count()
-            goals = GameGoal.objects.filter(**filter_kwargs, scored_by__user=user).count()
+            goals = GameGoal.objects.filter(**filter_kwargs, scored_by__user=user).exclude(period=GameGoal.SO).count()
             primary_assists = GameGoal.objects.filter(**filter_kwargs, assisted_by1__user=user).count()
             secondary_assists = GameGoal.objects.filter(**filter_kwargs, assisted_by2__user=user).count()
             assists = primary_assists + secondary_assists
