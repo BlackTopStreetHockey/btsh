@@ -10,7 +10,7 @@ from divisions.models import Division
 from games.models import Game, GameDay
 from seasons.models import Season
 from teams.models import Team
-from users.models import User
+from users.models import User, UserSeasonRegistration
 
 
 @pytest.fixture
@@ -427,6 +427,57 @@ def denim_demons_expected_json(denim_demons, placeholder_user_expected_json):
         }
 
     return _factory
+
+
+@pytest.fixture
+def user_season_registration_factory():
+    def _factory(user, season, team, is_captain, position, signature, location, registered_at=None,
+                 interested_in_reffing=None, interested_in_opening_closing=None, interested_in_other=None,
+                 interested_in_next_year=None, mid_season_party_ideas=None):
+        kwargs = {
+            'user': user,
+            'season': season,
+            'team': team,
+            'is_captain': is_captain,
+            'position': position,
+            'signature': signature,
+            'location': location,
+        }
+
+        if registered_at:
+            kwargs.update({'registered_at': registered_at})
+
+        user_season_registration = UserSeasonRegistration(
+            **kwargs,
+            interested_in_reffing=interested_in_reffing,
+            interested_in_opening_closing=interested_in_opening_closing,
+            interested_in_other=interested_in_other,
+            interested_in_next_year=interested_in_next_year,
+            mid_season_party_ideas=mid_season_party_ideas,
+        )
+        user_season_registration.full_clean()
+        user_season_registration.save()
+        return user_season_registration
+
+    return _factory
+
+
+@pytest.fixture
+def wgretzky_2024_season_registration(user_season_registration_factory, wgretzky, season_2024, corlears_hookers):
+    yield user_season_registration_factory(
+        user=wgretzky,
+        season=season_2024,
+        team=corlears_hookers,
+        is_captain=True,
+        position=UserSeasonRegistration.FORWARD,
+        signature='Wayne Gretzky',
+        location=UserSeasonRegistration.BRONX,
+        interested_in_reffing=False,
+        interested_in_opening_closing=False,
+        interested_in_other=None,
+        interested_in_next_year=False,
+        mid_season_party_ideas=None,
+    )
 
 
 @pytest.fixture
