@@ -67,6 +67,9 @@ class TestSeasonModel:
         assert season_2024.year == 2024
 
     def test_clean(self, season_factory):
+        with pytest.raises(ValidationError):
+            season_factory(start=None, end=None)
+
         with pytest.raises(ValidationError) as e:
             season_factory(start=date(year=2020, month=2, day=1), end=date(2019, month=4, day=2))
         assert e.value.message_dict == {
