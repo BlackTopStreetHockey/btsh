@@ -153,10 +153,10 @@ def season_2022(season_factory, placeholder_user):
 
 
 @pytest.fixture
-def season_2022_expected_json(season_2022, placeholder_user_expected_json):
+def season_2022_expected_json(season_2022, placeholder_user):
     def _factory(is_past, is_current, is_future, tz=None):
         return {
-            'created_by': placeholder_user_expected_json(tz),
+            'created_by': placeholder_user.id,
             'updated_by': None,
             'created_at': datetime_to_drf(season_2022.created_at, tz=tz),
             'updated_at': datetime_to_drf(season_2022.updated_at, tz=tz),
@@ -183,10 +183,10 @@ def season_2023(season_factory, placeholder_user):
 
 
 @pytest.fixture
-def season_2023_expected_json(season_2023, placeholder_user_expected_json):
+def season_2023_expected_json(season_2023, placeholder_user):
     def _factory(is_past, is_current, is_future, tz=None):
         return {
-            'created_by': placeholder_user_expected_json(tz),
+            'created_by': placeholder_user.id,
             'updated_by': None,
             'created_at': datetime_to_drf(season_2023.created_at, tz=tz),
             'updated_at': datetime_to_drf(season_2023.updated_at, tz=tz),
@@ -213,10 +213,10 @@ def season_2024(season_factory, placeholder_user):
 
 
 @pytest.fixture
-def season_2024_expected_json(season_2024, placeholder_user_expected_json):
+def season_2024_expected_json(season_2024, placeholder_user):
     def _factory(is_past, is_current, is_future, tz=None):
         return {
-            'created_by': placeholder_user_expected_json(tz),
+            'created_by': placeholder_user.id,
             'updated_by': None,
             'created_at': datetime_to_drf(season_2024.created_at, tz=tz),
             'updated_at': datetime_to_drf(season_2024.updated_at, tz=tz),

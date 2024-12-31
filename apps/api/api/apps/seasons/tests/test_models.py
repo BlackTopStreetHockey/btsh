@@ -63,6 +63,9 @@ class TestSeasonModel:
         season = season_factory(start=start, end=end)
         assert season.is_future is expected
 
+    def test_year(self, season_2024):
+        assert season_2024.year == 2024
+
     def test_clean(self, season_factory):
         with pytest.raises(ValidationError) as e:
             season_factory(start=date(year=2020, month=2, day=1), end=date(2019, month=4, day=2))

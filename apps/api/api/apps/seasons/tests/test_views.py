@@ -7,8 +7,16 @@ class TestSeasonViewSet(BaseTest):
     list_url = 'seasons:season-list'
     retrieve_url = 'seasons:season-detail'
 
-    def test_list(self, api_client, settings, mocker, season_2024, season_2022_expected_json, season_2023_expected_json,
-                  season_2024_expected_json, placeholder_user_expected_json):
+    def test_list_permission(self, api_client, cmcdavid):
+        # Anonymous
+        assert api_client.get(self.reverse_api_url(url=self.list_url)).status_code == 200
+
+        # Authenticated
+        api_client.force_login(cmcdavid)
+        assert api_client.get(self.reverse_api_url(url=self.list_url)).status_code == 200
+
+    def test_list(self, api_client, settings, mocker, season_2024, placeholder_user, season_2022_expected_json,
+                  season_2023_expected_json, season_2024_expected_json):
         mocker.patch('django.utils.timezone.now', return_value=datetime(
             year=season_2024.start.year,
             month=5,
@@ -38,6 +46,16 @@ class TestSeasonViewSet(BaseTest):
                 )
             ],
         }
+
+    def test_retrieve_permission(self, api_client, cmcdavid, season_2024):
+        url = self.reverse_api_url(url=self.retrieve_url, pk=season_2024.pk)
+
+        # Anonymous
+        assert api_client.get(url).status_code == 200
+
+        # Authenticated
+        api_client.force_login(cmcdavid)
+        assert api_client.get(url).status_code == 200
 
     def test_retrieve(self, api_client, settings, season_2024, season_2024_expected_json):
         response = api_client.get(self.reverse_api_url(url=self.retrieve_url, pk=season_2024.pk))
