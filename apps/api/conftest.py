@@ -20,13 +20,14 @@ def api_client():
 
 @pytest.fixture
 def user_factory():
-    def _factory(first_name, last_name, email, password):
+    def _factory(first_name, last_name, email, password, gender):
         return User.objects.create_user(
             first_name=first_name,
             last_name=last_name,
             username=email,
             email=email,
             password=password,
+            gender=gender,
         )
 
     return _factory
@@ -39,6 +40,7 @@ def placeholder_user(user_factory):
         last_name='Scott',
         email='mscott@dundermifflin.com',
         password='ilovepaper',
+        gender=User.MALE,
     )
 
 
@@ -63,6 +65,18 @@ def wgretzky(user_factory):
         last_name='Gretzky',
         email='thegr81@btsh.org',
         password='goat',
+        gender=User.MALE,
+    )
+
+
+@pytest.fixture
+def cmcdavid(user_factory):
+    yield user_factory(
+        first_name='Connor',
+        last_name='McDavid',
+        email='mcjesus@btsh.org',
+        password='mcjesus',
+        gender=User.MALE,
     )
 
 
