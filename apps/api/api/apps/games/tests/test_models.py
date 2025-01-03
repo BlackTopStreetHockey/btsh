@@ -4,6 +4,7 @@ import pytest
 from django.core.exceptions import ValidationError
 
 from api.utils.testing import BaseTest
+from games.models import Game
 
 
 class TestGameDayModel(BaseTest):
@@ -25,6 +26,82 @@ class TestGameDayModel(BaseTest):
 
 
 class TestGameModel(BaseTest):
+    def test_get_team_display(self, corlears_hookers, lbs, hookers_lbs_game_day1_2024):
+        # Scheduled game
+        assert hookers_lbs_game_day1_2024._get_team_display(corlears_hookers, 0) == 'Corlears Hookers'
+
+        # Completed game
+        hookers_lbs_game_day1_2024.status = Game.COMPLETED
+        hookers_lbs_game_day1_2024.save()
+
+        # Winner
+        hookers_lbs_game_day1_2024.winning_team_id = corlears_hookers.id
+        hookers_lbs_game_day1_2024.losing_team_id = lbs.id
+        assert hookers_lbs_game_day1_2024._get_team_display(corlears_hookers, 2) == 'Corlears Hookers (2) - W'
+
+        # Loser
+        hookers_lbs_game_day1_2024.winning_team_id = lbs.id
+        hookers_lbs_game_day1_2024.losing_team_id = corlears_hookers.id
+        assert hookers_lbs_game_day1_2024._get_team_display(corlears_hookers, 2) == 'Corlears Hookers (2) - L'
+
+        # Tie
+        hookers_lbs_game_day1_2024.winning_team_id = None
+        hookers_lbs_game_day1_2024.losing_team_id = None
+        assert hookers_lbs_game_day1_2024._get_team_display(corlears_hookers, 2) == 'Corlears Hookers (2) - T'
+
+    def test_get_team_season_registration(self, corlears_hookers, lbs, hookers_lbs_game_day1_2024,
+                                          corlears_hookers_2024_season_registration):
+        assert hookers_lbs_game_day1_2024.get_team_season_registration(lbs) is None
+        assert (
+            hookers_lbs_game_day1_2024.get_team_season_registration(corlears_hookers) ==
+            corlears_hookers_2024_season_registration
+        )
+
+    def test_get_team_division(self, corlears_hookers, lbs, hookers_lbs_game_day1_2024,
+                               corlears_hookers_2024_season_registration, division4):
+        assert hookers_lbs_game_day1_2024._get_team_division(lbs) is None
+        assert hookers_lbs_game_day1_2024._get_team_division(corlears_hookers) == division4
+
+    def test_teams(self, corlears_hookers, lbs, hookers_lbs_game_day1_2024):
+        assert hookers_lbs_game_day1_2024.teams == [corlears_hookers, lbs]
+
+    def test_home_team_division(self, hookers_lbs_game_day1_2024, corlears_hookers_2024_season_registration, division4):
+        assert hookers_lbs_game_day1_2024.home_team_division == division4
+
+    def test_away_team_division(self, hookers_lbs_game_day1_2024, lbs_2024_season_registration, division1):
+        assert hookers_lbs_game_day1_2024.away_team_division == division1
+
+    def test_home_team_display(self, corlears_hookers, lbs, hookers_lbs_game_day1_2024):
+        hookers_lbs_game_day1_2024.status = Game.COMPLETED
+        hookers_lbs_game_day1_2024.save()
+        hookers_lbs_game_day1_2024.winning_team_id = corlears_hookers.id
+        hookers_lbs_game_day1_2024.losing_team_id = lbs.id
+        hookers_lbs_game_day1_2024.home_team_num_goals = 8
+        assert hookers_lbs_game_day1_2024.home_team_display == 'Corlears Hookers (8) - W'
+
+    def test_away_team_display(self, corlears_hookers, lbs, hookers_lbs_game_day1_2024):
+        hookers_lbs_game_day1_2024.status = Game.COMPLETED
+        hookers_lbs_game_day1_2024.save()
+        hookers_lbs_game_day1_2024.winning_team_id = corlears_hookers.id
+        hookers_lbs_game_day1_2024.losing_team_id = lbs.id
+        hookers_lbs_game_day1_2024.away_team_num_goals = 0
+        assert hookers_lbs_game_day1_2024.away_team_display == 'Lbs (0) - L'
+
+    def test_save(self, mocker, hookers_lbs_game_day1_2024):
+        mock_calc = mocker.patch('games.models.calculate_team_season_registration_stats_from_game')
+
+        hookers_lbs_game_day1_2024.location = 'Chelsea Piers'
+        hookers_lbs_game_day1_2024.save()
+
+        mock_calc.assert_called_with(hookers_lbs_game_day1_2024)
+
+    def test_delete(self, mocker, hookers_lbs_game_day1_2024):
+        mock_calc = mocker.patch('games.models.calculate_team_season_registration_stats_from_game')
+
+        hookers_lbs_game_day1_2024.delete()
+
+        mock_calc.assert_called_with(hookers_lbs_game_day1_2024)
+
     def test_to_str(self, hookers_lbs_game_day1_2024):
         assert str(hookers_lbs_game_day1_2024) == '04/07/2024 12:00PM Corlears Hookers vs. Lbs'
 
@@ -37,6 +114,7 @@ class TestGameModel(BaseTest):
                 away_team=hookers_lbs_game_day1_2024.away_team,
                 court=hookers_lbs_game_day1_2024.court,
                 game_type=hookers_lbs_game_day1_2024.type,
+                status=hookers_lbs_game_day1_2024.status,
             )
         assert e.value.message_dict == {
             '__all__': ['Game with this Game day, Start, Home team and Away team already exists.']

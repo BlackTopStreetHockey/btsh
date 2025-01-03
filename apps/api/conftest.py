@@ -668,6 +668,35 @@ def corlears_hookers_2024_season_registration_expected_json(corlears_hookers_202
 
 
 @pytest.fixture
+def lbs_2024_season_registration(team_season_registration_factory, lbs, season_2024, division1):
+    yield team_season_registration_factory(
+        team=lbs,
+        season=season_2024,
+        division=division1,
+        home_games_played=3,
+        away_games_played=4,
+        home_regulation_wins=2,
+        home_regulation_losses=1,
+        home_overtime_wins=0,
+        home_overtime_losses=0,
+        home_shootout_wins=0,
+        home_shootout_losses=0,
+        home_ties=0,
+        away_regulation_wins=2,
+        away_regulation_losses=1,
+        away_overtime_wins=1,
+        away_overtime_losses=0,
+        away_shootout_wins=0,
+        away_shootout_losses=0,
+        away_ties=0,
+        home_goals_for=24,
+        home_goals_against=15,
+        away_goals_for=29,
+        away_goals_against=19,
+    )
+
+
+@pytest.fixture
 def game_day_factory():
     def _factory(day, season, opening_team, closing_team, created_by=None, updated_by=None):
         game_day = GameDay(
@@ -735,8 +764,8 @@ def game_day3_2024(game_day_factory, season_2024, dark_rainbows, corlears_hooker
 
 @pytest.fixture
 def game_factory():
-    def _factory(game_day, start, home_team, away_team, court, game_type, duration=None, location=None, created_by=None,
-                 updated_by=None):
+    def _factory(game_day, start, home_team, away_team, court, game_type, status, duration=None, location=None,
+                 created_by=None, updated_by=None):
         kwargs = {
             'game_day': game_day,
             'start': start,
@@ -744,6 +773,7 @@ def game_factory():
             'away_team': away_team,
             'court': court,
             'type': game_type,
+            'status': status,
             'created_by': created_by,
             'updated_by': updated_by,
         }
@@ -769,6 +799,7 @@ def hookers_lbs_game_day1_2024(game_day1_2024, corlears_hookers, lbs, game_facto
         away_team=lbs,
         court=Game.EAST,
         game_type=Game.REGULAR,
+        status=Game.SCHEDULED,
         created_by=placeholder_user,
     )
 
@@ -790,6 +821,8 @@ def hookers_lbs_game_day1_2024_expected_json(hookers_lbs_game_day1_2024, game_da
             'get_court_display': 'East',
             'type': 'regular',
             'get_type_display': 'Regular',
+            'status': 'scheduled',
+            'get_status_display': 'Scheduled',
         }
 
     return _factory
@@ -804,6 +837,7 @@ def demons_rainbows_game_day1_2024(game_day1_2024, denim_demons, dark_rainbows, 
         away_team=dark_rainbows,
         court=Game.WEST,
         game_type=Game.REGULAR,
+        status=Game.SCHEDULED,
         created_by=placeholder_user,
     )
 
@@ -827,6 +861,8 @@ def demons_rainbows_game_day1_2024_game_day1_2024_expected_json(demons_rainbows_
             'get_court_display': 'West',
             'type': 'regular',
             'get_type_display': 'Regular',
+            'status': 'scheduled',
+            'get_status_display': 'Scheduled',
         }
 
     return _factory
