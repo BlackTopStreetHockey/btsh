@@ -9,7 +9,7 @@ from api.utils.datetime import datetime_to_drf
 from divisions.models import Division
 from games.models import Game, GameDay
 from seasons.models import Season
-from teams.models import Team
+from teams.models import Team, TeamSeasonRegistration
 from users.models import User, UserSeasonRegistration
 
 
@@ -77,6 +77,50 @@ def cmcdavid(user_factory):
         email='mcjesus@btsh.org',
         password='mcjesus',
         gender=User.MALE,
+    )
+
+
+@pytest.fixture
+def scrosby(user_factory):
+    yield user_factory(
+        first_name='Sidney',
+        last_name='Crosby',
+        email='s.crosby@btsh.org',
+        password='penguins',
+        gender=User.MALE,
+    )
+
+
+@pytest.fixture
+def akessel(user_factory):
+    yield user_factory(
+        first_name='Amanda',
+        last_name='Kessel',
+        email='a.kessel@btsh.org',
+        password='philssister',
+        gender=User.FEMALE,
+    )
+
+
+@pytest.fixture
+def hknight(user_factory):
+    yield user_factory(
+        first_name='Hilary',
+        last_name='Knight',
+        email='h.knight@btsh.org',
+        password='knight',
+        gender=User.FEMALE,
+    )
+
+
+@pytest.fixture
+def snurse(user_factory):
+    yield user_factory(
+        first_name='Sarah',
+        last_name='Nurse',
+        email='s.nurse@btsh.org',
+        password='nurse',
+        gender=User.FEMALE,
     )
 
 
@@ -267,10 +311,10 @@ def corlears_hookers(team_factory, settings, placeholder_user):
 
 
 @pytest.fixture
-def corlears_hookers_expected_json(corlears_hookers, placeholder_user_expected_json):
+def corlears_hookers_expected_json(corlears_hookers, placeholder_user):
     def _factory(tz=None, logo_prefix=''):
         return {
-            'created_by': placeholder_user_expected_json(tz),
+            'created_by': placeholder_user.id,
             'updated_by': None,
             'created_at': datetime_to_drf(corlears_hookers.created_at, tz=tz),
             'updated_at': datetime_to_drf(corlears_hookers.updated_at, tz=tz),
@@ -296,10 +340,10 @@ def butchers(team_factory, settings, placeholder_user):
 
 
 @pytest.fixture
-def butchers_expected_json(butchers, placeholder_user_expected_json):
+def butchers_expected_json(butchers, placeholder_user):
     def _factory(tz=None, logo_prefix=''):
         return {
-            'created_by': placeholder_user_expected_json(tz),
+            'created_by': placeholder_user.id,
             'updated_by': None,
             'created_at': datetime_to_drf(butchers.created_at, tz=tz),
             'updated_at': datetime_to_drf(butchers.updated_at, tz=tz),
@@ -325,10 +369,10 @@ def lbs(team_factory, settings, placeholder_user):
 
 
 @pytest.fixture
-def lbs_expected_json(lbs, placeholder_user_expected_json):
+def lbs_expected_json(lbs, placeholder_user):
     def _factory(tz=None, logo_prefix=''):
         return {
-            'created_by': placeholder_user_expected_json(tz),
+            'created_by': placeholder_user.id,
             'updated_by': None,
             'created_at': datetime_to_drf(lbs.created_at, tz=tz),
             'updated_at': datetime_to_drf(lbs.updated_at, tz=tz),
@@ -354,10 +398,10 @@ def cobra_kai(team_factory, settings, placeholder_user):
 
 
 @pytest.fixture
-def cobra_kai_expected_json(cobra_kai, placeholder_user_expected_json):
+def cobra_kai_expected_json(cobra_kai, placeholder_user):
     def _factory(tz=None, logo_prefix=''):
         return {
-            'created_by': placeholder_user_expected_json(tz),
+            'created_by': placeholder_user.id,
             'updated_by': None,
             'created_at': datetime_to_drf(cobra_kai.created_at, tz=tz),
             'updated_at': datetime_to_drf(cobra_kai.updated_at, tz=tz),
@@ -383,10 +427,10 @@ def dark_rainbows(team_factory, settings, placeholder_user):
 
 
 @pytest.fixture
-def dark_rainbows_expected_json(dark_rainbows, placeholder_user_expected_json):
+def dark_rainbows_expected_json(dark_rainbows, placeholder_user):
     def _factory(tz=None, logo_prefix=''):
         return {
-            'created_by': placeholder_user_expected_json(tz),
+            'created_by': placeholder_user.id,
             'updated_by': None,
             'created_at': datetime_to_drf(dark_rainbows.created_at, tz=tz),
             'updated_at': datetime_to_drf(dark_rainbows.updated_at, tz=tz),
@@ -412,10 +456,10 @@ def denim_demons(team_factory, settings, placeholder_user):
 
 
 @pytest.fixture
-def denim_demons_expected_json(denim_demons, placeholder_user_expected_json):
+def denim_demons_expected_json(denim_demons, placeholder_user):
     def _factory(tz=None, logo_prefix=''):
         return {
-            'created_by': placeholder_user_expected_json(tz),
+            'created_by': placeholder_user.id,
             'updated_by': None,
             'created_at': datetime_to_drf(denim_demons.created_at, tz=tz),
             'updated_at': datetime_to_drf(denim_demons.updated_at, tz=tz),
@@ -463,6 +507,24 @@ def user_season_registration_factory():
 
 
 @pytest.fixture
+def wgretzky_2023_season_registration(user_season_registration_factory, wgretzky, season_2023, denim_demons):
+    yield user_season_registration_factory(
+        user=wgretzky,
+        season=season_2023,
+        team=denim_demons,
+        is_captain=False,
+        position=UserSeasonRegistration.DEFENSE,
+        signature='Wayne Gretzky',
+        location=UserSeasonRegistration.BRONX,
+        interested_in_reffing=True,
+        interested_in_opening_closing=False,
+        interested_in_other='Can Mark Messier play in this league?',
+        interested_in_next_year=False,
+        mid_season_party_ideas=None,
+    )
+
+
+@pytest.fixture
 def wgretzky_2024_season_registration(user_season_registration_factory, wgretzky, season_2024, corlears_hookers):
     yield user_season_registration_factory(
         user=wgretzky,
@@ -477,6 +539,76 @@ def wgretzky_2024_season_registration(user_season_registration_factory, wgretzky
         interested_in_other=None,
         interested_in_next_year=False,
         mid_season_party_ideas=None,
+    )
+
+
+@pytest.fixture
+def team_season_registration_factory():
+    def _factory(season, team, division, home_games_played, away_games_played, home_regulation_wins,
+                 home_regulation_losses, home_overtime_wins, home_overtime_losses, home_shootout_wins,
+                 home_shootout_losses, home_ties, away_regulation_wins,
+                 away_regulation_losses, away_overtime_wins, away_overtime_losses, away_shootout_wins,
+                 away_shootout_losses, away_ties, home_goals_for, home_goals_against, away_goals_for,
+                 away_goals_against):
+        team_season_registration = TeamSeasonRegistration(
+            season=season,
+            team=team,
+            division=division,
+            home_games_played=home_games_played,
+            away_games_played=away_games_played,
+            home_regulation_wins=home_regulation_wins,
+            home_regulation_losses=home_regulation_losses,
+            home_overtime_wins=home_overtime_wins,
+            home_overtime_losses=home_overtime_losses,
+            home_shootout_wins=home_shootout_wins,
+            home_shootout_losses=home_shootout_losses,
+            home_ties=home_ties,
+            away_regulation_wins=away_regulation_wins,
+            away_regulation_losses=away_regulation_losses,
+            away_overtime_wins=away_overtime_wins,
+            away_overtime_losses=away_overtime_losses,
+            away_shootout_wins=away_shootout_wins,
+            away_shootout_losses=away_shootout_losses,
+            away_ties=away_ties,
+            home_goals_for=home_goals_for,
+            home_goals_against=home_goals_against,
+            away_goals_for=away_goals_for,
+            away_goals_against=away_goals_against,
+        )
+        team_season_registration.full_clean()
+        team_season_registration.save()
+        return team_season_registration
+
+    return _factory
+
+
+@pytest.fixture
+def corlears_hookers_2024_season_registration(team_season_registration_factory, corlears_hookers, season_2024,
+                                              division4):
+    yield team_season_registration_factory(
+        team=corlears_hookers,
+        season=season_2024,
+        division=division4,
+        home_games_played=7,
+        away_games_played=8,
+        home_regulation_wins=1,
+        home_regulation_losses=1,
+        home_overtime_wins=1,
+        home_overtime_losses=1,
+        home_shootout_wins=1,
+        home_shootout_losses=1,
+        home_ties=1,
+        away_regulation_wins=2,
+        away_regulation_losses=1,
+        away_overtime_wins=1,
+        away_overtime_losses=1,
+        away_shootout_wins=1,
+        away_shootout_losses=1,
+        away_ties=1,
+        home_goals_for=35,
+        home_goals_against=10,
+        away_goals_for=34,
+        away_goals_against=15,
     )
 
 
@@ -510,11 +642,11 @@ def game_day1_2024(game_day_factory, season_2024, corlears_hookers, butchers, pl
 
 
 @pytest.fixture
-def game_day1_2024_expected_json(game_day1_2024, placeholder_user_expected_json, season_2024_expected_json,
+def game_day1_2024_expected_json(game_day1_2024, placeholder_user, season_2024_expected_json,
                                  butchers_expected_json, corlears_hookers_expected_json):
     def _factory(tz=None, logo_prefix=''):
         return {
-            'created_by': placeholder_user_expected_json(tz),
+            'created_by': placeholder_user.id,
             'updated_by': None,
             'created_at': datetime_to_drf(game_day1_2024.created_at, tz=tz),
             'updated_at': datetime_to_drf(game_day1_2024.updated_at, tz=tz),
@@ -593,12 +725,12 @@ def hookers_lbs_game_day1_2024(game_day1_2024, corlears_hookers, lbs, game_facto
 
 
 @pytest.fixture
-def hookers_lbs_game_day1_2024_expected_json(hookers_lbs_game_day1_2024, placeholder_user_expected_json,
+def hookers_lbs_game_day1_2024_expected_json(hookers_lbs_game_day1_2024, placeholder_user,
                                              game_day1_2024_expected_json, corlears_hookers_expected_json,
                                              lbs_expected_json):
     def _factory(tz=None, logo_prefix=''):
         return {
-            'created_by': placeholder_user_expected_json(tz),
+            'created_by': placeholder_user.id,
             'updated_by': None,
             'created_at': datetime_to_drf(hookers_lbs_game_day1_2024.created_at, tz=tz),
             'updated_at': datetime_to_drf(hookers_lbs_game_day1_2024.updated_at, tz=tz),
@@ -634,13 +766,13 @@ def demons_rainbows_game_day1_2024(game_day1_2024, denim_demons, dark_rainbows, 
 
 @pytest.fixture
 def demons_rainbows_game_day1_2024_game_day1_2024_expected_json(demons_rainbows_game_day1_2024,
-                                                                placeholder_user_expected_json,
+                                                                placeholder_user,
                                                                 game_day1_2024_expected_json,
                                                                 denim_demons_expected_json,
                                                                 dark_rainbows_expected_json):
     def _factory(tz=None, logo_prefix=''):
         return {
-            'created_by': placeholder_user_expected_json(tz),
+            'created_by': placeholder_user.id,
             'updated_by': None,
             'created_at': datetime_to_drf(demons_rainbows_game_day1_2024.created_at, tz=tz),
             'updated_at': datetime_to_drf(demons_rainbows_game_day1_2024.updated_at, tz=tz),
