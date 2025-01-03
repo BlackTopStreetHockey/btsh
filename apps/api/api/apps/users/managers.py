@@ -2,15 +2,10 @@ from django.db import models
 from django.db.models import Count, F, Q, Window
 from django.db.models.functions import RowNumber
 
-from games.models import Game
+from games.models import Game, GameGoal
 
 
 class UserSeasonRegistrationQuerySet(models.QuerySet):
-    def for_team(self, team, season=None):
-        kwargs = {'team': team}
-        if season:
-            kwargs.update({'season': season})
-        return self.filter(**kwargs).select_related('user', 'team', 'season')
 
     def with_stats(self, game_type):
         """
@@ -21,6 +16,7 @@ class UserSeasonRegistrationQuerySet(models.QuerySet):
         team_filter = Q(user__game_players__team=F('team'))
         completed_game_filter = Q(user__game_players__game__status=Game.COMPLETED)
         game_type_filter = Q(user__game_players__game__type=game_type)
+        not_shootout_goal_filter = ~Q(user__game_players__goals__period=GameGoal.SO)
 
         return self.annotate(
             games_played=Count(
@@ -31,7 +27,9 @@ class UserSeasonRegistrationQuerySet(models.QuerySet):
             goals=Count(
                 'user__game_players__goals',
                 distinct=True,
-                filter=season_filter & team_filter & completed_game_filter & game_type_filter,
+                filter=(
+                    season_filter & team_filter & completed_game_filter & game_type_filter & not_shootout_goal_filter
+                ),
             ),
             primary_assists=Count(
                 'user__game_players__primary_assists',

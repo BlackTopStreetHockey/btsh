@@ -64,10 +64,13 @@ class GameQuerySet(models.QuerySet):
 
     def for_stats(self, team, season, game_type):
         """Get the games to be used to compute stats for the given team in the given season."""
+        from games.models import GameGoal
+
         home_team_filter = Q(home_team=team)
         away_team_filter = Q(away_team=team)
         goals_for_filter = Q(goals__team=team)
         goals_against_filter = Q(goals__team_against=team)
+        not_shootout_goal_filter = ~Q(goals__period=GameGoal.SO)
 
         return self.for_team(team).filter(
             status=self.model.COMPLETED,
@@ -81,10 +84,16 @@ class GameQuerySet(models.QuerySet):
             'goals__team',
             'goals__team_against',
         ).with_scores().annotate(
-            _home_goals_for=Count('goals', filter=home_team_filter & goals_for_filter),
-            _home_goals_against=Count('goals', filter=home_team_filter & goals_against_filter),
-            _away_goals_for=Count('goals', filter=away_team_filter & goals_for_filter),
-            _away_goals_against=Count('goals', filter=away_team_filter & goals_against_filter),
+            _home_goals_for=Count('goals', filter=home_team_filter & goals_for_filter & not_shootout_goal_filter),
+            _home_goals_against=Count(
+                'goals',
+                filter=home_team_filter & goals_against_filter & not_shootout_goal_filter
+            ),
+            _away_goals_for=Count('goals', filter=away_team_filter & goals_for_filter & not_shootout_goal_filter),
+            _away_goals_against=Count(
+                'goals',
+                filter=away_team_filter & goals_against_filter & not_shootout_goal_filter
+            ),
         )
 
 
