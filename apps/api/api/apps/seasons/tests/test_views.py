@@ -15,8 +15,8 @@ class TestSeasonViewSet(BaseTest):
         api_client.force_login(cmcdavid)
         assert api_client.get(self.reverse_api_url(url=self.list_url)).status_code == 200
 
-    def test_list(self, api_client, settings, mocker, season_2024, placeholder_user, season_2022_expected_json,
-                  season_2023_expected_json, season_2024_expected_json):
+    def test_list(self, api_client, mocker, season_2024, season_2022_expected_json, season_2023_expected_json,
+                  season_2024_expected_json):
         mocker.patch('django.utils.timezone.now', return_value=datetime(
             year=season_2024.start.year,
             month=5,
@@ -30,22 +30,19 @@ class TestSeasonViewSet(BaseTest):
         response = api_client.get(self.reverse_api_url(url=self.list_url))
 
         assert response.status_code == 200
-        assert response.data == {
-            'count': 3,
-            'next': None,
-            'previous': None,
-            'results': [
-                season_2022_expected_json(
-                    is_past=True, is_current=False, is_future=False, tz=settings.DEFAULT_USER_TIME_ZONE
-                ),
-                season_2023_expected_json(
-                    is_past=True, is_current=False, is_future=False, tz=settings.DEFAULT_USER_TIME_ZONE
-                ),
-                season_2024_expected_json(
-                    is_past=False, is_current=True, is_future=False, tz=settings.DEFAULT_USER_TIME_ZONE
-                )
-            ],
-        }
+        self.assert_data(
+            response.data,
+            {
+                'count': 3,
+                'next': None,
+                'previous': None,
+                'results': [
+                    self.clean_data(season_2022_expected_json(is_past=True, is_current=False, is_future=False)),
+                    self.clean_data(season_2023_expected_json(is_past=True, is_current=False, is_future=False)),
+                    self.clean_data(season_2024_expected_json(is_past=False, is_current=True, is_future=False)),
+                ],
+            }
+        )
 
     def test_retrieve_permission(self, api_client, cmcdavid, season_2024):
         url = self.reverse_api_url(url=self.retrieve_url, pk=season_2024.pk)
@@ -57,10 +54,8 @@ class TestSeasonViewSet(BaseTest):
         api_client.force_login(cmcdavid)
         assert api_client.get(url).status_code == 200
 
-    def test_retrieve(self, api_client, settings, season_2024, season_2024_expected_json):
+    def test_retrieve(self, api_client, season_2024, season_2024_expected_json):
         response = api_client.get(self.reverse_api_url(url=self.retrieve_url, pk=season_2024.pk))
 
         assert response.status_code == 200
-        assert response.data == season_2024_expected_json(
-            is_past=True, is_current=False, is_future=False, tz=settings.DEFAULT_USER_TIME_ZONE
-        )
+        self.assert_data(response.data, season_2024_expected_json(is_past=True, is_current=False, is_future=False))

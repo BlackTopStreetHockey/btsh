@@ -18,16 +18,18 @@ class TestDivisionViewSet(BaseTest):
         response = api_client.get(self.reverse_api_url(url=self.list_url))
 
         assert response.status_code == 200
-        assert response.data == {
-            'count': 3,
-            'next': None,
-            'previous': None,
-            'results': [
-                self.clean_data(division1_expected_json),
-                self.clean_data(division2_expected_json),
-                self.clean_data(division3_expected_json),
-            ],
-        }
+        self.assert_data(
+            response.data,
+            {
+                'count': 3,
+                'next': None,
+                'previous': None,
+                'results': [
+                    division1_expected_json,
+                    division2_expected_json,
+                    division3_expected_json,
+                ],
+            })
 
     def test_retrieve_permission(self, api_client, cmcdavid, division1):
         url = self.reverse_api_url(url=self.retrieve_url, pk=division1.pk)

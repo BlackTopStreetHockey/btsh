@@ -5,7 +5,7 @@ from seasons.serializers import SeasonReadOnlySerializer
 
 
 class TestSeasonReadOnlySerializer(BaseTest):
-    def test_serialize(self, mocker, settings, season_2024, season_2024_expected_json):
+    def test_serialize(self, mocker, season_2024, season_2024_expected_json):
         mocker.patch('django.utils.timezone.now', return_value=datetime(
             year=season_2024.start.year,
             month=5,
@@ -18,6 +18,4 @@ class TestSeasonReadOnlySerializer(BaseTest):
 
         s = SeasonReadOnlySerializer(season_2024)
 
-        assert s.data == season_2024_expected_json(
-            is_past=False, is_current=True, is_future=False, tz=settings.DEFAULT_USER_TIME_ZONE,
-        )
+        self.assert_data(s.data, season_2024_expected_json(is_past=False, is_current=True, is_future=False))

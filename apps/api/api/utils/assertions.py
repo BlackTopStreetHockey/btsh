@@ -15,4 +15,8 @@ def clean_data(data: dict, ignore_keys: list[str] = None) -> dict:
 
 def assert_data(data: dict, expected_data: dict, ignore_keys: list[str] = None):
     """Asserts serializer data or response data matches the expected data."""
+    # If it's a paginated response clean all of the results before asserting
+    if results := data.get('results'):
+        data.update({'results': [clean_data(r, ignore_keys) for r in results]})
+
     assert clean_data(data, ignore_keys) == expected_data
