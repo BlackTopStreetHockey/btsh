@@ -3,9 +3,10 @@ from datetime import date, datetime, timedelta, timezone
 import pytest
 from django.core.exceptions import ValidationError
 
+from api.utils.testing import BaseTest
 
-@pytest.mark.django_db
-class TestSeasonModel:
+
+class TestSeasonModel(BaseTest):
     def test_start_formatted(self, season_2024):
         assert season_2024.start_formatted == '03/31/2024'
 

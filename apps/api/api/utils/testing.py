@@ -3,6 +3,7 @@ from datetime import datetime
 import pytest
 from rest_framework.reverse import reverse as drf_reverse
 
+from .assertions import assert_data, clean_data
 from .datetime import datetime_to_drf
 
 
@@ -17,6 +18,12 @@ class BaseTest:
     def reverse_api_url(self, *args, url=None, **kwargs):
         url = url or getattr(self, 'url', None)
         return drf_reverse(url, args=args, kwargs=kwargs) if url else None
+
+    def clean_data(self, data, ignore_keys=None):
+        return clean_data(data, ignore_keys)
+
+    def assert_data(self, data, expected_data, ignore_keys=None):
+        return assert_data(data, expected_data, ignore_keys)
 
     # Create
     def test_create_permission(self, *args, **kwargs):

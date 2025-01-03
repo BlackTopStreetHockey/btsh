@@ -13,7 +13,8 @@ class TestDivisionViewSet(BaseTest):
         api_client.force_login(cmcdavid)
         assert api_client.get(self.reverse_api_url(url=self.list_url)).status_code == 200
 
-    def test_list(self, api_client, settings, division1, division2, division3, placeholder_user):
+    def test_list(self, api_client, division1, division2, division3, division1_expected_json, division2_expected_json,
+                  division3_expected_json):
         response = api_client.get(self.reverse_api_url(url=self.list_url))
 
         assert response.status_code == 200
@@ -22,30 +23,9 @@ class TestDivisionViewSet(BaseTest):
             'next': None,
             'previous': None,
             'results': [
-                {
-                    'created_by': self.format_created_by_updated_by(placeholder_user),
-                    'updated_by': None,
-                    'created_at': self.format_datetime(division1.created_at, tz=settings.DEFAULT_USER_TIME_ZONE),
-                    'updated_at': self.format_datetime(division1.updated_at, tz=settings.DEFAULT_USER_TIME_ZONE),
-                    'id': division1.id,
-                    'name': 'Division 1',
-                },
-                {
-                    'created_by': self.format_created_by_updated_by(placeholder_user),
-                    'updated_by': None,
-                    'created_at': self.format_datetime(division2.created_at, tz=settings.DEFAULT_USER_TIME_ZONE),
-                    'updated_at': self.format_datetime(division2.updated_at, tz=settings.DEFAULT_USER_TIME_ZONE),
-                    'id': division2.id,
-                    'name': 'Division 2',
-                },
-                {
-                    'created_by': self.format_created_by_updated_by(placeholder_user),
-                    'updated_by': None,
-                    'created_at': self.format_datetime(division3.created_at, tz=settings.DEFAULT_USER_TIME_ZONE),
-                    'updated_at': self.format_datetime(division3.updated_at, tz=settings.DEFAULT_USER_TIME_ZONE),
-                    'id': division3.id,
-                    'name': 'Division 3',
-                },
+                self.clean_data(division1_expected_json),
+                self.clean_data(division2_expected_json),
+                self.clean_data(division3_expected_json),
             ],
         }
 
@@ -59,15 +39,8 @@ class TestDivisionViewSet(BaseTest):
         api_client.force_login(cmcdavid)
         assert api_client.get(url).status_code == 200
 
-    def test_retrieve(self, api_client, settings, division1, placeholder_user):
+    def test_retrieve(self, api_client, division1, division1_expected_json):
         response = api_client.get(self.reverse_api_url(url=self.retrieve_url, pk=division1.pk))
 
         assert response.status_code == 200
-        assert response.data == {
-            'created_by': self.format_created_by_updated_by(placeholder_user),
-            'updated_by': None,
-            'created_at': self.format_datetime(division1.created_at, tz=settings.DEFAULT_USER_TIME_ZONE),
-            'updated_at': self.format_datetime(division1.updated_at, tz=settings.DEFAULT_USER_TIME_ZONE),
-            'id': division1.id,
-            'name': 'Division 1',
-        }
+        self.assert_data(response.data, division1_expected_json)

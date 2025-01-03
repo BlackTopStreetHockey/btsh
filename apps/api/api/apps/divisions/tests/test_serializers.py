@@ -4,14 +4,7 @@ from divisions.serializers import DivisionReadOnlySerializer
 
 
 class TestDivisionReadOnlySerializer(BaseTest):
-    def test_serialize(self, division1, placeholder_user):
+    def test_serialize(self, division1, division1_expected_json):
         s = DivisionReadOnlySerializer(division1)
 
-        assert s.data == {
-            'created_by': self.format_created_by_updated_by(placeholder_user),
-            'updated_by': None,
-            'created_at': self.format_datetime(division1.created_at),
-            'updated_at': self.format_datetime(division1.updated_at),
-            'id': division1.id,
-            'name': 'Division 1',
-        }
+        self.assert_data(s.data, division1_expected_json)

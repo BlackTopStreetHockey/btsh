@@ -3,9 +3,10 @@ from datetime import date
 import pytest
 from django.core.exceptions import ValidationError
 
+from api.utils.testing import BaseTest
 
-@pytest.mark.django_db
-class TestGameDayModel:
+
+class TestGameDayModel(BaseTest):
     @pytest.mark.parametrize('day', [
         date(year=2023, month=2, day=1),
         date(year=2024, month=3, day=1),
@@ -23,8 +24,7 @@ class TestGameDayModel:
         assert str(game_day1_2024) == '04/07/2024'
 
 
-@pytest.mark.django_db
-class TestGameModel:
+class TestGameModel(BaseTest):
     def test_to_str(self, hookers_lbs_game_day1_2024):
         assert str(hookers_lbs_game_day1_2024) == '04/07/2024 12:00PM Corlears Hookers vs. Lbs'
 
