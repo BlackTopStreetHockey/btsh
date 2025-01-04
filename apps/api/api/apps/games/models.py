@@ -237,24 +237,24 @@ class GameGoal(BaseModel):
         related_name='secondary_assists',
     )
 
-    def _validate_game_player(self, game_player: GamePlayer, game: Game, team: Team):
+    def _validate_game_player(self, game_player: GamePlayer, game: Game, team: Team) -> set:
         """Validates the selected game player belongs to the selected team and game."""
-        errors = []
+        errors = set()
 
         if game_player and game and game_player.game_id != game.id:
-            errors.append('This player does not belong to the selected game.')
+            errors.add('This player does not belong to the selected game.')
 
         if game_player and team and game_player.team_id != team.id:
-            errors.append('This player does not belong to the selected team.')
+            errors.add('This player does not belong to the selected team.')
 
         return errors
 
-    def _validate_game_players(self, gp1: GamePlayer, gp2: GamePlayer):
+    def _validate_game_players(self, gp1: GamePlayer, gp2: GamePlayer) -> set:
         """Validates the selected game players are not the same, i.e. the scorer isn't given an assist."""
-        errors = []
+        errors = set()
 
         if gp1 and gp2 and gp1.id == gp2.id:
-            errors.append('This player can\'t be selected more than once.')
+            errors.add('This player can\'t be selected more than once.')
 
         return errors
 
@@ -277,38 +277,38 @@ class GameGoal(BaseModel):
 
         # Ensure team is either the home or away team
         if team and game and team not in teams:
-            errors.setdefault('team', []).append(f'Team must be {team_names}.')
+            errors.setdefault('team', set()).add(f'Team must be {team_names}.')
 
         # Ensure team against is either the home or away team
         if team_against and game and team_against not in teams:
-            errors.setdefault('team_against', []).append(f'Team must be {team_names}.')
+            errors.setdefault('team_against', set()).add(f'Team must be {team_names}.')
 
         # Ensure team and team_against are different
         if (team and team_against) and (team == team_against):
-            errors.setdefault('team', []).append('Team must be different from team against.')
-            errors.setdefault('team_against', []).append('Team against must be different from team.')
+            errors.setdefault('team', set()).add('Team must be different from team against.')
+            errors.setdefault('team_against', set()).add('Team against must be different from team.')
 
         # Ensure game player belongs to the game and team
         if errors1 := self._validate_game_player(scored_by, game, team):
-            errors.setdefault('scored_by', []).extend(errors1)
+            errors.setdefault('scored_by', set()).update(errors1)
         if errors2 := self._validate_game_player(assisted_by1, game, team):
-            errors.setdefault('assisted_by1', []).extend(errors2)
+            errors.setdefault('assisted_by1', set()).update(errors2)
         if errors3 := self._validate_game_player(assisted_by2, game, team):
-            errors.setdefault('assisted_by2', []).extend(errors3)
+            errors.setdefault('assisted_by2', set()).update(errors3)
 
         # Ensure scorer, assist1, assist2 are all different
         if errors4 := self._validate_game_players(scored_by, assisted_by1):
-            errors.setdefault('assisted_by1', []).extend(errors4)
+            errors.setdefault('assisted_by1', set()).update(errors4)
         if errors5 := self._validate_game_players(scored_by, assisted_by2):
-            errors.setdefault('assisted_by2', []).extend(errors5)
+            errors.setdefault('assisted_by2', set()).update(errors5)
         if errors6 := self._validate_game_players(assisted_by1, assisted_by2):
-            errors.setdefault('assisted_by2', []).extend(errors6)
+            errors.setdefault('assisted_by2', set()).update(errors6)
 
         if not assisted_by1 and assisted_by2:
-            errors.setdefault('assisted_by1', []).append('This field is required when a secondary assist is provided.')
+            errors.setdefault('assisted_by1', set()).add('This field is required when a secondary assist is provided.')
 
         if errors:
-            raise ValidationError(errors)
+            raise ValidationError({k: sorted(list(v)) for k, v in errors.items()})
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

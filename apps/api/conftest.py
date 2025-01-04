@@ -7,7 +7,7 @@ from rest_framework.test import APIClient
 
 from api.utils.datetime import datetime_to_drf
 from divisions.models import Division
-from games.models import Game, GameDay
+from games.models import Game, GameDay, GameGoal, GamePlayer, GameReferee
 from seasons.models import Season
 from teams.models import Team, TeamSeasonRegistration
 from users.models import User, UserSeasonRegistration
@@ -123,6 +123,28 @@ def snurse(user_factory):
         last_name='Nurse',
         email='s.nurse@btsh.org',
         password='nurse',
+        gender=User.FEMALE,
+    )
+
+
+@pytest.fixture
+def dschrute(user_factory):
+    yield user_factory(
+        first_name='Dwight',
+        last_name='Schrute',
+        email='d.schrute@dundermifflin.com',
+        password='beets',
+        gender=User.MALE,
+    )
+
+
+@pytest.fixture
+def pbeasley(user_factory):
+    yield user_factory(
+        first_name='Pam',
+        last_name='Beasley',
+        email='p.beasley@dundermifflin.com',
+        password='jim',
         gender=User.FEMALE,
     )
 
@@ -866,3 +888,125 @@ def demons_rainbows_game_day1_2024_game_day1_2024_expected_json(demons_rainbows_
         }
 
     return _factory
+
+
+@pytest.fixture
+def game_referee_factory():
+    def _factory(game, user, _type, created_by=None, updated_by=None):
+        game_ref = GameReferee(game=game, user=user, type=_type, created_by=created_by, updated_by=updated_by)
+        game_ref.full_clean()
+        game_ref.save()
+        return game_ref
+
+    return _factory
+
+
+@pytest.fixture
+def pbeasley_hookers_lbs_game_day1_2024_game_ref(game_referee_factory, pbeasley, hookers_lbs_game_day1_2024,
+                                                 placeholder_user):
+    yield game_referee_factory(
+        game=hookers_lbs_game_day1_2024, user=pbeasley, _type=GameReferee.STRING, created_by=placeholder_user,
+    )
+
+
+@pytest.fixture
+def dschrute_hookers_lbs_game_day1_2024_game_ref(game_referee_factory, dschrute, hookers_lbs_game_day1_2024,
+                                                 placeholder_user):
+    yield game_referee_factory(
+        game=hookers_lbs_game_day1_2024, user=dschrute, _type=GameReferee.FENCE, created_by=placeholder_user,
+    )
+
+
+@pytest.fixture
+def game_player_factory():
+    def _factory(game, user, team, is_substitute, is_goalie, created_by=None, updated_by=None):
+        game_player = GamePlayer(
+            game=game,
+            user=user,
+            team=team,
+            is_substitute=is_substitute,
+            is_goalie=is_goalie,
+            created_by=created_by,
+            updated_by=updated_by,
+        )
+        game_player.full_clean()
+        game_player.save()
+        return game_player
+
+    return _factory
+
+
+@pytest.fixture
+def wgretzky_hookers_lbs_game_day1_2024_game_player(game_player_factory, wgretzky, corlears_hookers,
+                                                    hookers_lbs_game_day1_2024, placeholder_user):
+    yield game_player_factory(
+        game=hookers_lbs_game_day1_2024,
+        user=wgretzky,
+        team=corlears_hookers,
+        is_substitute=False,
+        is_goalie=False,
+        created_by=placeholder_user,
+    )
+
+
+@pytest.fixture
+def cmcdavid_hookers_lbs_game_day1_2024_game_player(game_player_factory, cmcdavid, corlears_hookers,
+                                                    hookers_lbs_game_day1_2024, placeholder_user):
+    yield game_player_factory(
+        game=hookers_lbs_game_day1_2024,
+        user=cmcdavid,
+        team=corlears_hookers,
+        is_substitute=False,
+        is_goalie=False,
+        created_by=placeholder_user,
+    )
+
+
+@pytest.fixture
+def akessel_demons_rainbows_game_day1_2024_game_player(game_player_factory, akessel, denim_demons,
+                                                       demons_rainbows_game_day1_2024, placeholder_user):
+    yield game_player_factory(
+        game=demons_rainbows_game_day1_2024,
+        user=akessel,
+        team=denim_demons,
+        is_substitute=False,
+        is_goalie=False,
+        created_by=placeholder_user,
+    )
+
+
+@pytest.fixture
+def game_goal_factory():
+    def _factory(game, team, team_against, period, scored_by, assisted_by1, assisted_by2, created_by=None,
+                 updated_by=None):
+        game_goal = GameGoal(
+            game=game,
+            team=team,
+            team_against=team_against,
+            period=period,
+            scored_by=scored_by,
+            assisted_by1=assisted_by1,
+            assisted_by2=assisted_by2,
+            created_by=created_by,
+            updated_by=updated_by,
+        )
+        game_goal.full_clean()
+        game_goal.save()
+        return game_goal
+
+    return _factory
+
+
+@pytest.fixture
+def hookers_lbs_game_day1_2024_game_goal1(game_goal_factory, hookers_lbs_game_day1_2024, corlears_hookers, lbs,
+                                          wgretzky_hookers_lbs_game_day1_2024_game_player, placeholder_user):
+    yield game_goal_factory(
+        game=hookers_lbs_game_day1_2024,
+        team=corlears_hookers,
+        team_against=lbs,
+        period=GameGoal.FIRST,
+        scored_by=wgretzky_hookers_lbs_game_day1_2024_game_player,
+        assisted_by1=None,
+        assisted_by2=None,
+        created_by=placeholder_user,
+    )
